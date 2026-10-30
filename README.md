@@ -231,6 +231,65 @@ docker compose -f infra/docker-compose.yml up
 
 ---
 
+## 🤖 AI Agent Skill & Plugin (Antigravity, Claude Code, Cursor, Windsurf)
+
+ShaktIQ can be installed directly into AI coding agents as an **Agent Skill, Plugin, and MCP Tool** (similar to `graphify` and `ponytail`). This allows agents to run deterministic API contract diffs **in-between code execution**, catching breaking changes before code is ever committed or deployed.
+
+### What It Is Called
+- **Antigravity / Agent Skill:** Defined by `skills/shaktiq/SKILL.md` and `.agents/skills/shaktiq/SKILL.md`. Injected into agent context via *Progressive Disclosure*.
+- **Agent Plugin:** Bundled via `plugin.json` and `plugin.yaml` with commands, tools, and hooks.
+- **Model Context Protocol (MCP) Server:** Standard JSON-RPC stdio tool provider (`shaktiq_analyze` and `shaktiq_git_diff`).
+
+### Quick Installation (1-Command Setup)
+
+Run the automated installer script:
+```bash
+./scripts/install-agent-skill.sh
+```
+
+This installs:
+1. `shaktiq` CLI globally into `~/.local/bin/shaktiq`.
+2. ShaktIQ Skill into Antigravity global customizations (`~/.gemini/config/skills/shaktiq/SKILL.md`).
+3. ShaktIQ Workspace Skill into `.agents/skills/shaktiq/SKILL.md` (auto-detected by repository agents).
+
+### How AI Agents Use It Between Code Execution
+
+When pair programming or editing backend controllers / OpenAPI schemas, agents can execute:
+
+```bash
+# 1. Compare working copy against git main branch (structured JSON for agents)
+shaktiq git-diff --spec openapi.yaml --base-ref main --json
+
+# 2. Compare working copy against git main branch (markdown for PR comments / chat)
+shaktiq git-diff --spec openapi.yaml --base-ref main --markdown
+
+# 3. Direct comparison between two spec files:
+shaktiq analyze --base ./base.yaml --head ./head.yaml --json
+
+# 4. Strict CI / pre-commit mode (exits with code 1 on breaking changes):
+shaktiq analyze --base ./base.yaml --head ./head.yaml --fail-on-breaking
+```
+
+### Model Context Protocol (MCP) Configuration
+
+Add ShaktIQ to your agent's `mcp_config.json` (Antigravity, Claude Desktop, Cursor, Windsurf):
+
+```json
+{
+  "mcpServers": {
+    "shaktiq": {
+      "command": "shaktiq-mcp"
+    }
+  }
+}
+```
+
+Exposed native tools:
+- `shaktiq_analyze({ base_spec, head_spec })`
+- `shaktiq_git_diff({ spec_path, base_ref })`
+
+---
+
 ## 🧪 Testing & Quality Assurance
 
 ShaktIQ follows a rigorous testing pyramid:

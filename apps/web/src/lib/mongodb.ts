@@ -28,3 +28,4 @@ export async function getDb(): Promise<Db> {
   const connectedClient = await clientPromise;
   return connectedClient.db(dbName);
 }
+
