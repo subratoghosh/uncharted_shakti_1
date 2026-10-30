@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "prebuild": "npm run build --workspace=@shaktiq/shared || npm --prefix ../../packages/shared run build || tsc -b ../../packages/shared",
+    "build": "(npm run build --workspace=@shaktiq/shared || npm --prefix ../../packages/shared run build) && next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"

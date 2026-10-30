@@ -5,8 +5,8 @@
   "description": "Deterministic OpenAPI Breaking Change Detection & Release Impact Intelligence",
   "type": "module",
   "workspaces": [
-    "apps/*",
     "packages/*",
+    "apps/*",
     "n8n/stub-api"
   ],
   "scripts": {
