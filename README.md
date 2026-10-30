@@ -32,14 +32,12 @@ ShaktIQ answers this deterministically before changes hit production, tracks pro
 ## 🌟 Key Features
 
 - 🎯 **Deterministic Breaking Change Detection:** Powered by `oasdiff` via `@shaktiq/analyzer`. Evaluates ~300 rules against OpenAPI 3.0/3.1 specs with zero hallucination.
-- 🛡️ **Three Surfaces, One Unified Pipeline:**
-  - **GitHub Pre-Release Gate:** Webhook triggers on `push` / `pull_request`, classifies risk, and posts automated compatibility comments.
-  - **VS Code Extension:** Developers compare their local working spec against `git HEAD` in real-time with diagnostics in the Problems panel.
-  - **User & Admin Web Dashboard:** Interactive Next.js console with run comparisons, endpoint hotspot tracking, and an admin audit trail.
-- 🧠 **Project Memory & Endpoint Hotspots:** Identifies chronic risk areas by aggregating breaking changes across releases (`distinctRuns >= 2`).
-- ⚡ **Real-Time Live Updates:** MongoDB Change Streams push real-time status transitions (`queued` → `running` → `completed`) over Server-Sent Events (SSE).
-- 🔒 **Zero-Duplicate Idempotent Webhook Intake:** Guaranteed single execution under webhook delivery retries and races via MongoDB unique indexes and atomic updates.
-- 🤖 **Optional Isolated AI Explanations:** Claude API (orchestrated via n8n) translates technical diffs into plain-language consumer impact and migration guides without compromising security.
+- 🤖 **Google Gemini 3.8 Flash AI Intelligence:** Synthesizes AST code fix snippets, blast radius risk assessments for mobile/web/microservice clients, and comprehensive Release Dossiers.
+- 💬 **Natural Language Project Assistant:** Ask ShaktIQ AI questions in plain English (*"Will this release break our mobile app?"*, *"How do I fix the parameter mismatch on POST /orders?"*) with instant answers grounded in MongoDB release memory.
+- 🛡️ **Three Developer Gateways:**
+  - **Gateway 1: GitHub Pre-Release Gate:** Webhook triggers on `push` / `pull_request`, classifies risk, and posts automated compatibility comments.
+  - **Gateway 2: VS Code Extension:** Developers compare their local working spec against `git HEAD` in real-time with diagnostics in the Problems panel.
+  - **Gateway 3: Coding Agent Skill & Web Console:** Interactive Next.js console with run comparisons, endpoint hotspot tracking, and an AI chat assistant.
 
 ---
 
