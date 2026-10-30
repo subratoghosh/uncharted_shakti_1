@@ -39,22 +39,30 @@ async function request<T>(
   init: RequestInit = {},
 ): Promise<ApiResponse<T>> {
   const url = `${API_URL}${path}`;
-  const res = await fetch(url, {
-    ...init,
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init.headers ?? {}),
-    },
-  });
+  try {
+    const res = await fetch(url, {
+      ...init,
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(init.headers ?? {}),
+      },
+    });
 
-  const json = (await res.json()) as ApiResponse<T>;
+    const json = (await res.json()) as ApiResponse<T>;
 
-  if (!json.ok) {
-    throw new ApiError(json.error.code, json.error.message, json.error.details);
+    if (!json.ok) {
+      throw new ApiError(json.error.code, json.error.message, json.error.details);
+    }
+
+    return json;
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    throw new ApiError(
+      'NETWORK_ERROR',
+      err instanceof Error ? err.message : 'Network request failed',
+    );
   }
-
-  return json;
 }
 
 function get<T>(path: string) {

@@ -27,3 +27,4 @@ describe('format utilities', () => {
     expect(formatRelative(now)).toMatch(/s ago/);
   });
 });
+

@@ -19,3 +19,4 @@ describe('VerdictBanner exact copy rules', () => {
     expect(screen.getByText('Not ready: blocking changes detected')).toBeDefined();
   });
 });
+

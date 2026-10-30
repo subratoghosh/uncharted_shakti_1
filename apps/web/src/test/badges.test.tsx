@@ -46,3 +46,4 @@ describe('Shared badge components', () => {
     expect(screen.getByText('/orders/{id}')).toBeDefined();
   });
 });
+

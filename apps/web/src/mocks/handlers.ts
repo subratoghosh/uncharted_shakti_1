@@ -3,7 +3,7 @@
 
 import { http, HttpResponse } from 'msw';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
+const API = '*/api/v1';
 
 const MOCK_USER = {
   id: 'user-1',
@@ -113,44 +113,44 @@ const MOCK_FINDINGS = [
 
 export const handlers = [
   // Auth
-  http.get(`${API}/api/v1/auth/me`, () =>
+  http.get(`${API}/auth/me`, () =>
     HttpResponse.json({ ok: true, data: MOCK_USER }),
   ),
-  http.post(`${API}/api/v1/auth/login`, () =>
+  http.post(`${API}/auth/login`, () =>
     HttpResponse.json({ ok: true, data: { user: MOCK_USER } }),
   ),
-  http.post(`${API}/api/v1/auth/register`, () =>
+  http.post(`${API}/auth/register`, () =>
     HttpResponse.json({ ok: true, data: { user: MOCK_USER } }),
   ),
-  http.post(`${API}/api/v1/auth/logout`, () =>
+  http.post(`${API}/auth/logout`, () =>
     HttpResponse.json({ ok: true, data: {} }),
   ),
 
   // Projects
-  http.get(`${API}/api/v1/projects`, () =>
+  http.get(`${API}/projects`, () =>
     HttpResponse.json({ ok: true, data: [MOCK_PROJECT] }),
   ),
-  http.post(`${API}/api/v1/projects`, () =>
+  http.post(`${API}/projects`, () =>
     HttpResponse.json({ ok: true, data: MOCK_PROJECT }),
   ),
-  http.get(`${API}/api/v1/projects/:projectId`, () =>
+  http.get(`${API}/projects/:projectId`, () =>
     HttpResponse.json({ ok: true, data: MOCK_PROJECT }),
   ),
 
   // Runs
-  http.get(`${API}/api/v1/projects/:projectId/runs`, () =>
+  http.get(`${API}/projects/:projectId/runs`, () =>
     HttpResponse.json({ ok: true, data: [MOCK_RUN_COMPLETED], meta: { page: 1, limit: 20, total: 1 } }),
   ),
-  http.post(`${API}/api/v1/projects/:projectId/runs`, () =>
+  http.post(`${API}/projects/:projectId/runs`, () =>
     HttpResponse.json({ ok: true, data: { ...MOCK_RUN_COMPLETED, status: 'queued', id: 'run-2' } }),
   ),
-  http.get(`${API}/api/v1/runs/:runId`, () =>
+  http.get(`${API}/runs/:runId`, () =>
     HttpResponse.json({ ok: true, data: MOCK_RUN_COMPLETED }),
   ),
-  http.get(`${API}/api/v1/runs/:runId/findings`, () =>
+  http.get(`${API}/runs/:runId/findings`, () =>
     HttpResponse.json({ ok: true, data: MOCK_FINDINGS }),
   ),
-  http.get(`${API}/api/v1/runs/:runId/report`, () =>
+  http.get(`${API}/runs/:runId/report`, () =>
     HttpResponse.json({
       ok: true,
       data: {
@@ -162,7 +162,7 @@ export const handlers = [
       },
     }),
   ),
-  http.get(`${API}/api/v1/projects/:projectId/compare`, () =>
+  http.get(`${API}/projects/:projectId/compare`, () =>
     HttpResponse.json({
       ok: true,
       data: MOCK_FINDINGS.map((f, i) => ({
@@ -173,7 +173,7 @@ export const handlers = [
   ),
 
   // Memory
-  http.get(`${API}/api/v1/projects/:projectId/memory/hotspots`, () =>
+  http.get(`${API}/projects/:projectId/memory/hotspots`, () =>
     HttpResponse.json({
       ok: true,
       data: [
@@ -188,12 +188,12 @@ export const handlers = [
       ],
     }),
   ),
-  http.get(`${API}/api/v1/projects/:projectId/memory/endpoint`, () =>
+  http.get(`${API}/projects/:projectId/memory/endpoint`, () =>
     HttpResponse.json({ ok: true, data: [] }),
   ),
 
   // Tokens
-  http.get(`${API}/api/v1/tokens`, () =>
+  http.get(`${API}/tokens`, () =>
     HttpResponse.json({
       ok: true,
       data: [
@@ -209,7 +209,7 @@ export const handlers = [
       ],
     }),
   ),
-  http.post(`${API}/api/v1/tokens`, () =>
+  http.post(`${API}/tokens`, () =>
     HttpResponse.json({
       ok: true,
       data: {
@@ -224,12 +224,12 @@ export const handlers = [
       },
     }),
   ),
-  http.delete(`${API}/api/v1/tokens/:tokenId`, () =>
+  http.delete(`${API}/tokens/:tokenId`, () =>
     HttpResponse.json({ ok: true, data: {} }),
   ),
 
   // Admin
-  http.get(`${API}/api/v1/admin/overview`, () =>
+  http.get(`${API}/admin/overview`, () =>
     HttpResponse.json({
       ok: true,
       data: {
@@ -240,13 +240,13 @@ export const handlers = [
       },
     }),
   ),
-  http.get(`${API}/api/v1/admin/projects`, () =>
+  http.get(`${API}/admin/projects`, () =>
     HttpResponse.json({ ok: true, data: [MOCK_PROJECT], meta: { page: 1, limit: 20, total: 1 } }),
   ),
-  http.get(`${API}/api/v1/admin/runs`, () =>
+  http.get(`${API}/admin/runs`, () =>
     HttpResponse.json({ ok: true, data: [MOCK_RUN_COMPLETED], meta: { page: 1, limit: 20, total: 1 } }),
   ),
-  http.get(`${API}/api/v1/admin/events`, () =>
+  http.get(`${API}/admin/events`, () =>
     HttpResponse.json({
       ok: true,
       data: [
@@ -280,24 +280,24 @@ export const handlers = [
       meta: { page: 1, limit: 20, total: 2 },
     }),
   ),
-  http.get(`${API}/api/v1/admin/workflows/health`, () =>
+  http.get(`${API}/admin/workflows/health`, () =>
     HttpResponse.json({
       ok: true,
       data: { status: 'ok', lastCheck: new Date().toISOString(), details: 'n8n reachable' },
     }),
   ),
-  http.get(`${API}/api/v1/admin/users`, () =>
+  http.get(`${API}/admin/users`, () =>
     HttpResponse.json({ ok: true, data: [MOCK_USER, MOCK_ADMIN] }),
   ),
-  http.patch(`${API}/api/v1/admin/users/:userId`, () =>
+  http.patch(`${API}/admin/users/:userId`, () =>
     HttpResponse.json({ ok: true, data: MOCK_USER }),
   ),
-  http.post(`${API}/api/v1/admin/runs/:runId/retry`, () =>
+  http.post(`${API}/admin/runs/:runId/retry`, () =>
     HttpResponse.json({ ok: true, data: { ...MOCK_RUN_COMPLETED, status: 'queued' } }),
   ),
 
   // Health
-  http.get(`${API}/api/v1/health`, () =>
+  http.get(`${API}/health`, () =>
     HttpResponse.json({ ok: true, data: { status: 'ok' } }),
   ),
 ];
