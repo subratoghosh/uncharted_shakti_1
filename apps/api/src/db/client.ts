@@ -5,7 +5,10 @@ import { logger } from '../lib/logger.js';
 let client: MongoClient | null = null;
 let db: Db | null = null;
 
-export async function connectDb(uri: string = env.MONGODB_URI, dbName: string = env.MONGODB_DB): Promise<Db> {
+export async function connectDb(
+  uri: string = env.MONGODB_URI,
+  dbName: string = env.MONGODB_DB,
+): Promise<Db> {
   if (db && client) {
     return db;
   }

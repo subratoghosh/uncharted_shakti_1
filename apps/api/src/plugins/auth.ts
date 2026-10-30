@@ -6,13 +6,14 @@ import { env } from '../config/env.js';
 import { getCollections } from '../db/collections.js';
 import { sha256, timingSafeStringCompare } from '../lib/hash.js';
 
-export interface AuthUser {
+export type AuthUser = {
   id: string;
   email: string;
   role: 'user' | 'admin';
 }
 
 declare module 'fastify' {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface FastifyRequest {
     user?: AuthUser;
   }
@@ -63,7 +64,9 @@ export async function authenticate(request: FastifyRequest, reply: FastifyReply)
     }
 
     // Update lastUsedAt asynchronously
-    apiTokens.updateOne({ _id: tokenDoc._id }, { $set: { lastUsedAt: new Date() } }).catch(() => {});
+    apiTokens
+      .updateOne({ _id: tokenDoc._id }, { $set: { lastUsedAt: new Date() } })
+      .catch(() => {});
 
     request.user = {
       id: userDoc._id.toHexString(),
@@ -106,7 +109,10 @@ export function requireRole(role: 'admin') {
   };
 }
 
-export async function requireInternalKey(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+export async function requireInternalKey(
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<void> {
   const headerKey = request.headers['x-shaktiq-internal-key'];
   if (typeof headerKey !== 'string') {
     throw new AppError('UNAUTHENTICATED', 'Missing internal API key');

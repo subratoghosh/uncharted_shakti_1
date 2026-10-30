@@ -21,7 +21,7 @@ export const projectRoutes: FastifyPluginAsync = async (app: FastifyInstance) =>
 
     return sendSuccess(
       reply,
-      list.map((p) => ({
+      list.map(p => ({
         id: p._id.toHexString(),
         ownerUserId: p.ownerUserId.toHexString(),
         name: p.name,

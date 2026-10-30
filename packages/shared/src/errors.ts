@@ -28,7 +28,7 @@ export const ERROR_HTTP_STATUS_MAP: Record<ErrorCode, number> = {
   INTERNAL: 500,
 };
 
-export interface ErrorDetail {
+export type ErrorDetail = {
   path?: string;
   message: string;
 }

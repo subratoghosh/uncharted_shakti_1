@@ -5,7 +5,7 @@ import { logger } from '../../lib/logger.js';
 
 export type SseListener = (msg: SseMessage) => void;
 
-interface Subscriber {
+type Subscriber = {
   id: string;
   userId: string;
   role: 'user' | 'admin';
@@ -60,10 +60,11 @@ class ChangeStreamHub {
 
   private initRunsStream(db: Db) {
     try {
-      this.runsStream = db.collection<RunDoc>('runs').watch(
-        [{ $match: { operationType: { $in: ['insert', 'update', 'replace'] } } }],
-        { fullDocument: 'updateLookup' },
-      );
+      this.runsStream = db
+        .collection<RunDoc>('runs')
+        .watch([{ $match: { operationType: { $in: ['insert', 'update', 'replace'] } } }], {
+          fullDocument: 'updateLookup',
+        });
 
       this.runsStream.on('change', (change: any) => {
         const fullDoc = change.fullDocument;
@@ -85,7 +86,7 @@ class ChangeStreamHub {
         this.publish(msg);
       });
 
-      this.runsStream.on('error', (err) => {
+      this.runsStream.on('error', err => {
         logger.warn({ err }, 'Runs change stream error, reconnecting in 5s...');
         setTimeout(() => {
           if (this.isRunning) this.initRunsStream(db);
@@ -104,7 +105,10 @@ class ChangeStreamHub {
             $match: {
               $or: [
                 { operationType: 'insert' },
-                { operationType: 'update', 'updateDescription.updatedFields.duplicateCount': { $exists: true } },
+                {
+                  operationType: 'update',
+                  'updateDescription.updatedFields.duplicateCount': { $exists: true },
+                },
               ],
             },
           },
@@ -116,7 +120,9 @@ class ChangeStreamHub {
         const fullDoc = change.fullDocument;
         if (!fullDoc) return;
 
-        const isDuplicate = change.operationType === 'update' || (fullDoc.duplicateCount && fullDoc.duplicateCount > 0);
+        const isDuplicate =
+          change.operationType === 'update' ||
+          (fullDoc.duplicateCount && fullDoc.duplicateCount > 0);
         const type: SseEventType = isDuplicate ? 'event.duplicate' : 'event.received';
 
         const msg: SseMessage = {
@@ -133,7 +139,7 @@ class ChangeStreamHub {
         this.publish(msg);
       });
 
-      this.eventsStream.on('error', (err) => {
+      this.eventsStream.on('error', err => {
         logger.warn({ err }, 'Events change stream error, reconnecting in 5s...');
         setTimeout(() => {
           if (this.isRunning) this.initEventsStream(db);

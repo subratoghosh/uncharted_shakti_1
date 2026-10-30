@@ -31,14 +31,18 @@ export async function createIndexes(db: Db): Promise<void> {
   await db.collection('findings').createIndex({ runId: 1, severity: 1 });
   await db.collection('findings').createIndex({ runId: 1, fingerprint: 1 }, { unique: true });
   await db.collection('findings').createIndex({ projectId: 1, fingerprint: 1, createdAt: -1 });
-  await db.collection('findings').createIndex({ projectId: 1, method: 1, endpoint: 1, createdAt: -1 });
+  await db
+    .collection('findings')
+    .createIndex({ projectId: 1, method: 1, endpoint: 1, createdAt: -1 });
 
   // Spec Snapshots
   await db.collection('specSnapshots').createIndex({ projectId: 1, sha256: 1 }, { unique: true });
 
   // Notifications
   await db.collection('notifications').createIndex({ runId: 1, createdAt: -1 });
-  await db.collection('notifications').createIndex({ createdAt: 1 }, { expireAfterSeconds: 7776000 }); // 90 days TTL
+  await db
+    .collection('notifications')
+    .createIndex({ createdAt: 1 }, { expireAfterSeconds: 7776000 }); // 90 days TTL
 
   logger.info('MongoDB indexes applied successfully');
 }

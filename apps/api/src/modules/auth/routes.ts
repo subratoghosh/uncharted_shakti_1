@@ -156,7 +156,7 @@ export const authRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
 
     return sendSuccess(
       reply,
-      tokens.map((t) => ({
+      tokens.map(t => ({
         id: t._id.toHexString(),
         userId: t.userId.toHexString(),
         name: t.name,

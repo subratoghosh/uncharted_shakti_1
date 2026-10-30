@@ -1,9 +1,18 @@
-// Frontend entrypoint - owned by Lavanya
-export default function HomePage() {
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function RootPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('/dashboard');
+  }, [router]);
+
   return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold">ShaktIQ</h1>
-      <p className="text-muted-foreground">API Compatibility & Release Intelligence</p>
-    </main>
+    <div className="flex items-center justify-center min-h-[50vh]">
+      <div className="text-sm text-muted">Redirecting to ShaktIQ Dashboard...</div>
+    </div>
   );
 }

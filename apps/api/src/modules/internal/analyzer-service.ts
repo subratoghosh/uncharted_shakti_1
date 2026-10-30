@@ -3,19 +3,14 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
-import {
-  ChangeType,
-  FindingDraft,
-  HttpMethod,
-  Severity,
-} from '@shaktiq/shared';
+import { ChangeType, FindingDraft, HttpMethod, Severity } from '@shaktiq/shared';
 import { env } from '../../config/env.js';
 import { computeFindingFingerprint, sha256 } from '../../lib/hash.js';
 import { logger } from '../../lib/logger.js';
 
 const execFileAsync = promisify(execFile);
 
-export interface AnalyzerContext {
+export type AnalyzerContext = {
   projectId: string;
   previousVersion?: string | null;
   currentVersion: string;
@@ -24,30 +19,37 @@ export interface AnalyzerContext {
 const TEMPLATES: Record<string, { impact: string; recommendation: string }> = {
   ENDPOINT_REMOVED: {
     impact: 'Clients calling this endpoint will receive 404 or 405 errors.',
-    recommendation: 'Restore the endpoint or mark it deprecated first and communicate a sunset schedule.',
+    recommendation:
+      'Restore the endpoint or mark it deprecated first and communicate a sunset schedule.',
   },
   METHOD_REMOVED: {
     impact: 'Clients sending requests with this HTTP method will receive 405 Method Not Allowed.',
     recommendation: 'Restore the method or deprecate gracefully before removal.',
   },
   REQUIRED_REQUEST_FIELD_ADDED: {
-    impact: 'Existing client payloads lacking this field will fail request schema validation with 400 Bad Request.',
-    recommendation: 'Make the newly added field optional, provide a sensible server-side default, or bump the major API version.',
+    impact:
+      'Existing client payloads lacking this field will fail request schema validation with 400 Bad Request.',
+    recommendation:
+      'Make the newly added field optional, provide a sensible server-side default, or bump the major API version.',
   },
   REQUIRED_PARAMETER_ADDED: {
-    impact: 'Existing clients calling this operation without this parameter will be rejected with 400 Bad Request.',
+    impact:
+      'Existing clients calling this operation without this parameter will be rejected with 400 Bad Request.',
     recommendation: 'Make the parameter optional or provide a default value.',
   },
   RESPONSE_FIELD_REMOVED: {
-    impact: 'Downstream consumers parsing this response field may fail deserialization or encounter runtime null pointer exceptions.',
+    impact:
+      'Downstream consumers parsing this response field may fail deserialization or encounter runtime null pointer exceptions.',
     recommendation: 'Restore the field or deprecate it in a prior release before removal.',
   },
   FIELD_TYPE_CHANGED: {
     impact: 'Client serialization / deserialization will fail due to unexpected data types.',
-    recommendation: 'Avoid changing existing field types; create a new field or version the endpoint.',
+    recommendation:
+      'Avoid changing existing field types; create a new field or version the endpoint.',
   },
   FIELD_MADE_REQUIRED: {
-    impact: 'Previously valid requests omitting this field will now be rejected with 400 Bad Request.',
+    impact:
+      'Previously valid requests omitting this field will now be rejected with 400 Bad Request.',
     recommendation: 'Keep the field optional or introduce a new endpoint version.',
   },
   RESPONSE_SCHEMA_CHANGED: {
@@ -159,11 +161,19 @@ export async function compareSpecs(
 
 function mapOasdiffIdToChangeType(id: string): ChangeType {
   const lower = id.toLowerCase();
-  if (lower.includes('endpoint-removed') || lower.includes('path-removed')) return 'ENDPOINT_REMOVED';
-  if (lower.includes('method-removed') || lower.includes('operation-removed')) return 'METHOD_REMOVED';
-  if (lower.includes('request-property-became-required') || lower.includes('request-field-added-required'))
+  if (lower.includes('endpoint-removed') || lower.includes('path-removed'))
+    return 'ENDPOINT_REMOVED';
+  if (lower.includes('method-removed') || lower.includes('operation-removed'))
+    return 'METHOD_REMOVED';
+  if (
+    lower.includes('request-property-became-required') ||
+    lower.includes('request-field-added-required')
+  )
     return 'REQUIRED_REQUEST_FIELD_ADDED';
-  if (lower.includes('request-parameter-became-required') || lower.includes('request-parameter-added-required'))
+  if (
+    lower.includes('request-parameter-became-required') ||
+    lower.includes('request-parameter-added-required')
+  )
     return 'REQUIRED_PARAMETER_ADDED';
   if (lower.includes('response-property-removed')) return 'RESPONSE_FIELD_REMOVED';
   if (lower.includes('type-changed')) return 'FIELD_TYPE_CHANGED';
@@ -216,7 +226,7 @@ function fallbackDeterministicDiff(
   // Check for methods removed
   const baseMethods = extractMethods(baseLines);
   const headMethods = extractMethods(headLines);
-  const headMethodKeys = new Set(headMethods.map((m) => m.key));
+  const headMethodKeys = new Set(headMethods.map(m => m.key));
 
   for (const bm of baseMethods) {
     if (!headMethodKeys.has(bm.key)) {

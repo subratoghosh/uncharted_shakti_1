@@ -16,7 +16,7 @@ import {
 } from '@shaktiq/shared';
 import { getDb } from './client.js';
 
-export interface UserDoc {
+export type UserDoc = {
   _id: ObjectId;
   email: string;
   passwordHash: string;
@@ -27,7 +27,7 @@ export interface UserDoc {
   updatedAt: Date;
 }
 
-export interface ApiTokenDoc {
+export type ApiTokenDoc = {
   _id: ObjectId;
   userId: ObjectId;
   name: string;
@@ -38,7 +38,7 @@ export interface ApiTokenDoc {
   createdAt: Date;
 }
 
-export interface ProjectDoc {
+export type ProjectDoc = {
   _id: ObjectId;
   ownerUserId: ObjectId;
   name: string;
@@ -52,7 +52,7 @@ export interface ProjectDoc {
   updatedAt: Date;
 }
 
-export interface EventDoc {
+export type EventDoc = {
   _id: ObjectId;
   eventId: string;
   projectId?: ObjectId | null;
@@ -67,7 +67,7 @@ export interface EventDoc {
   error?: string | null;
 }
 
-export interface RunDoc {
+export type RunDoc = {
   _id: ObjectId;
   projectId: ObjectId;
   eventId: string;
@@ -92,7 +92,7 @@ export interface RunDoc {
   aiSummary?: string | null;
 }
 
-export interface FindingDoc {
+export type FindingDoc = {
   _id: ObjectId;
   projectId: ObjectId;
   runId: ObjectId;
@@ -111,7 +111,7 @@ export interface FindingDoc {
   createdAt: Date;
 }
 
-export interface SpecSnapshotDoc {
+export type SpecSnapshotDoc = {
   _id: ObjectId;
   projectId: ObjectId;
   sha256: string;
@@ -124,7 +124,7 @@ export interface SpecSnapshotDoc {
   createdAt: Date;
 }
 
-export interface NotificationDoc {
+export type NotificationDoc = {
   _id: ObjectId;
   runId: ObjectId;
   projectId: ObjectId;

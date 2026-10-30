@@ -1,10 +1,5 @@
 import { z } from 'zod';
-import {
-  CHANGE_TYPES,
-  DIFF_STATUSES,
-  HTTP_METHODS,
-  SEVERITIES,
-} from '../enums.js';
+import { CHANGE_TYPES, DIFF_STATUSES, HTTP_METHODS, SEVERITIES } from '../enums.js';
 import { objectIdSchema } from './common.js';
 
 export const findingDraftSchema = z.object({

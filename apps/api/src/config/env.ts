@@ -20,7 +20,7 @@ const envSchema = z.object({
   ADMIN_PASSWORD: z.string().min(8).default('admin1234!'),
   AI_EXPLANATIONS_ENABLED: z
     .string()
-    .transform((val) => val === 'true')
+    .transform(val => val === 'true')
     .default('false'),
 });
 
@@ -28,7 +28,10 @@ const parsed = envSchema.safeParse(process.env);
 
 if (!parsed.success) {
   // eslint-disable-next-line no-console
-  console.error('❌ Invalid environment variables:\n', JSON.stringify(parsed.error.format(), null, 2));
+  console.error(
+    '❌ Invalid environment variables:\n',
+    JSON.stringify(parsed.error.format(), null, 2),
+  );
   process.exit(1);
 }
 
