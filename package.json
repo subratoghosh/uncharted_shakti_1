@@ -17,6 +17,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md,yaml,yml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md,yaml,yml}\"",
     "test": "npm test --workspaces --if-present",
+    "test:ai": "npm run test:ai -w apps/api",
     "dev:mongo": "npx tsx scripts/start-local-mongo.ts",
     "dev:api": "npm run dev -w apps/api",
     "dev:web": "npm run dev -w apps/web"
