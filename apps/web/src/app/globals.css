@@ -3,41 +3,217 @@
 @tailwind utilities;
 
 :root {
-  --bg: #FAFAF9;
+  /* Butter & Green Design Tokens (from SponFy Design System) */
+  --butter-bg: #FAF4E6;
+  --butter-card: #FFFFFF;
+  --butter-panel: #FFFDF6;
+  --butter-cream: #FFF0B3;
+  --butter-gold: #FEE790;
+  --butter-warm: #F6EED8;
+
+  /* Forest Green Tokens */
+  --green-dark: #0C382E;
+  --green-deep: #08261E;
+  --green-hero: #0E3B2E;
+  --green-mid: #164E3E;
+  --green-light: #2A6F5A;
+  --green-accent: #428E75;
+  --green-sage: #8EBDAA;
+
+  /* Typography Colors */
+  --text-main: #0C382E;
+  --text-dim: #244D3F;
+  --text-muted: #4A6F62;
+  --text-hero-main: #FFF5D1;
+  --text-hero-sub: #D8EAE1;
+
+  /* Semantic Status Colors */
+  --success: #16A34A;
+  --warning: #D97706;
+  --error: #DC2626;
+  --info: #0284C7;
+
+  /* Radii */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-hero: 36px;
+  --radius-pill: 30px;
+
+  /* Backward Compatibility Tokens for App Dashboard */
+  --bg: #FAF4E6;
   --surface: #FFFFFF;
-  --surface-2: #F4F4F2;
-  --border: #E4E4E0;
-  --text: #18181B;
-  --text-muted: #6B6B73;
-  --accent: #2B50E6;
+  --surface-2: #FFFDF6;
+  --border: rgba(12, 56, 46, 0.12);
+  --text: #0C382E;
+  --accent: #164E3E;
   --sev-breaking: #DC2626;
-  --sev-warning: #B45309;
-  --sev-info: #0369A1;
-  --ok: #15803D;
+  --sev-warning: #D97706;
+  --sev-info: #0284C7;
+  --ok: #16A34A;
 }
 
-.dark {
-  --bg: #0C0C0D;
-  --surface: #151517;
-  --surface-2: #1C1C1F;
-  --border: #2A2A2E;
-  --text: #ECECEE;
-  --text-muted: #9A9AA3;
-  --accent: #6C8CFF;
-  --sev-breaking: #F87171;
-  --sev-warning: #FBBF24;
-  --sev-info: #38BDF8;
-  --ok: #4ADE80;
+html {
+  background-color: var(--green-dark);
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
-  background-color: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--butter-bg);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
 }
 
-/* Badge styles per design_system.md: 10% opacity bg with 1px border at 30% */
+/* Typography styles */
+.display-font {
+  font-family: 'Roboto Slab', Georgia, serif;
+}
+
+.heading-font {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.stat-font {
+  font-family: 'JetBrains Mono', 'Space Mono', monospace;
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+
+/* Organic Floating Blobs Animation */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-16px) scale(1.05); }
+}
+
+.blob-float {
+  animation: floatSlow 10s ease-in-out infinite;
+}
+
+/* Button Classes from SponFy butgreendesign.md */
+.btn-butter {
+  background-color: var(--butter-cream);
+  color: var(--green-dark);
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+  padding: 12px 28px;
+  box-shadow: 0 4px 14px rgba(12, 56, 46, 0.08);
+  transition: all 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-butter:hover:not(:disabled) {
+  background-color: var(--butter-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(12, 56, 46, 0.15);
+}
+
+.btn-butter:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn-butter:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-green {
+  background-color: var(--green-dark);
+  color: var(--butter-cream);
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+  padding: 12px 26px;
+  border: 1px solid rgba(255, 240, 179, 0.2);
+  transition: all 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-green:hover:not(:disabled) {
+  background-color: var(--green-mid);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(12, 56, 46, 0.3);
+}
+
+.btn-green:active:not(:disabled) {
+  background-color: var(--green-deep);
+  transform: translateY(1px);
+}
+
+.btn-glass {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(12, 56, 46, 0.16);
+  color: var(--green-dark);
+  border-radius: var(--radius-pill);
+  padding: 11px 24px;
+  font-weight: 600;
+  transition: all 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-glass:hover:not(:disabled) {
+  background-color: var(--butter-cream);
+  border-color: var(--green-dark);
+  transform: translateY(-2px);
+}
+
+.btn-hero-ghost {
+  background-color: rgba(255, 240, 179, 0.10);
+  border: 1px solid rgba(255, 240, 179, 0.35);
+  color: var(--text-hero-main);
+  border-radius: var(--radius-pill);
+  padding: 12px 26px;
+  font-weight: 600;
+  transition: all 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-hero-ghost:hover:not(:disabled) {
+  background-color: rgba(255, 240, 179, 0.22);
+  border-color: var(--butter-cream);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+}
+
+/* Card Hover Physics */
+.feature-card-interactive {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(12, 56, 46, 0.12);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 4px 16px rgba(12, 56, 46, 0.04);
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.28s ease,
+              border-color 0.28s ease;
+}
+
+.feature-card-interactive:hover {
+  transform: translateY(-6px);
+  border-color: var(--green-dark);
+  box-shadow: 0 18px 40px -8px rgba(12, 56, 46, 0.16);
+}
+
+/* Badge styles preserved */
 .badge-breaking {
   background-color: rgba(220, 38, 38, 0.1);
   color: var(--sev-breaking);
