@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #FAFAF9;
+  --surface: #FFFFFF;
+  --surface-2: #F4F4F2;
+  --border: #E4E4E0;
+  --text: #18181B;
+  --text-muted: #6B6B73;
+  --accent: #2B50E6;
+  --sev-breaking: #DC2626;
+  --sev-warning: #B45309;
+  --sev-info: #0369A1;
+  --ok: #15803D;
+}
+
+.dark {
+  --bg: #0C0C0D;
+  --surface: #151517;
+  --surface-2: #1C1C1F;
+  --border: #2A2A2E;
+  --text: #ECECEE;
+  --text-muted: #9A9AA3;
+  --accent: #6C8CFF;
+  --sev-breaking: #F87171;
+  --sev-warning: #FBBF24;
+  --sev-info: #38BDF8;
+  --ok: #4ADE80;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Badge styles per design_system.md: 10% opacity bg with 1px border at 30% */
+.badge-breaking {
+  background-color: rgba(220, 38, 38, 0.1);
+  color: var(--sev-breaking);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+}
+
+.badge-warning {
+  background-color: rgba(180, 83, 9, 0.1);
+  color: var(--sev-warning);
+  border: 1px solid rgba(180, 83, 9, 0.3);
+}
+
+.badge-info {
+  background-color: rgba(3, 105, 161, 0.1);
+  color: var(--sev-info);
+  border: 1px solid rgba(3, 105, 161, 0.3);
+}
+
+.badge-ok {
+  background-color: rgba(21, 128, 61, 0.1);
+  color: var(--ok);
+  border: 1px solid rgba(21, 128, 61, 0.3);
+}
+
+.badge-neutral {
+  background-color: rgba(107, 107, 115, 0.1);
+  color: var(--text-muted);
+  border: 1px solid rgba(107, 107, 115, 0.25);
+}

@@ -16,7 +16,10 @@
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md,yaml,yml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md,yaml,yml}\"",
-    "test": "npm test --workspaces --if-present"
+    "test": "npm test --workspaces --if-present",
+    "dev:mongo": "npx tsx scripts/start-local-mongo.ts",
+    "dev:api": "npm run dev -w apps/api",
+    "dev:web": "npm run dev -w apps/web"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
