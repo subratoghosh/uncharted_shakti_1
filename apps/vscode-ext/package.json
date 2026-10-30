@@ -1,0 +1,88 @@
+{
+  "name": "shaktiq-vscode",
+  "displayName": "ShaktIQ – OpenAPI Breaking Change Detection",
+  "description": "Deterministic OpenAPI Breaking Change Detection & Release Impact Intelligence in VS Code",
+  "version": "0.1.0",
+  "publisher": "shaktiq",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Linters",
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:shaktiq.signIn",
+    "onCommand:shaktiq.analyze",
+    "onCommand:shaktiq.openDashboard"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "shaktiq.signIn",
+        "title": "ShaktIQ: Sign in with token"
+      },
+      {
+        "command": "shaktiq.analyze",
+        "title": "ShaktIQ: Analyze API changes"
+      },
+      {
+        "command": "shaktiq.openDashboard",
+        "title": "ShaktIQ: Open last run in dashboard"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "shaktiq-sidebar",
+          "title": "ShaktIQ",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "shaktiq-sidebar": [
+        {
+          "id": "shaktiq.findingsView",
+          "name": "API Findings"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "ShaktIQ",
+      "properties": {
+        "shaktiq.apiUrl": {
+          "type": "string",
+          "default": "http://localhost:4000/api/v1",
+          "description": "ShaktIQ API base URL"
+        },
+        "shaktiq.webUrl": {
+          "type": "string",
+          "default": "http://localhost:3000",
+          "description": "ShaktIQ Web Dashboard URL"
+        },
+        "shaktiq.specPath": {
+          "type": "string",
+          "default": "openapi.yaml",
+          "description": "Relative path to OpenAPI specification file"
+        },
+        "shaktiq.baseRef": {
+          "type": "string",
+          "default": "HEAD",
+          "description": "Default Git reference to compare working copy against"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.4"
+  }
+}

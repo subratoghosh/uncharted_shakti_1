@@ -2,17 +2,29 @@
   "name": "shaktiq",
   "version": "1.0.0",
   "private": true,
+  "description": "Deterministic OpenAPI Breaking Change Detection & Release Impact Intelligence",
+  "type": "module",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "n8n/stub-api"
   ],
   "scripts": {
+    "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
-    "test": "npm test --workspaces --if-present",
-    "build": "npm run build --workspaces --if-present"
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,yaml,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md,yaml,yml}\"",
+    "test": "npm test --workspaces --if-present"
   },
   "devDependencies": {
-    "typescript": "^5.7.3"
+    "@types/node": "^20.14.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
   }
 }

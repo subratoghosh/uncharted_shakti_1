@@ -15,6 +15,16 @@ export const runSummarySchema = z.object({
 
 export type RunSummary = z.infer<typeof runSummarySchema>;
 
+export function computeReleaseStatus(counts: {
+  breaking: number;
+  warning: number;
+  info?: number;
+}): (typeof RELEASE_STATUSES)[number] {
+  if (counts.breaking > 0) return 'blocked';
+  if (counts.warning > 0) return 'review';
+  return 'safe';
+}
+
 export const runDtoSchema = z.object({
   id: objectIdSchema,
   projectId: objectIdSchema,

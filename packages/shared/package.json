@@ -14,8 +14,8 @@
   },
   "scripts": {
     "build": "tsc -b",
-    "typecheck": "tsc --noEmit",
-    "clean": "rimraf dist"
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "zod": "^3.24.1"

@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true
+  },
+  "files": [],
+  "references": [
+    { "path": "./packages/shared" },
+    { "path": "./packages/analyzer" },
+    { "path": "./n8n/stub-api" },
+    { "path": "./apps/api" },
+    { "path": "./apps/web" },
+    { "path": "./apps/vscode-ext" }
+  ]
+}

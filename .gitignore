@@ -1,11 +1,43 @@
+# Dependencies
 node_modules/
+.pnpm-store/
+
+# Build artifacts
 dist/
+build/
+out/
+.next/
+.turbo/
+*.tsbuildinfo
+*.vsix
+.vscode-test/
+
+# Environment files
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+!infra/.env.example
+
+# Logs and runtime data
 *.log
 npm-debug.log*
-.DS_Store
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.n8n/
+n8n-local-data/
+
+# Testing & Coverage
 coverage/
-.turbo/
-.next/
+.nyc_output/
+playwright-report/
+test-results/
+
+# System and IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json

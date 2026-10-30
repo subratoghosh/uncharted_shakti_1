@@ -20,6 +20,8 @@ import { runRoutes } from './modules/runs/routes.js';
 import { hub } from './modules/stream/hub.js';
 import { streamRoutes } from './modules/stream/routes.js';
 
+export const serverPlaceholder = 'apps/api bootstrap';
+
 export async function buildServer(): Promise<FastifyInstance> {
   const app = fastify({
     logger: false, // Using our centralized Pino logger
