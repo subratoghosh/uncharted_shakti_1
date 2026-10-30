@@ -7,6 +7,7 @@ dist/
 build/
 out/
 .next/
+.turbo/
 *.tsbuildinfo
 *.vsix
 .vscode-test/
@@ -15,6 +16,7 @@ out/
 .env
 .env.*
 !.env.example
+!infra/.env.example
 
 # Logs and runtime data
 *.log
