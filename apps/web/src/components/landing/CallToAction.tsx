@@ -30,8 +30,8 @@ export const CallToAction: React.FC = () => {
               <span>Launch Live Console</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
-            <Link href="/faq" className="btn-hero-ghost">
-              <span>Read Architecture FAQ</span>
+            <Link href="/workflow" className="btn-hero-ghost">
+              <span>Explore 5-Step Workflow</span>
             </Link>
           </div>
         </div>

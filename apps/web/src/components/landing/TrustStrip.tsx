@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, ShieldAlert, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Layers, ShieldAlert, Zap, CheckCircle2 } from 'lucide-react';
 
 export const TrustStrip: React.FC = () => {
   const pillars = [
@@ -16,7 +16,7 @@ export const TrustStrip: React.FC = () => {
         'Calculates real-world downstream blast radius. Immediately flags which microservice consumers, mobile SDKs, or web clients will break.',
     },
     {
-      icon: Sparkles,
+      icon: Zap,
       title: 'Gemini 3.8 Flash Remediation',
       description:
         'Autonomous synthesis of production-ready backward-compatible fixes, deprecation shims, and v2 evolution strategies.',

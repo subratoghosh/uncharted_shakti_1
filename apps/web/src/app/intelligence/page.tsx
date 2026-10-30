@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {
   ShieldCheck,
   Network,
-  Sparkles,
+  Zap,
   Terminal,
   ArrowRight,
   CheckCircle2,
@@ -39,7 +39,7 @@ export default function IntelligencePage() {
       benefit: 'Gives engineering managers actionable release confidence metrics',
     },
     {
-      icon: Sparkles,
+      icon: Zap,
       title: 'Autonomous Patch Synthesis',
       subtitle: 'Gemini 3.8 Flash writes backward-compatible alternatives',
       description:

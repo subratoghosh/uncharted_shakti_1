@@ -6,10 +6,10 @@ import type { MultiLayerDossier } from '@/types/index';
 
 type FindingInsight = MultiLayerDossier['findingInsights'][number];
 
-interface CodeRemediationCardProps {
+type CodeRemediationCardProps = {
   insight: FindingInsight;
   getMethodBadgeClass: (method: string) => string;
-}
+};
 
 export function CodeRemediationCard({ insight, getMethodBadgeClass }: CodeRemediationCardProps) {
   const [copied, setCopied] = useState(false);

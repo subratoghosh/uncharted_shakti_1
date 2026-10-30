@@ -1,10 +1,10 @@
 import React from 'react';
 import type { Finding } from '@/types/index';
 
-interface ReleaseScoreGaugeProps {
+type ReleaseScoreGaugeProps = {
   score: number;
   findings: Finding[];
-}
+};
 
 export function ReleaseScoreGauge({ score, findings }: ReleaseScoreGaugeProps) {
   const breakingCount = findings.filter((f) => f.severity === 'breaking').length;

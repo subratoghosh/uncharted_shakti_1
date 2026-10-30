@@ -30,6 +30,10 @@ module.exports = {
           onDark: 'var(--text-hero-main)',
           onDarkSub: 'var(--text-hero-sub)',
         },
+        'text-hero-main': 'var(--text-hero-main)',
+        'text-hero-sub': 'var(--text-hero-sub)',
+        'text-main': 'var(--text-main)',
+        'text-dim': 'var(--text-dim)',
         // Existing tokens preserved for app dashboard compatibility
         bg: 'var(--bg)',
         surface: 'var(--surface)',

@@ -4,7 +4,8 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { signIn, useSession } from 'next-auth/react';
-import { Shield, CheckCircle2, AlertTriangle, ArrowRight } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, ArrowRight, ShieldCheck, Mail, KeyRound } from 'lucide-react';
+import { ShaktiqBrand } from '../../../components/landing/ShaktiqBrand';
 
 function LoginForm() {
   const router = useRouter();
@@ -62,7 +63,7 @@ function LoginForm() {
         return;
       }
 
-      // Successful sign in: NextAuth cookie is stored, session established
+      // Successful sign in
       const callback = searchParams.get('callbackUrl') || '/dashboard';
       router.push(callback);
       router.refresh();
@@ -73,37 +74,48 @@ function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md p-8 bg-surface border border-border rounded-xl shadow-lg space-y-6">
-      <div className="space-y-1 text-center">
-        <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-accent/10 text-accent mb-2">
-          <Shield className="w-6 h-6" />
+    <div className="w-full max-w-md bg-[#FFFDF7] border border-[#0C382E]/15 rounded-3xl p-7 sm:p-10 shadow-[0_20px_50px_rgba(12,56,46,0.1)] text-[#0C382E] space-y-6 relative overflow-hidden">
+      {/* Header with Brand */}
+      <div className="text-center space-y-3 relative z-10">
+        <div className="flex justify-center pb-1">
+          <ShaktiqBrand href="/" theme="light" size="lg" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-text">Sign in to ShaktIQ</h1>
-        <p className="text-sm text-muted">API Compatibility & Release Intelligence Platform</p>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0C382E]/5 border border-[#0C382E]/15 text-[11px] font-mono text-[#0C382E] font-medium">
+          <ShieldCheck className="w-3.5 h-3.5 text-green-accent" />
+          <span>Continuous Release Intelligence</span>
+        </div>
+        <h1 className="text-2xl font-bold tracking-tight text-[#0C382E] font-slab">
+          Sign In to Console
+        </h1>
+        <p className="text-xs text-[#0C382E]/70">
+          Enter your credentials or use Single Sign-On
+        </p>
       </div>
 
-      {/* Success Banner if redirected from registration */}
+      {/* Success Notification if redirected from registration */}
       {registered && (
-        <div className="p-3.5 text-xs bg-ok/10 border border-ok/30 text-ok rounded-md flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-          <span>Account created successfully! Please sign in with your credentials.</span>
+        <div className="p-3.5 text-xs bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-2xl flex items-center gap-2.5 animate-fade-in shadow-xs">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+          <span className="font-medium">
+            Account created successfully! Please sign in with your credentials.
+          </span>
         </div>
       )}
 
       {/* Error Alert */}
       {error && (
-        <div className="p-3.5 text-xs bg-sev-breaking/10 border border-sev-breaking/30 text-sev-breaking rounded-md flex items-start gap-2">
-          <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-          <span>{error}</span>
+        <div className="p-3.5 text-xs bg-red-50 border border-red-300 text-red-900 rounded-2xl flex items-start gap-2.5 animate-fade-in shadow-xs">
+          <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+          <span className="font-medium">{error}</span>
         </div>
       )}
 
-      {/* OAuth Buttons */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* Social OAuth Buttons */}
+      <div className="grid grid-cols-2 gap-3 relative z-10">
         <button
           type="button"
           onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
-          className="flex items-center justify-center gap-2 h-10 px-4 bg-surface-2 hover:bg-border/60 border border-border rounded-md text-xs font-semibold text-text transition-all"
+          className="flex items-center justify-center gap-2.5 h-11 px-4 bg-white hover:bg-[#F6EED8] border border-[#0C382E]/20 hover:border-[#0C382E]/40 rounded-2xl text-xs font-semibold text-[#0C382E] transition-all duration-200 shadow-xs active:scale-[0.98]"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">
             <path
@@ -129,9 +141,9 @@ function LoginForm() {
         <button
           type="button"
           onClick={() => signIn('github', { callbackUrl: '/dashboard' })}
-          className="flex items-center justify-center gap-2 h-10 px-4 bg-surface-2 hover:bg-border/60 border border-border rounded-md text-xs font-semibold text-text transition-all"
+          className="flex items-center justify-center gap-2.5 h-11 px-4 bg-white hover:bg-[#F6EED8] border border-[#0C382E]/20 hover:border-[#0C382E]/40 rounded-2xl text-xs font-semibold text-[#0C382E] transition-all duration-200 shadow-xs active:scale-[0.98]"
         >
-          <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 fill-current text-[#0C382E]" viewBox="0 0 24 24">
             <path
               fillRule="evenodd"
               clipRule="evenodd"
@@ -142,55 +154,64 @@ function LoginForm() {
         </button>
       </div>
 
+      {/* Divider */}
       <div className="relative flex items-center justify-center">
-        <div className="border-t border-border w-full" />
-        <span className="bg-surface px-3 text-[11px] uppercase tracking-wider text-muted font-medium absolute">
+        <div className="border-t border-[#0C382E]/15 w-full" />
+        <span className="bg-[#FFFDF7] px-3 text-[10px] uppercase tracking-wider text-[#0C382E]/60 font-mono font-semibold absolute">
           Or continue with email
         </span>
       </div>
 
       {/* Credentials Form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-text">Email Address</label>
+          <label className="text-xs font-semibold text-[#0C382E] flex items-center gap-1.5">
+            <Mail className="w-3.5 h-3.5 text-green-accent" />
+            <span>Email Address</span>
+          </label>
           <input
             type="email"
             required
             placeholder="admin@shaktiq.dev"
             value={email}
-            onChange={e => setEmail(e.target.value)}
-            className="w-full h-10 px-3 text-sm bg-surface-2 border border-border rounded-md focus:outline-none focus:border-accent transition-colors"
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full h-11 px-3.5 text-sm bg-white border border-[#0C382E]/20 rounded-xl text-[#0C382E] placeholder:text-[#0C382E]/35 focus:outline-none focus:border-[#0C382E] focus:ring-2 focus:ring-[#0C382E]/15 transition-all font-mono shadow-xs"
           />
         </div>
 
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between">
-            <label className="text-xs font-semibold text-text">Password</label>
-          </div>
+          <label className="text-xs font-semibold text-[#0C382E] flex items-center gap-1.5">
+            <KeyRound className="w-3.5 h-3.5 text-green-accent" />
+            <span>Password</span>
+          </label>
           <input
             type="password"
             required
             placeholder="••••••••••••"
             value={password}
-            onChange={e => setPassword(e.target.value)}
-            className="w-full h-10 px-3 text-sm bg-surface-2 border border-border rounded-md focus:outline-none focus:border-accent transition-colors"
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full h-11 px-3.5 text-sm bg-white border border-[#0C382E]/20 rounded-xl text-[#0C382E] placeholder:text-[#0C382E]/35 focus:outline-none focus:border-[#0C382E] focus:ring-2 focus:ring-[#0C382E]/15 transition-all font-mono shadow-xs"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-10 mt-2 bg-accent text-white text-sm font-semibold rounded-md hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+          className="w-full h-11 mt-2 bg-[#0C382E] hover:bg-[#07241D] text-butter-cream text-sm font-bold rounded-2xl shadow-md hover:shadow-[0_8px_24px_rgba(12,56,46,0.25)] transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50 min-h-[44px]"
         >
-          <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
+          <span>{loading ? 'Authenticating...' : 'Sign In to Console'}</span>
           {!loading && <ArrowRight className="w-4 h-4" />}
         </button>
       </form>
 
-      <div className="text-xs text-center text-muted">
+      {/* Footer link to register */}
+      <div className="text-xs text-center text-[#0C382E]/70 pt-2 border-t border-[#0C382E]/15">
         Don&apos;t have an account?{' '}
-        <Link href="/register" className="text-accent hover:underline font-semibold">
-          Create an account
+        <Link
+          href="/register"
+          className="text-[#0C382E] hover:underline font-bold transition-colors ml-1"
+        >
+          Create one now
         </Link>
       </div>
     </div>
@@ -199,8 +220,14 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-[85vh] flex items-center justify-center p-4">
-      <Suspense fallback={<div className="text-xs text-muted">Loading sign in...</div>}>
+    <div className="min-h-screen bg-butter-bg flex items-center justify-center p-4 selection:bg-butter-cream selection:text-green-dark">
+      <Suspense
+        fallback={
+          <div className="text-xs text-green-dark font-mono animate-pulse">
+            Loading console authentication...
+          </div>
+        }
+      >
         <LoginForm />
       </Suspense>
     </div>

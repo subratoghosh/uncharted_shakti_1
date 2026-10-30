@@ -1,17 +1,17 @@
 # Graph Report - ShaktIQ  (2026-10-31)
 
 ## Corpus Check
-- 157 files · ~63,951 words
+- 177 files · ~73,550 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 10 file(s) not represented in the graph (top: (none) 5, .example 3, .css 1)
 
 ## Summary
-- 939 nodes · 1787 edges · 72 communities (51 shown, 21 thin omitted)
+- 994 nodes · 1929 edges · 69 communities (48 shown, 21 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 20 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `76be64f5`
+- Built from commit: `ddd0e4b1`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -25,7 +25,7 @@
 - Package Dependencies (Group 6)
 - Auth & Token Models
 - Package Dependencies (Group 8)
-- finding.ts
+- notification.ts
 - TypeScript Compiler Config
 - Auth & Token Models
 - Package Dependencies (Group 12)
@@ -41,7 +41,7 @@
 - Auth & Token Models
 - TypeScript Compiler Config
 - n8n Stub Mock API
-- fastify@^4.28.1
+- api/package.json
 - System Subsystem 26
 - System Subsystem 27
 - TypeScript Compiler Config
@@ -49,7 +49,7 @@
 - TypeScript Compiler Config
 - TypeScript Compiler Config
 - Database Migrations & Schemas
-- hub.ts
+- ChangeStreamHub
 - VS Code Extension
 - TypeScript Compiler Config
 - Package Dependencies (Group 36)
@@ -61,11 +61,11 @@
 - System Subsystem 42
 - Run Execution & Verdicts
 - System Subsystem 44
-- lib/auth.ts
-- next-auth.d.ts
+- next-auth
+- next.config.js
 - pino
 - app/page.tsx
-- dependencies
+- @fastify/cookie
 - System Subsystem 52
 - ShaktIQ AI Agent Skill & Plugin Guide
 - /shaktiq - API Breaking Change & Release Intelligence
@@ -78,25 +78,22 @@
 - Auth & Token Models
 - plugin.yaml
 - [1.1.0] - 2026-10-31
-- scripts
-- middleware.ts
+- @fastify/cors
 - dotenv
-- @fastify/rate-limit
 - @google/genai
-- zod@^3.24.1
 - install-agent-skill.sh
 
 ## God Nodes (most connected - your core abstractions)
-1. `react` - 32 edges
-2. `apiClient()` - 28 edges
-3. `mongodb` - 24 edges
-4. `lucide-react` - 23 edges
-5. `AppError` - 22 edges
-6. `getCollections()` - 21 edges
-7. `formatDate()` - 21 edges
+1. `react` - 51 edges
+2. `lucide-react` - 40 edges
+3. `next` - 34 edges
+4. `apiClient()` - 26 edges
+5. `mongodb` - 24 edges
+6. `AppError` - 22 edges
+7. `getCollections()` - 21 edges
 8. `sendSuccess()` - 19 edges
-9. `next` - 18 edges
-10. `authenticate()` - 17 edges
+9. `formatDate()` - 19 edges
+10. `MarketingLayout()` - 18 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `ShaktIQ Extension Brand Icon` --conceptually_related_to--> `VS Code IDE Extension`  [INFERRED]
@@ -116,23 +113,23 @@
 ## Hyperedges (group relationships)
 - **Core Analysis & Feedback Pipeline** — docs_architecture_fastify_api, docs_architecture_n8n_orchestration, docs_architecture_analyzer_engine, docs_architecture_vscode_extension [EXTRACTED 1.00]
 
-## Communities (72 total, 21 thin omitted)
+## Communities (69 total, 21 thin omitted)
 
 ### Community 0 - "Web Admin Dashboard"
-Cohesion: 0.10
-Nodes (59): mongodb-memory-server@^10.1.3, Env, envSchema, parsed, closeDb(), connectDb(), getDb(), getCollections() (+51 more)
+Cohesion: 0.08
+Nodes (65): Env, envSchema, parsed, closeDb(), connectDb(), getDb(), ApiTokenDoc, EventDoc (+57 more)
 
 ### Community 1 - "Web Admin Dashboard"
-Cohesion: 0.07
-Nodes (57): AdminEventsPage(), WebhookEvent, AdminOverview, AdminOverviewPage(), AdminProjectsPage(), Project, AdminRunsPage(), Run (+49 more)
+Cohesion: 0.05
+Nodes (78): AdminEventsPage(), WebhookEvent, AdminOverview, AdminOverviewPage(), AdminProjectsPage(), Project, AdminRunsPage(), Run (+70 more)
 
 ### Community 2 - "API Diff Analyzer Core"
 Cohesion: 0.06
-Nodes (37): activate(), AnalyzeResponse, execFileAsync, FindingItem, FindingsTreeDataProvider, FindingTreeItem, computeReleaseStatus(), formatMarkdown() (+29 more)
+Nodes (45): computeFindingFingerprint(), AnalyzerContext, compareSpecs(), execFileAsync, extractMethods(), extractPaths(), fallbackDeterministicDiff(), mapOasdiffIdToChangeType() (+37 more)
 
 ### Community 3 - "web/package.json"
-Cohesion: 0.15
-Nodes (18): devDependencies, autoprefixer@^10.4.19, postcss@^8.4.39, tailwindcss@^3.4.6, @types/node@^20.14.0, @types/react@^18.3.3, @types/react-dom@^18.3.0, typescript@^5.5.4 (+10 more)
+Cohesion: 0.07
+Nodes (38): dependencies, clsx@^2.1.1, lucide-react@^0.408.0, next@^14.2.5, next-auth@^4.24.15, react@^18.3.1, react-dom@^18.3.1, @shaktiq/shared@* (+30 more)
 
 ### Community 4 - "Infra Docker Services"
 Cohesion: 0.07
@@ -147,16 +144,16 @@ Cohesion: 0.11
 Nodes (22): dependencies, fastify@^4.28.1, @shaktiq/shared@*, devDependencies, tsx@^4.16.2, @types/node@^20.14.0, typescript@^5.5.4, fastify (+14 more)
 
 ### Community 7 - "Auth & Token Models"
-Cohesion: 0.11
-Nodes (19): ApiToken, apiTokenDtoSchema, CreateApiTokenRequest, createApiTokenRequestSchema, CreateApiTokenResponse, createApiTokenResponseSchema, objectIdSchema, PaginationQuery (+11 more)
+Cohesion: 0.12
+Nodes (17): ApiToken, apiTokenDtoSchema, CreateApiTokenRequest, createApiTokenRequestSchema, CreateApiTokenResponse, createApiTokenResponseSchema, objectIdSchema, PaginationQuery (+9 more)
 
 ### Community 8 - "Package Dependencies (Group 8)"
 Cohesion: 0.10
 Nodes (22): bin, shaktiq, shaktiq-mcp, dependencies, @shaktiq/shared@*, devDependencies, typescript@^5.5.4, vitest@^1.6.0 (+14 more)
 
-### Community 9 - "finding.ts"
-Cohesion: 0.22
-Nodes (8): DIFF_STATUSES, HTTP_METHODS, SEVERITIES, Finding, findingDraftSchema, findingDtoSchema, Hotspot, hotspotDtoSchema
+### Community 9 - "notification.ts"
+Cohesion: 0.40
+Nodes (4): NOTIFICATION_CHANNELS, NOTIFICATION_STATUSES, Notification, notificationDtoSchema
 
 ### Community 10 - "TypeScript Compiler Config"
 Cohesion: 0.11
@@ -184,15 +181,15 @@ Nodes (13): ERROR_CODES, ERROR_HTTP_STATUS_MAP, ErrorCode, ErrorDetail, ApiError
 
 ### Community 16 - "Auth & Token Models"
 Cohesion: 0.14
-Nodes (18): description, devDependencies, pino-pretty@^13.0.0, tsx@^4.19.2, @types/jsonwebtoken@^9.0.8, @types/node@^22.10.7, typescript@^5.7.3, vitest@^2.1.8 (+10 more)
+Nodes (14): devDependencies, mongodb-memory-server@^10.1.3, pino-pretty@^13.0.0, tsx@^4.19.2, @types/jsonwebtoken@^9.0.8, @types/node@^22.10.7, typescript@^5.7.3, vitest@^2.1.8 (+6 more)
 
 ### Community 17 - "API Diff Analyzer Core"
-Cohesion: 0.11
-Nodes (17): NOTIFICATION_CHANNELS, NOTIFICATION_STATUSES, SPEC_SOURCES, InternalRunAnalyzeRequest, internalRunAnalyzeRequestSchema, InternalRunAnalyzeResponse, internalRunAnalyzeResponseSchema, InternalRunExplanationsRequest (+9 more)
+Cohesion: 0.13
+Nodes (14): InternalRunAnalyzeRequest, internalRunAnalyzeRequestSchema, InternalRunAnalyzeResponse, internalRunAnalyzeResponseSchema, InternalRunExplanationsRequest, internalRunExplanationsRequestSchema, InternalRunFailRequest, internalRunFailRequestSchema (+6 more)
 
 ### Community 18 - "API Diff Analyzer Core"
-Cohesion: 0.12
-Nodes (16): dependencies, @fastify/cookie@^9.4.0, @fastify/cors@^9.0.1, fastify-raw-body@^4.3.0, fastify-type-provider-zod@^2.0.0, jsonwebtoken@^9.0.2, mongodb@^6.12.0, @shaktiq/analyzer@* (+8 more)
+Cohesion: 0.14
+Nodes (14): dependencies, @fastify/rate-limit@^9.1.0, fastify-type-provider-zod@^2.0.0, jsonwebtoken@^9.0.2, mongodb@^6.12.0, @shaktiq/analyzer@*, @shaktiq/shared@*, zod@^3.24.1 (+6 more)
 
 ### Community 19 - "System Subsystem 19"
 Cohesion: 0.15
@@ -203,8 +200,8 @@ Cohesion: 0.17
 Nodes (11): activationEvents, categories, description, displayName, engines, vscode, files, main (+3 more)
 
 ### Community 21 - "Run Execution & Verdicts"
-Cohesion: 0.18
-Nodes (10): AI_STATUSES, RELEASE_STATUSES, RUN_STATUSES, CompareRunsQuery, compareRunsQuerySchema, CreateManualRunRequest, createManualRunRequestSchema, Run (+2 more)
+Cohesion: 0.17
+Nodes (11): AI_STATUSES, RELEASE_STATUSES, RUN_STATUSES, CompareRunsQuery, compareRunsQuerySchema, computeReleaseStatus(), CreateManualRunRequest, createManualRunRequestSchema (+3 more)
 
 ### Community 22 - "Auth & Token Models"
 Cohesion: 0.33
@@ -217,6 +214,10 @@ Nodes (10): compilerOptions, composite, module, moduleResolution, outDir, rootDi
 ### Community 24 - "n8n Stub Mock API"
 Cohesion: 0.19
 Nodes (7): generateMultiLayerDossier(), app, recordedCalls, StubCall, stubState, RunSummary, main()
+
+### Community 25 - "api/package.json"
+Cohesion: 0.20
+Nodes (9): fastify@^4.28.1, fastify-raw-body@^4.3.0, description, fastify, main, name, type, version (+1 more)
 
 ### Community 26 - "System Subsystem 26"
 Cohesion: 0.20
@@ -246,10 +247,6 @@ Nodes (7): compilerOptions, composite, outDir, rootDir, extends, include, ../../
 Cohesion: 0.22
 Nodes (9): scripts, build, db:migrate, dev, start, test, test:ai, test:unit (+1 more)
 
-### Community 33 - "hub.ts"
-Cohesion: 0.17
-Nodes (8): EventDoc, RunDoc, ChangeStreamHub, SseListener, Subscriber, SSE_EVENT_TYPES, SseEventType, SseMessage
-
 ### Community 34 - "VS Code Extension"
 Cohesion: 0.29
 Nodes (7): devDependencies, @types/node@^20.14.0, @types/vscode@^1.85.0, typescript@^5.5.4, @types/node, typescript, @types/vscode
@@ -263,8 +260,8 @@ Cohesion: 0.40
 Nodes (5): scripts, build, dev, package, typecheck
 
 ### Community 37 - "collections.ts"
-Cohesion: 0.14
-Nodes (19): ApiTokenDoc, FindingDoc, NotificationDoc, ProjectDoc, SpecSnapshotDoc, UserDoc, AiStatus, ChangeType (+11 more)
+Cohesion: 0.11
+Nodes (19): AiStatus, CHANGE_TYPES, DIFF_STATUSES, DiffStatus, EventType, HTTP_METHODS, NotificationChannel, NotificationStatus (+11 more)
 
 ### Community 38 - "System Subsystem 38"
 Cohesion: 0.50
@@ -282,21 +279,13 @@ Nodes (4): shaktiq.webUrl, default, description, type
 Cohesion: 0.67
 Nodes (3): repository, type, url
 
-### Community 45 - "lib/auth.ts"
-Cohesion: 0.29
-Nodes (7): argon2@^0.41.1, handler, POST(), authOptions, getDb(), argon2, next-auth
-
-### Community 46 - "next-auth.d.ts"
-Cohesion: 0.33
-Nodes (5): JWT, next-auth, next-auth/jwt, Session, User
+### Community 45 - "next-auth"
+Cohesion: 0.07
+Nodes (26): argon2@^0.41.1, handler, POST(), metadata, RootLayout(), PullToRefresh(), PullToRefreshProps, AppShell() (+18 more)
 
 ### Community 48 - "app/page.tsx"
 Cohesion: 0.10
 Nodes (32): ShaktIQDashboard(), handleCreateProject(), handleCreateToken(), loadAiDossier(), loadProjectDetails(), loadProjects(), loadRunFindings(), loadTokens() (+24 more)
-
-### Community 49 - "dependencies"
-Cohesion: 0.14
-Nodes (14): dependencies, clsx@^2.1.1, lucide-react@^0.408.0, next@^14.2.5, next-auth@^4.24.15, react@^18.3.1, react-dom@^18.3.1, @shaktiq/shared@* (+6 more)
 
 ### Community 53 - "ShaktIQ AI Agent Skill & Plugin Guide"
 Cohesion: 0.15
@@ -318,29 +307,25 @@ Nodes (7): author, description, name, provides_commands, provides_skills, provid
 Cohesion: 0.29
 Nodes (6): [1.0.0] - 2026-10-30, [1.1.0] - 2026-10-31, Added, Changed, Changelog, Initial Release
 
-### Community 64 - "scripts"
-Cohesion: 0.33
-Nodes (6): scripts, build, dev, lint, start, typecheck
-
 ## Knowledge Gaps
 - **27 isolated node(s):** `eslint:recommended`, `plugin:@typescript-eslint/recommended`, `../../tsconfig.base.json`, `../../tsconfig.base.json`, `../../tsconfig.base.json` (+22 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 410 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 428 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **21 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react` connect `Web Admin Dashboard` to `app/page.tsx`, `dependencies`, `web/package.json`?**
-  _High betweenness centrality (0.073) - this node is a cross-community bridge._
+- **Why does `react` connect `Web Admin Dashboard` to `app/page.tsx`, `web/package.json`, `next-auth`?**
+  _High betweenness centrality (0.099) - this node is a cross-community bridge._
 - **What connects `eslint:recommended`, `plugin:@typescript-eslint/recommended`, `../../tsconfig.base.json` to the rest of the system?**
   _27 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Web Admin Dashboard` be split into smaller, more focused modules?**
-  _Cohesion score 0.09691745036572623 - nodes in this community are weakly interconnected._
-- **Why does `mongodb` connect `Web Admin Dashboard` to `hub.ts`, `collections.ts`, `lib/auth.ts`, `Auth & Token Models`, `API Diff Analyzer Core`, `Auth & Token Models`?**
+  _Cohesion score 0.08442982456140351 - nodes in this community are weakly interconnected._
+- **Why does `mongodb` connect `Web Admin Dashboard` to `api/package.json`, `API Diff Analyzer Core`, `next-auth`, `Auth & Token Models`?**
   _High betweenness centrality (0.051) - this node is a cross-community bridge._
 - **Should `Web Admin Dashboard` be split into smaller, more focused modules?**
-  _Cohesion score 0.07001044932079414 - nodes in this community are weakly interconnected._
-- **Why does `lucide-react` connect `Web Admin Dashboard` to `app/page.tsx`, `dependencies`, `web/package.json`?**
-  _High betweenness centrality (0.024) - this node is a cross-community bridge._
+  _Cohesion score 0.05200637404027234 - nodes in this community are weakly interconnected._
+- **Why does `next` connect `Web Admin Dashboard` to `web/package.json`, `next-auth`?**
+  _High betweenness centrality (0.035) - this node is a cross-community bridge._
 - **Should `API Diff Analyzer Core` be split into smaller, more focused modules?**
-  _Cohesion score 0.06120218579234973 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0567287784679089 - nodes in this community are weakly interconnected._

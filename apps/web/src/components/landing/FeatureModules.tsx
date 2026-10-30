@@ -3,7 +3,7 @@ import Link from 'next/link';
 import {
   Workflow,
   Network,
-  Sparkles,
+  Zap,
   ShieldCheck,
   ArrowRight,
   GitCommit,
@@ -30,7 +30,7 @@ const FEATURE_MODULES = [
   {
     title: 'Autonomous AI Dossier',
     href: '/dashboard',
-    icon: Sparkles,
+    icon: Zap,
     tag: 'Gemini 3.8 Flash',
     description:
       'Synthesizes production-grade backward-compatible schema shims, route deprecation wrappers, and copy-paste ready migration code in under 300ms.',
@@ -51,7 +51,7 @@ export const FeatureModules: React.FC = () => {
       <div className="max-w-[1240px] mx-auto px-6">
         <div className="text-center max-w-2xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-dark/5 text-green-dark text-xs font-bold uppercase tracking-wider mb-4">
-            <Sparkles className="w-3.5 h-3.5 text-green-accent" />
+            <Zap className="w-3.5 h-3.5 text-green-accent" />
             PLATFORM ARCHITECTURE
           </div>
           <h2 className="heading-font text-3xl sm:text-4xl font-extrabold text-green-dark tracking-tight mb-3">
