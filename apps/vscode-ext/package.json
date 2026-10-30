@@ -4,6 +4,15 @@
   "description": "Deterministic OpenAPI Breaking Change Detection & Release Impact Intelligence in VS Code",
   "version": "0.1.0",
   "publisher": "shaktiq",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/subratoghosh/uncharted_shakti_1.git"
+  },
+  "files": [
+    "dist",
+    "resources",
+    "README.md"
+  ],
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -78,7 +87,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "package": "tsc && vsce package --no-dependencies --no-git-tag-version --skip-license"
   },
   "devDependencies": {
     "@types/vscode": "^1.85.0",
@@ -86,3 +96,4 @@
     "typescript": "^5.5.4"
   }
 }
+
