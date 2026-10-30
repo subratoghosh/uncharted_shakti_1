@@ -1,0 +1,19 @@
+// packages/shared/src/errors.ts
+// Error codes matching code_style.md §5. Single source of truth.
+
+export const ERROR_CODES = {
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  UNAUTHENTICATED: 'UNAUTHENTICATED',
+  INVALID_SIGNATURE: 'INVALID_SIGNATURE',
+  FORBIDDEN: 'FORBIDDEN',
+  NOT_FOUND: 'NOT_FOUND',
+  CONFLICT: 'CONFLICT',
+  SPEC_TOO_LARGE: 'SPEC_TOO_LARGE',
+  SPEC_INVALID: 'SPEC_INVALID',
+  RATE_LIMITED: 'RATE_LIMITED',
+  WORKFLOW_UNAVAILABLE: 'WORKFLOW_UNAVAILABLE',
+  INTERNAL: 'INTERNAL',
+} as const;
+
+export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
+
