@@ -59,11 +59,20 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  href="/faq"
+                  href="/privacy"
                   className="group inline-flex items-center gap-1.5 text-text-hero-sub hover:text-butter-cream hover:translate-x-1.5 transition-all duration-200"
                 >
                   <span className="opacity-0 group-hover:opacity-100 transition-opacity text-butter-cream text-xs">→</span>
-                  <span>FAQ & Knowledge Base</span>
+                  <span>Privacy Policy</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms"
+                  className="group inline-flex items-center gap-1.5 text-text-hero-sub hover:text-butter-cream hover:translate-x-1.5 transition-all duration-200"
+                >
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity text-butter-cream text-xs">→</span>
+                  <span>Terms of Service</span>
                 </Link>
               </li>
               <li>
@@ -133,12 +142,18 @@ export const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-hero-sub/90">
           <p>© {currentYear} ShaktIQ. Built with high-contrast Butter & Green design philosophy.</p>
-          <div className="flex items-center gap-6 font-medium">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6 font-medium">
             <Link
-              href="/faq"
+              href="/privacy"
               className="text-text-hero-sub hover:text-butter-cream transition-colors duration-200"
             >
-              Help & FAQ
+              Privacy Policy
+            </Link>
+            <Link
+              href="/terms"
+              className="text-text-hero-sub hover:text-butter-cream transition-colors duration-200"
+            >
+              Terms of Service
             </Link>
             <Link
               href="/why-us"

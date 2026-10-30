@@ -20,7 +20,7 @@ import {
   CheckCircle2,
   Copy,
   Check,
-  Sparkles,
+  Cpu,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { AiReleaseDossier } from '@/components/AiReleaseDossier';
@@ -478,7 +478,7 @@ export default function ShaktIQDashboard() {
                 activeTab === 'dossier' ? 'bg-accent/10 text-accent font-medium' : 'text-text-muted hover:text-text hover:bg-surface-2'
               }`}
             >
-              <Sparkles className="w-4 h-4 text-accent" />
+              <Cpu className="w-4 h-4 text-accent" />
               <span>AI Release Dossier</span>
             </button>
             <button

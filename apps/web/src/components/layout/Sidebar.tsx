@@ -39,7 +39,7 @@ export function Sidebar() {
   const isCurrentAdminPath = pathname.startsWith('/admin');
 
   return (
-    <aside className="w-60 border-r border-border bg-surface flex flex-col h-screen sticky top-0 flex-shrink-0 select-none">
+    <aside className="hidden md:flex w-60 border-r border-border bg-surface flex-col h-screen sticky top-0 flex-shrink-0 select-none">
       {/* Brand Header */}
       <div className="h-14 border-b border-border flex items-center justify-between px-4">
         <Link

@@ -1,5 +1,5 @@
 import React from 'react';
-import { GitBranch, ShieldCheck, Sparkles, Network } from 'lucide-react';
+import { GitBranch, ShieldCheck, Zap, Network } from 'lucide-react';
 
 export const WhyShaktiq: React.FC = () => {
   const differentiators = [
@@ -16,7 +16,7 @@ export const WhyShaktiq: React.FC = () => {
         'Zero broken clients in production. ShaktIQ evaluates your release policy, calculating an objective 0-100 score and halting pull requests with an explicit BLOCKED verdict.',
     },
     {
-      icon: Sparkles,
+      icon: Zap,
       title: 'Autonomous Gemini 3.8 Flash Remediation',
       description:
         'Don’t just flag broken APIs—remediate them. Gemini synthesizes non-breaking schema shims, route aliases, and field-level deprecation wrappers in milliseconds.',

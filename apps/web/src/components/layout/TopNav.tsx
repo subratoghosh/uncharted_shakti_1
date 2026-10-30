@@ -18,9 +18,9 @@ export function TopNav() {
   const segments = pathname.split('/').filter(Boolean);
 
   return (
-    <header className="h-14 border-b border-green-mid/50 bg-[#0A382C] text-butter-cream px-6 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+    <header className="h-14 border-b border-green-mid/50 bg-[#0A382C] text-butter-cream px-3 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
       {/* Breadcrumbs */}
-      <div className="flex items-center gap-2 text-sm">
+      <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm truncate max-w-[200px] sm:max-w-none">
         <span className="text-butter-cream font-bold">ShaktIQ</span>
         {segments.map((seg, i) => (
           <React.Fragment key={seg + i}>

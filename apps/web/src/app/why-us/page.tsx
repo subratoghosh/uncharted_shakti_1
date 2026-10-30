@@ -13,7 +13,7 @@ import {
   FileCheck2,
   AlertTriangle,
   HelpCircle,
-  Sparkles,
+  Cpu,
 } from 'lucide-react';
 import { MarketingLayout } from '@/components/landing/MarketingLayout';
 
@@ -50,7 +50,7 @@ export default function WhyUsPage() {
       ],
     },
     {
-      icon: Sparkles,
+      icon: Cpu,
       title: 'Autonomous Gemini 3.8 Flash Remediation',
       subtitle: 'AI that writes production-grade backward-compatible schema patches',
       description:

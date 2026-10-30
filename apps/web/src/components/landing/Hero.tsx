@@ -8,7 +8,7 @@ import {
   ShieldCheck,
   CheckCircle2,
   Terminal,
-  Sparkles,
+  Cpu,
   GitCommit,
   Layers,
   FileCode2,
@@ -265,7 +265,7 @@ export const Hero: React.FC = () => {
             <div className="p-3.5 bg-green-dark text-butter-cream rounded-2xl border border-butter-cream/20 font-mono text-[11px]">
               <div className="flex items-center justify-between text-butter-cream/80 text-[10px] pb-2 border-b border-butter-cream/15 mb-2">
                 <span className="flex items-center gap-1.5 font-bold">
-                  <Sparkles className="w-3.5 h-3.5 text-butter-cream" />
+                  <Cpu className="w-3.5 h-3.5 text-butter-cream" />
                   Gemini 3.8 Flash Remediation
                 </span>
                 <span className="text-green-sage">Synthesized in 240ms</span>

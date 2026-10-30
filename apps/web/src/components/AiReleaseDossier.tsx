@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, RefreshCw, AlertTriangle } from 'lucide-react';
+import { Cpu, RefreshCw, AlertTriangle } from 'lucide-react';
 import type { MultiLayerDossier, Run, Finding } from '@/types/index';
 import { BlastRadiusMatrix } from './BlastRadiusMatrix';
 import { CodeRemediationCard } from './CodeRemediationCard';
@@ -35,7 +35,7 @@ export function AiReleaseDossier({
       <div className="border border-border bg-surface p-4 rounded-lg flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-accent/10 border border-accent/20">
-            <Sparkles className="w-5 h-5 text-accent" />
+            <Cpu className="w-5 h-5 text-accent" />
           </div>
           <div>
             <h3 className="font-semibold text-sm flex items-center gap-2">

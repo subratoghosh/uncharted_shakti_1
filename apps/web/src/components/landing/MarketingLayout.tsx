@@ -5,7 +5,7 @@ import { MarketingMobileNav } from './MarketingMobileNav';
 
 export const MarketingLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <div className="min-h-screen bg-butter-bg text-green-dark flex flex-col pb-[80px] md:pb-0 font-sans selection:bg-butter-cream selection:text-green-dark">
+    <div className="min-h-screen w-full overflow-x-hidden bg-butter-bg text-green-dark flex flex-col pb-[84px] md:pb-0 font-sans selection:bg-butter-cream selection:text-green-dark">
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />

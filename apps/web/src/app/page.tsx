@@ -5,7 +5,6 @@ import { Hero } from '@/components/landing/Hero';
 import { TrustStrip } from '@/components/landing/TrustStrip';
 import { FeatureModules } from '@/components/landing/FeatureModules';
 import { WhyShaktiq } from '@/components/landing/WhyShaktiq';
-import { FAQAccordion } from '@/components/landing/FAQAccordion';
 import { CallToAction } from '@/components/landing/CallToAction';
 
 export const metadata: Metadata = {
@@ -21,7 +20,6 @@ export default function LandingPage() {
       <TrustStrip />
       <FeatureModules />
       <WhyShaktiq />
-      <FAQAccordion />
       <CallToAction />
     </MarketingLayout>
   );

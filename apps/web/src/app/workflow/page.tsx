@@ -6,7 +6,7 @@ import {
   GitBranch,
   Layers,
   Network,
-  Sparkles,
+  Cpu,
   ShieldCheck,
   CheckCircle2,
   Terminal,
@@ -149,7 +149,7 @@ export default function WorkflowPage() {
               <div className="p-8 bg-white rounded-3xl border border-green-dark/12 shadow-sm feature-card-interactive flex flex-col justify-between">
                 <div>
                   <div className="w-12 h-12 rounded-2xl bg-green-hero/10 flex items-center justify-center text-green-hero mb-6">
-                    <Sparkles className="w-6 h-6" />
+                    <Cpu className="w-6 h-6" />
                   </div>
                   <h3 className="heading-font font-bold text-xl text-green-dark mb-3">
                     Remediation Autopilot
