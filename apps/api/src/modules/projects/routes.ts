@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import {
   AppError,
   createProjectRequestSchema,
+  aiQueryRequestSchema,
   ROUTES,
   updateProjectRequestSchema,
 } from '@shaktiq/shared';
@@ -175,4 +176,64 @@ export const projectRoutes: FastifyPluginAsync = async (app: FastifyInstance) =>
 
     return sendSuccess(reply, { deleted: true });
   });
+
+  // POST /projects/:projectId/ai/query
+  app.post(ROUTES.PROJECTS.AI_QUERY, { preHandler: [authenticate] }, async (request, reply) => {
+    const user = request.user!;
+    const { projectId } = request.params as { projectId: string };
+    const { question } = aiQueryRequestSchema.parse(request.body);
+
+    const project = await verifyProjectOwnership(projectId, user);
+    const { runs, findings } = getCollections();
+    const projectObjId = new ObjectId(projectId);
+
+    // 1. Fetch recent runs for this project (up to 5)
+    const recentRuns = await runs
+      .find({ projectId: projectObjId })
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .toArray();
+
+    // 2. Fetch recent findings across these runs
+    const recentRunIds = recentRuns.map((r) => r._id);
+    const runFindings =
+      recentRunIds.length > 0
+        ? await findings.find({ runId: { $in: recentRunIds } }).limit(50).toArray()
+        : [];
+
+    // 3. Fetch recurring hotspots
+    const { createHotspotsPipeline } = await import('../runs/pipelines.js');
+    const hotspots = await findings.aggregate(createHotspotsPipeline(project.id)).toArray();
+
+    // 4. Call Gemini 3.8 Flash query assistant
+    const { queryProjectAssistant } = await import('../ai/gemini-service.js');
+    const result = await queryProjectAssistant({
+      projectName: project.fullName,
+      question,
+      runsSummary: recentRuns.map((r) => ({
+        version: r.currentVersion || 'HEAD',
+        status: r.status,
+        releaseStatus: r.summary?.releaseStatus || 'unknown',
+        breakingCount: r.summary?.breaking || 0,
+        warningCount: r.summary?.warning || 0,
+        createdAt: r.createdAt.toISOString(),
+      })),
+      recentFindings: runFindings.map((f) => ({
+        endpoint: f.endpoint,
+        method: f.method,
+        changeType: f.changeType,
+        severity: f.severity,
+        description: f.description,
+        impact: f.impact,
+        recommendation: f.recommendation,
+      })),
+      hotspots: hotspots.map((h: any) => ({
+        endpoint: h.endpoint || h._id,
+        count: h.distinctRuns || h.count || 1,
+      })),
+    });
+
+    return sendSuccess(reply, result);
+  });
 };
+

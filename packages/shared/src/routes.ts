@@ -19,6 +19,7 @@ export const ROUTES = {
     GET: '/projects/:projectId',
     UPDATE: '/projects/:projectId',
     DELETE: '/projects/:projectId',
+    AI_QUERY: '/projects/:projectId/ai/query',
   },
   RUNS: {
     CREATE_MANUAL: '/projects/:projectId/runs',
@@ -27,6 +28,7 @@ export const ROUTES = {
     FINDINGS: '/runs/:runId/findings',
     REPORT: '/runs/:runId/report',
     COMPARE: '/projects/:projectId/compare',
+    AI_QUERY: '/runs/:runId/ai/query',
   },
   MEMORY: {
     HOTSPOTS: '/projects/:projectId/memory/hotspots',
