@@ -1,115 +1,19 @@
 // mocks/handlers.ts — MSW request handlers for local development
-// Dev only — never imported in production build.
-
 import { http, HttpResponse } from 'msw';
+import {
+  MOCK_USER,
+  MOCK_ADMIN,
+  MOCK_PROJECT,
+  MOCK_RUN_COMPLETED,
+  MOCK_FINDINGS,
+  MOCK_EVENTS,
+  MOCK_TOKENS,
+  MOCK_HOTSPOTS,
+  MOCK_OVERVIEW,
+  MOCK_WORKFLOW_HEALTH,
+} from './mock-data';
 
 const API = '*/api/v1';
-
-const MOCK_USER = {
-  id: 'user-1',
-  email: 'dev@shaktiq.dev',
-  name: 'Dev User',
-  role: 'user' as const,
-  disabled: false,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-};
-
-const MOCK_ADMIN = {
-  ...MOCK_USER,
-  id: 'admin-1',
-  email: 'admin@shaktiq.dev',
-  name: 'Admin',
-  role: 'admin' as const,
-};
-
-const MOCK_PROJECT = {
-  id: 'proj-1',
-  ownerUserId: 'user-1',
-  name: 'Orders API',
-  repositoryUrl: 'https://github.com/acme/orders',
-  owner: 'acme',
-  repo: 'orders',
-  fullName: 'acme/orders',
-  defaultBranch: 'main',
-  specPath: 'openapi.yaml',
-  createdAt: new Date(Date.now() - 86400000).toISOString(),
-  updatedAt: new Date().toISOString(),
-};
-
-const MOCK_RUN_COMPLETED = {
-  id: 'run-1',
-  projectId: 'proj-1',
-  eventId: 'manual:uuid-1',
-  source: 'manual' as const,
-  previousVersion: 'abc1234',
-  currentVersion: 'def5678',
-  commitId: null,
-  branch: 'main',
-  pullRequestNumber: null,
-  baseSnapshotId: null,
-  headSnapshotId: null,
-  baseSpecHash: null,
-  headSpecHash: null,
-  status: 'completed' as const,
-  startedAt: new Date(Date.now() - 10000).toISOString(),
-  completedAt: new Date().toISOString(),
-  createdAt: new Date().toISOString(),
-  summary: {
-    total: 3,
-    breaking: 1,
-    warning: 1,
-    info: 1,
-    releaseStatus: 'blocked' as const,
-    newCount: 2,
-    resolvedCount: 0,
-    unresolvedCount: 1,
-  },
-  errorCode: null,
-  errorMessage: null,
-  aiStatus: 'disabled' as const,
-  aiSummary: null,
-};
-
-const MOCK_FINDINGS = [
-  {
-    id: 'f-1',
-    projectId: 'proj-1',
-    runId: 'run-1',
-    fingerprint: 'a'.repeat(64),
-    previousVersion: 'abc1234',
-    currentVersion: 'def5678',
-    endpoint: '/users/{id}',
-    method: 'DELETE' as const,
-    changeType: 'ENDPOINT_REMOVED' as const,
-    severity: 'breaking' as const,
-    ruleId: 'api-path-removed-without-deprecation',
-    description: 'Endpoint DELETE /users/{id} was removed',
-    impact: 'Clients calling this endpoint will receive 404/405.',
-    recommendation:
-      'Restore the endpoint or deprecate first and communicate a sunset date.',
-    aiExplanation: null,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'f-2',
-    projectId: 'proj-1',
-    runId: 'run-1',
-    fingerprint: 'b'.repeat(64),
-    previousVersion: 'abc1234',
-    currentVersion: 'def5678',
-    endpoint: '/orders',
-    method: 'POST' as const,
-    changeType: 'REQUIRED_REQUEST_FIELD_ADDED' as const,
-    severity: 'warning' as const,
-    ruleId: null,
-    description: 'Required field "currency" added to POST /orders request body',
-    impact: 'Clients not sending "currency" will receive a 422 error.',
-    recommendation: 'Add "currency" to your request body or make it optional with a default.',
-    aiExplanation: null,
-    createdAt: new Date().toISOString(),
-  },
-];
 
 export const handlers = [
   // Auth
@@ -174,40 +78,27 @@ export const handlers = [
 
   // Memory
   http.get(`${API}/projects/:projectId/memory/hotspots`, () =>
+    HttpResponse.json({ ok: true, data: MOCK_HOTSPOTS }),
+  ),
+  http.get(`${API}/projects/:projectId/memory/endpoint`, () =>
     HttpResponse.json({
       ok: true,
       data: [
         {
-          method: 'DELETE',
-          endpoint: '/users/{id}',
-          occurrences: 3,
-          distinctRuns: 2,
-          lastSeen: new Date().toISOString(),
-          changeTypes: ['ENDPOINT_REMOVED'],
+          id: 'mem-1',
+          runId: 'run-0',
+          severity: 'breaking',
+          changeType: 'ENDPOINT_REMOVED',
+          description: 'DELETE /users/{id} was removed in v0.9',
+          createdAt: new Date(Date.now() - 172800000).toISOString(),
         },
       ],
     }),
-  ),
-  http.get(`${API}/projects/:projectId/memory/endpoint`, () =>
-    HttpResponse.json({ ok: true, data: [] }),
   ),
 
   // Tokens
   http.get(`${API}/tokens`, () =>
-    HttpResponse.json({
-      ok: true,
-      data: [
-        {
-          id: 'tok-1',
-          userId: 'user-1',
-          name: 'laptop',
-          prefix: 'sq_ab12',
-          lastUsedAt: null,
-          revokedAt: null,
-          createdAt: new Date().toISOString(),
-        },
-      ],
-    }),
+    HttpResponse.json({ ok: true, data: MOCK_TOKENS }),
   ),
   http.post(`${API}/tokens`, () =>
     HttpResponse.json({
@@ -220,7 +111,7 @@ export const handlers = [
         lastUsedAt: null,
         revokedAt: null,
         createdAt: new Date().toISOString(),
-        rawToken: 'sq_cd34_FAKE_RAW_TOKEN_SHOWN_ONCE',
+        rawToken: 'sq_cd34_4f8b91c2e7a05d6e3f1b4c8a9e0d2f4b',
       },
     }),
   ),
@@ -230,15 +121,7 @@ export const handlers = [
 
   // Admin
   http.get(`${API}/admin/overview`, () =>
-    HttpResponse.json({
-      ok: true,
-      data: {
-        runs: { total: 42, queued: 1, running: 2, completed: 38, failed: 1, last24h: 12 },
-        events: { total: 55, duplicateCount: 3, rejectedCount: 2 },
-        projects: { total: 8 },
-        users: { total: 15 },
-      },
-    }),
+    HttpResponse.json({ ok: true, data: MOCK_OVERVIEW }),
   ),
   http.get(`${API}/admin/projects`, () =>
     HttpResponse.json({ ok: true, data: [MOCK_PROJECT], meta: { page: 1, limit: 20, total: 1 } }),
@@ -247,44 +130,10 @@ export const handlers = [
     HttpResponse.json({ ok: true, data: [MOCK_RUN_COMPLETED], meta: { page: 1, limit: 20, total: 1 } }),
   ),
   http.get(`${API}/admin/events`, () =>
-    HttpResponse.json({
-      ok: true,
-      data: [
-        {
-          id: 'evt-1',
-          eventId: 'github:delivery-uuid-1',
-          projectId: 'proj-1',
-          eventType: 'github.push',
-          source: 'github',
-          receivedAt: new Date().toISOString(),
-          processingStatus: 'processed',
-          runId: 'run-1',
-          duplicateCount: 1,
-          lastDuplicateAt: new Date().toISOString(),
-          error: null,
-        },
-        {
-          id: 'evt-2',
-          eventId: 'rejected:bad-signature-uuid',
-          projectId: null,
-          eventType: 'github.push',
-          source: 'github',
-          receivedAt: new Date().toISOString(),
-          processingStatus: 'rejected',
-          runId: null,
-          duplicateCount: 0,
-          lastDuplicateAt: null,
-          error: 'INVALID_SIGNATURE',
-        },
-      ],
-      meta: { page: 1, limit: 20, total: 2 },
-    }),
+    HttpResponse.json({ ok: true, data: MOCK_EVENTS, meta: { page: 1, limit: 20, total: 2 } }),
   ),
   http.get(`${API}/admin/workflows/health`, () =>
-    HttpResponse.json({
-      ok: true,
-      data: { status: 'ok', lastCheck: new Date().toISOString(), details: 'n8n reachable' },
-    }),
+    HttpResponse.json({ ok: true, data: MOCK_WORKFLOW_HEALTH }),
   ),
   http.get(`${API}/admin/users`, () =>
     HttpResponse.json({ ok: true, data: [MOCK_USER, MOCK_ADMIN] }),
@@ -301,4 +150,3 @@ export const handlers = [
     HttpResponse.json({ ok: true, data: { status: 'ok' } }),
   ),
 ];
-
