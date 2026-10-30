@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Sparkles, RefreshCw, AlertTriangle, Copy, Check } from 'lucide-react';
 import type { MultiLayerDossier, Run, Finding } from '@/types/index';
+import { BlastRadiusMatrix } from './BlastRadiusMatrix';
 
 interface AiReleaseDossierProps {
   aiDossier: MultiLayerDossier | null;
@@ -159,122 +160,7 @@ export function AiReleaseDossier({
           </div>
 
           {/* Layer 2: 4-Pillar Consumer Blast Radius Matrix */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-xs uppercase tracking-wider font-semibold text-text-muted">
-                Layer 2: Consumer Blast Radius & Vulnerability Matrix
-              </h4>
-              <span className="text-xs text-text-muted">Evaluated against real API consumption patterns</span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Mobile Apps */}
-              <div className="border border-border bg-surface p-4 rounded-lg space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="font-semibold text-xs flex items-center gap-1.5">
-                    <span>📱 Mobile Applications</span>
-                  </div>
-                  <span
-                    className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                      aiDossier.blastRadius.mobileAppsRisk === 'CRITICAL' || aiDossier.blastRadius.mobileAppsRisk === 'HIGH'
-                        ? 'badge-breaking'
-                        : aiDossier.blastRadius.mobileAppsRisk === 'MEDIUM'
-                        ? 'badge-warning'
-                        : 'badge-ok'
-                    }`}
-                  >
-                    {aiDossier.blastRadius.mobileAppsRisk}
-                  </span>
-                </div>
-                <p className="text-xs text-text-muted leading-relaxed">
-                  {aiDossier.blastRadius.mobileAppsRisk === 'CRITICAL' || aiDossier.blastRadius.mobileAppsRisk === 'HIGH'
-                    ? 'Client crash risk on outdated app stores without forward compatibility.'
-                    : 'Backward compatible or low client failure footprint.'}
-                </p>
-              </div>
-
-              {/* Web Frontend */}
-              <div className="border border-border bg-surface p-4 rounded-lg space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="font-semibold text-xs flex items-center gap-1.5">
-                    <span>💻 Web Frontend</span>
-                  </div>
-                  <span
-                    className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                      aiDossier.blastRadius.webFrontendRisk === 'CRITICAL' || aiDossier.blastRadius.webFrontendRisk === 'HIGH'
-                        ? 'badge-breaking'
-                        : aiDossier.blastRadius.webFrontendRisk === 'MEDIUM'
-                        ? 'badge-warning'
-                        : 'badge-ok'
-                    }`}
-                  >
-                    {aiDossier.blastRadius.webFrontendRisk}
-                  </span>
-                </div>
-                <p className="text-xs text-text-muted leading-relaxed">
-                  {aiDossier.blastRadius.webFrontendRisk === 'CRITICAL' || aiDossier.blastRadius.webFrontendRisk === 'HIGH'
-                    ? 'Form validations and data schemas may reject payloads unexpectedly.'
-                    : 'Single-page applications adapt smoothly without breaking state.'}
-                </p>
-              </div>
-
-              {/* Microservices */}
-              <div className="border border-border bg-surface p-4 rounded-lg space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="font-semibold text-xs flex items-center gap-1.5">
-                    <span>⚙️ Backend Microservices</span>
-                  </div>
-                  <span
-                    className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                      aiDossier.blastRadius.microservicesRisk === 'CRITICAL' || aiDossier.blastRadius.microservicesRisk === 'HIGH'
-                        ? 'badge-breaking'
-                        : aiDossier.blastRadius.microservicesRisk === 'MEDIUM'
-                        ? 'badge-warning'
-                        : 'badge-ok'
-                    }`}
-                  >
-                    {aiDossier.blastRadius.microservicesRisk}
-                  </span>
-                </div>
-                <p className="text-xs text-text-muted leading-relaxed">
-                  {aiDossier.blastRadius.microservicesRisk === 'CRITICAL' || aiDossier.blastRadius.microservicesRisk === 'HIGH'
-                    ? 'Internal RPC or REST consumers face HTTP 4xx/5xx cascade errors.'
-                    : 'Service mesh contract checks remain compatible.'}
-                </p>
-              </div>
-
-              {/* 3rd Party Integrations */}
-              <div className="border border-border bg-surface p-4 rounded-lg space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="font-semibold text-xs flex items-center gap-1.5">
-                    <span>🌐 3rd-Party & Webhooks</span>
-                  </div>
-                  <span
-                    className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                      aiDossier.blastRadius.thirdPartyRisk === 'CRITICAL' || aiDossier.blastRadius.thirdPartyRisk === 'HIGH'
-                        ? 'badge-breaking'
-                        : aiDossier.blastRadius.thirdPartyRisk === 'MEDIUM'
-                        ? 'badge-warning'
-                        : 'badge-ok'
-                    }`}
-                  >
-                    {aiDossier.blastRadius.thirdPartyRisk}
-                  </span>
-                </div>
-                <p className="text-xs text-text-muted leading-relaxed">
-                  {aiDossier.blastRadius.thirdPartyRisk === 'CRITICAL' || aiDossier.blastRadius.thirdPartyRisk === 'HIGH'
-                    ? 'External partner API consumers without migration window will break.'
-                    : 'Partner contracts and event delivery payloads unharmed.'}
-                </p>
-              </div>
-            </div>
-
-            {/* Summary banner */}
-            <div className="mt-3 p-3 rounded-lg border border-border bg-surface-2/60 text-xs text-text leading-relaxed">
-              <span className="font-semibold text-text">Blast Radius Analysis: </span>
-              {aiDossier.blastRadius.summary}
-            </div>
-          </div>
+          <BlastRadiusMatrix blastRadius={aiDossier.blastRadius} />
 
           {/* Layer 3: Findings Deep Insights & Code Remediation */}
           <div>
