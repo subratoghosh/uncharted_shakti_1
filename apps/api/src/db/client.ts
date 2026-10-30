@@ -1,6 +1,13 @@
+import dns from 'node:dns';
 import { Db, MongoClient } from 'mongodb';
 import { env } from '../config/env.js';
 import { logger } from '../lib/logger.js';
+
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch {
+  // Ignore in environments where setServers is restricted
+}
 
 let client: MongoClient | null = null;
 let db: Db | null = null;

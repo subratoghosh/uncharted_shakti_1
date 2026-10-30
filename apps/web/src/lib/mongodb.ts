@@ -1,4 +1,11 @@
+import dns from 'node:dns';
 import { MongoClient, Db } from 'mongodb';
+
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch {
+  // Ignore in environments where setServers is restricted
+}
 
 const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/shaktiq';
 const dbName = process.env.MONGODB_DB_NAME || 'shaktiq';
