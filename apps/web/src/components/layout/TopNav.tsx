@@ -1,23 +1,18 @@
 'use client';
 
 import React from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import { useRunStream } from '../../hooks/useRunStream';
-import { apiClient } from '../../lib/api-client';
-import { LogOut } from 'lucide-react';
+import { LogOut, Shield, User } from 'lucide-react';
 
 export function TopNav() {
   const pathname = usePathname();
-  const router = useRouter();
+  const { data: session } = useSession();
   const { status } = useRunStream();
 
   const handleLogout = async () => {
-    try {
-      await apiClient('/auth/logout', { method: 'POST' });
-    } catch {
-      // Ignore error during logout
-    }
-    router.push('/login');
+    await signOut({ callbackUrl: '/login' });
   };
 
   const segments = pathname.split('/').filter(Boolean);
@@ -58,6 +53,29 @@ export function TopNav() {
             </>
           )}
         </div>
+
+        {/* User Profile Pill */}
+        {session?.user && (
+          <div className="flex items-center gap-2 pl-2 border-l border-border text-xs">
+            <div className="w-6 h-6 rounded-full bg-accent/15 text-accent flex items-center justify-center font-bold text-[11px]">
+              {session.user.name ? session.user.name.charAt(0).toUpperCase() : <User className="w-3 h-3" />}
+            </div>
+            <div className="hidden md:flex flex-col">
+              <span className="font-semibold text-text leading-tight">{session.user.name || session.user.email}</span>
+              <span className="text-[10px] text-muted leading-tight">{session.user.email}</span>
+            </div>
+            {session.user.role === 'admin' ? (
+              <span className="inline-flex items-center gap-0.5 text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 uppercase tracking-wider">
+                <Shield className="w-2.5 h-2.5" />
+                Admin
+              </span>
+            ) : (
+              <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-surface-2 text-muted border border-border uppercase">
+                User
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Logout action */}
         <button
