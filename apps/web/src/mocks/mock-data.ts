@@ -188,3 +188,4 @@ export const MOCK_WORKFLOW_HEALTH: WorkflowHealth = {
   lastCheck: new Date().toISOString(),
   details: 'n8n workflow shaktiq-analyze-run active and reachable',
 };
+
