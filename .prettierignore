@@ -9,3 +9,4 @@ coverage/
 package-lock.json
 fixtures/openapi/broken.yaml
 docs/
+README.md

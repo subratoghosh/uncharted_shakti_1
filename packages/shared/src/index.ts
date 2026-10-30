@@ -114,6 +114,20 @@ export const runSummarySchema = z.object({
 });
 export type RunSummary = z.infer<typeof runSummarySchema>;
 
+/**
+ * Computes release status according to docs/database.md §6:
+ * blocked if breaking > 0; else review if warning > 0; else safe.
+ */
+export function computeReleaseStatus(counts: {
+  breaking: number;
+  warning: number;
+  info?: number;
+}): ReleaseStatus {
+  if (counts.breaking > 0) return 'blocked';
+  if (counts.warning > 0) return 'review';
+  return 'safe';
+}
+
 // ============================================================================
 // API Envelope (docs/code_style.md §5)
 // ============================================================================
