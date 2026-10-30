@@ -1,0 +1,35 @@
+# Code Owners for ShaktIQ
+# Defined in docs/agents.md
+
+# Suibrato – Backend + Database + Security
+apps/api/               @subratoghosh
+packages/shared/        @subratoghosh
+docs/database.md        @subratoghosh
+docs/security.md        @subratoghosh
+
+# Lavanya – Frontend (user + admin panels)
+apps/web/               @lavanya
+docs/design_system.md   @lavanya
+
+# Vicky – n8n Automation + Analyzer + VS Code extension + QA/Infra
+n8n/                    @vicky
+packages/analyzer/      @vicky
+apps/vscode-ext/        @vicky
+fixtures/               @vicky
+infra/                  @vicky
+scripts/                @vicky
+docs/testing.md         @vicky
+package.json            @vicky
+package-lock.json       @vicky
+tsconfig*.json          @vicky
+.eslintrc*              @vicky
+eslint.config.*         @vicky
+.prettier*              @vicky
+.gitignore              @vicky
+.env.example            @vicky
+
+# Shared – Product / Architecture
+docs/prd.md             @subratoghosh @lavanya @vicky
+docs/architecture.md    @subratoghosh @lavanya @vicky
+docs/code_style.md      @subratoghosh @lavanya @vicky
+docs/agents.md          @subratoghosh @lavanya @vicky

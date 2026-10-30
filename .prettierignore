@@ -1,0 +1,11 @@
+node_modules/
+dist/
+build/
+out/
+.next/
+coverage/
+*.vsix
+.vscode-test/
+package-lock.json
+fixtures/openapi/broken.yaml
+docs/
