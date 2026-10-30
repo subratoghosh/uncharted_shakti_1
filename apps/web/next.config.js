@@ -1,5 +1,11 @@
 const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+
+// Safe optional local .env loader (Vercel provides process.env natively)
+try {
+  require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+} catch {
+  // On Vercel, environment variables are provided natively via process.env
+}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
