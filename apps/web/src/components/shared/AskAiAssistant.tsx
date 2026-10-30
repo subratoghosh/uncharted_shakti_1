@@ -13,6 +13,7 @@ import {
   User,
   ShieldAlert,
   Terminal,
+  RotateCcw,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import type { AiQueryResponse } from '@shaktiq/shared';
@@ -160,12 +161,33 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() =>
+                  setMessages([
+                    {
+                      id: 'welcome',
+                      sender: 'assistant',
+                      content: `Thread reset. Ask me anything about **${
+                        projectName || 'this project'
+                      }**!`,
+                      timestamp: new Date(),
+                    },
+                  ])
+                }
+                title="Reset conversation"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                title="Close assistant"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           {/* Quick Preset Prompts */}
