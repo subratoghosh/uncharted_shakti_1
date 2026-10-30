@@ -1,6 +1,13 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { z } from 'zod';
 
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
+
+// Load root .env file, then local fallback
+dotenv.config({ path: path.resolve(currentDir, '../../../../.env') });
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 dotenv.config();
 
 const envSchema = z.object({
@@ -23,6 +30,10 @@ const envSchema = z.object({
     .transform(val => val === 'true')
     .default('false'),
   GEMINI_API_KEY: z.string().optional(),
+  GITHUB_APP_ID: z.string().optional(),
+  GITHUB_APP_PRIVATE_KEY: z.string().optional(),
+  GITHUB_APP_SLUG: z.string().optional(),
+  GITHUB_TOKEN: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

@@ -48,9 +48,10 @@ export type ProjectDoc = {
   fullName: string;
   defaultBranch: string;
   specPath: string;
+  installationId?: number | null;
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
 export type EventDoc = {
   _id: ObjectId;

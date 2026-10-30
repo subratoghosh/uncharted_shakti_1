@@ -7,6 +7,7 @@ import { getCollections } from '../../db/collections.js';
 import { verifyGithubWebhookSignature } from '../../lib/hash.js';
 import { logger } from '../../lib/logger.js';
 import { sendError, sendSuccess } from '../../lib/response.js';
+import { processRunAutonomously } from '../internal/background-runner.js';
 
 export const eventRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
   // POST /webhooks/github
@@ -63,7 +64,54 @@ export const eventRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
       return sendSuccess(reply, { ping: 'pong' }, 200);
     }
 
-    // 4. Filter only push and pull_request
+    const payload = request.body as Record<string, any>;
+    const { projects, events, runs } = getCollections();
+
+    // 4. Handle GitHub App Installation events (1-click onboarding worldwide)
+    if (eventTypeHeader === 'installation' || eventTypeHeader === 'installation_repositories') {
+      const installationId = payload.installation?.id;
+      const repos = payload.repositories || payload.repositories_added || [];
+
+      if (Array.isArray(repos) && installationId) {
+        logger.info(
+          { action: payload.action, count: repos.length, installationId },
+          'GitHub App installation event received: syncing repositories',
+        );
+
+        for (const repo of repos) {
+          const fullName = (repo.full_name || '').toLowerCase();
+          if (!fullName) continue;
+          const [ownerPart, repoPart] = fullName.split('/');
+
+          await projects.updateOne(
+            { fullName },
+            {
+              $set: {
+                name: repo.name || repoPart || fullName,
+                fullName,
+                owner: ownerPart || '',
+                repo: repoPart || '',
+                repositoryUrl: `https://github.com/${fullName}`,
+                defaultBranch: repo.default_branch || 'main',
+                specPath: 'openapi.yaml',
+                installationId,
+                updatedAt: new Date(),
+              },
+              $setOnInsert: {
+                _id: new ObjectId(),
+                ownerUserId: new ObjectId(),
+                createdAt: new Date(),
+              },
+            },
+            { upsert: true },
+          );
+        }
+      }
+
+      return sendSuccess(reply, { synced: true, count: repos.length }, 200);
+    }
+
+    // 5. Filter only push and pull_request
     if (eventTypeHeader !== 'push' && eventTypeHeader !== 'pull_request') {
       return sendSuccess(
         reply,
@@ -72,7 +120,6 @@ export const eventRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
       );
     }
 
-    const payload = request.body as Record<string, any>;
     if (!payload || typeof payload !== 'object' || !payload.repository?.full_name) {
       return sendError(
         reply,
@@ -94,24 +141,40 @@ export const eventRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
       }
     }
 
-    // 5. Resolve project by repository.full_name
+    // 6. Resolve or Auto-Onboard project by repository.full_name
     const repoFullName = payload.repository.full_name.toLowerCase();
-    const { projects, events, runs } = getCollections();
-    const project = await projects.findOne({ fullName: repoFullName });
+    let project = await projects.findOne({ fullName: repoFullName });
 
     if (!project) {
-      return sendError(
-        reply,
-        'NOT_FOUND',
-        `Repository ${repoFullName} is not registered in ShaktIQ`,
-        404,
-      );
+      logger.info({ repoFullName }, 'New global repository detected via webhook; auto-onboarding project');
+      const [ownerPart, repoPart] = repoFullName.split('/');
+      const newProjectDoc = {
+        _id: new ObjectId(),
+        ownerUserId: new ObjectId(),
+        name: payload.repository.name || repoPart || repoFullName,
+        fullName: repoFullName,
+        owner: ownerPart || '',
+        repo: repoPart || '',
+        repositoryUrl: payload.repository.html_url || `https://github.com/${repoFullName}`,
+        defaultBranch: payload.repository.default_branch || 'main',
+        specPath: 'openapi.yaml',
+        installationId: payload.installation?.id || null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      await projects.insertOne(newProjectDoc);
+      project = newProjectDoc;
+    } else if (payload.installation?.id && !project.installationId) {
+      await projects.updateOne({ _id: project._id }, { $set: { installationId: payload.installation.id } });
+      project = { ...project, installationId: payload.installation.id };
     }
+
+    const activeProject = project;
 
     // If push, ignore if non-default branch
     if (eventTypeHeader === 'push') {
       const branch = payload.ref ? payload.ref.replace('refs/heads/', '') : '';
-      if (branch && branch !== project.defaultBranch) {
+      if (branch && branch !== activeProject.defaultBranch) {
         return sendSuccess(
           reply,
           { ignored: true, reason: `Push ignored for non-default branch: ${branch}` },
@@ -127,19 +190,19 @@ export const eventRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
     let previousVersion: string | null = null;
     let currentVersion = 'HEAD';
     let commitId: string | null = null;
-    let branch = project.defaultBranch;
+    let branch = activeProject.defaultBranch;
     let pullRequestNumber: number | null = null;
 
     if (eventTypeHeader === 'push') {
       previousVersion = payload.before || null;
       currentVersion = payload.after || 'HEAD';
       commitId = payload.after || null;
-      branch = payload.ref ? payload.ref.replace('refs/heads/', '') : project.defaultBranch;
+      branch = payload.ref ? payload.ref.replace('refs/heads/', '') : activeProject.defaultBranch;
     } else if (eventTypeHeader === 'pull_request') {
       previousVersion = payload.pull_request?.base?.sha || null;
       currentVersion = payload.pull_request?.head?.sha || 'HEAD';
       commitId = payload.pull_request?.head?.sha || null;
-      branch = payload.pull_request?.head?.ref || project.defaultBranch;
+      branch = payload.pull_request?.head?.ref || activeProject.defaultBranch;
       pullRequestNumber = payload.pull_request?.number || null;
     }
 
@@ -157,7 +220,7 @@ export const eventRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
     const eventDoc = {
       _id: new ObjectId(),
       eventId,
-      projectId: project._id,
+      projectId: activeProject._id,
       eventType: (eventTypeHeader === 'push' ? 'github.push' : 'github.pull_request') as any,
       source: 'github' as const,
       payload: trimmedPayload,
@@ -201,7 +264,7 @@ export const eventRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
     // 10. Create run
     const runDoc = {
       _id: new ObjectId(),
-      projectId: project._id,
+      projectId: activeProject._id,
       eventId,
       source: 'github' as const,
       previousVersion,
@@ -243,7 +306,8 @@ export const eventRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
       throw err;
     }
 
-    // 11. Dispatch to n8n webhook
+    // 11. Dispatch to n8n webhook (or fallback to autonomous execution)
+    let dispatchedToN8n = false;
     try {
       const response = await fetch(env.N8N_WEBHOOK_URL, {
         method: 'POST',
@@ -253,27 +317,26 @@ export const eventRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
         },
         body: JSON.stringify({
           runId: runDoc._id.toHexString(),
-          projectId: project._id.toHexString(),
+          projectId: activeProject._id.toHexString(),
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`n8n responded with status ${response.status}`);
+      if (response.ok) {
+        dispatchedToN8n = true;
       }
-    } catch (dispatchErr: any) {
-      logger.error({ err: dispatchErr, runId: runDoc._id }, 'Failed to trigger n8n workflow');
-      // Mark run failed with WORKFLOW_UNAVAILABLE per prd.md & architecture.md
-      await runs.updateOne(
-        { _id: runDoc._id },
-        {
-          $set: {
-            status: 'failed',
-            errorCode: 'WORKFLOW_UNAVAILABLE',
-            errorMessage: 'Failed to dispatch workflow to n8n',
-            completedAt: new Date(),
-          },
-        },
+    } catch {
+      // n8n offline or unreachable
+    }
+
+    if (!dispatchedToN8n) {
+      logger.info(
+        { runId: runDoc._id, repoFullName },
+        'n8n workflow engine offline or unconfigured; launching autonomous in-process ShaktIQ analysis',
       );
+      // Run autonomous analysis asynchronously in background
+      processRunAutonomously(runDoc._id, activeProject).catch(err => {
+        logger.error({ err, runId: runDoc._id }, 'Autonomous analysis error');
+      });
     }
 
     return sendSuccess(
