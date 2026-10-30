@@ -17,8 +17,15 @@ import {
 import { apiClient } from '@/lib/api-client';
 import type { AiQueryResponse } from '@shaktiq/shared';
 
+/**
+ * AskAiAssistant Component
+ * Interactive natural language AI assistant powered by Google Gemini 3.8 Flash.
+ * Allows developers to query project health, breaking changes, and backward-compatible patches.
+ */
 interface AskAiAssistantProps {
+  /** The unique ObjectId string of the active project */
   projectId: string;
+  /** Human-readable display name of the project */
   projectName?: string;
 }
 
@@ -35,6 +42,17 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
+  // Close drawer on Escape key press for accessibility
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
 
   const [messages, setMessages] = useState<Message[]>([
     {
