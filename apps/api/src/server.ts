@@ -127,12 +127,28 @@ export async function buildServer(): Promise<FastifyInstance> {
   app.setNotFoundHandler(notFoundHandler);
 
   // Health checks
+  const getHealthStatus = () => {
+    const hasGemini = Boolean(
+      env.GEMINI_API_KEY &&
+      env.GEMINI_API_KEY !== 'your_gemini_api_key_here' &&
+      env.GEMINI_API_KEY.length > 10
+    );
+    return {
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      ai: {
+        engine: hasGemini ? 'gemini-3.8-flash' : 'deterministic-intelligence',
+        enabled: true,
+      },
+    };
+  };
+
   app.get(ROUTES.HEALTH, async (_req, reply) => {
-    return sendSuccess(reply, { status: 'healthy', timestamp: new Date().toISOString() });
+    return sendSuccess(reply, getHealthStatus());
   });
 
   app.get(`${API_PREFIX}${ROUTES.HEALTH}`, async (_req, reply) => {
-    return sendSuccess(reply, { status: 'healthy', timestamp: new Date().toISOString() });
+    return sendSuccess(reply, getHealthStatus());
   });
 
   // Register API modules under /api/v1
