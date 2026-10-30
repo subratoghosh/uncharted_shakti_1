@@ -20,8 +20,10 @@ import {
   CheckCircle2,
   Copy,
   Check,
+  Sparkles,
 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { AiReleaseDossier } from '@/components/AiReleaseDossier';
 import type {
   Project,
   Run,
@@ -33,6 +35,7 @@ import type {
   CompareResult,
   AnalyzerResult,
   AuthUser,
+  MultiLayerDossier,
 } from '@/types/index';
 
 // Demo sample specs for instant testing
@@ -106,7 +109,7 @@ paths:
 `;
 
 export default function ShaktIQDashboard() {
-  const [activeTab, setActiveTab] = useState<'overview' | 'runs' | 'compare' | 'memory' | 'analyzer' | 'tokens' | 'admin'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'runs' | 'compare' | 'memory' | 'dossier' | 'analyzer' | 'tokens' | 'admin'>('overview');
   const [user, setUser] = useState<AuthUser | null>(null);
   const [sseConnected, setSseConnected] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -122,6 +125,9 @@ export default function ShaktIQDashboard() {
   const [tokens, setTokens] = useState<ApiToken[]>([]);
   const [adminOverview, setAdminOverview] = useState<AdminOverview | null>(null);
   const [adminEvents, setAdminEvents] = useState<WebhookEvent[]>([]);
+  const [aiDossier, setAiDossier] = useState<MultiLayerDossier | null>(null);
+  const [loadingDossier, setLoadingDossier] = useState(false);
+  const [copiedSnippetIndex, setCopiedSnippetIndex] = useState<number | null>(null);
 
   // Compare states
   const [compareBaseId, setCompareBaseId] = useState('');
@@ -231,9 +237,11 @@ export default function ShaktIQDashboard() {
       if (runsList.length > 0) {
         setSelectedRun(runsList[0]);
         loadRunFindings(projectId, runsList[0]._id || runsList[0].id || '');
+        loadAiDossier(projectId, runsList[0]._id || runsList[0].id || '');
       } else {
         setSelectedRun(null);
         setFindings([]);
+        setAiDossier(null);
       }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to load project runs';
@@ -247,6 +255,18 @@ export default function ShaktIQDashboard() {
       setFindings(res);
     } catch {
       // ignore
+    }
+  }
+
+  async function loadAiDossier(projectId: string, runId: string) {
+    setLoadingDossier(true);
+    try {
+      const res = await api.getAiDossier(projectId, runId);
+      setAiDossier(res);
+    } catch {
+      // ignore
+    } finally {
+      setLoadingDossier(false);
     }
   }
 
@@ -448,6 +468,20 @@ export default function ShaktIQDashboard() {
               <span>Runs & Findings</span>
             </button>
             <button
+              onClick={() => {
+                setActiveTab('dossier');
+                if (selectedProjectId && selectedRun) {
+                  loadAiDossier(selectedProjectId, selectedRun._id || selectedRun.id || '');
+                }
+              }}
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-left ${
+                activeTab === 'dossier' ? 'bg-accent/10 text-accent font-medium' : 'text-text-muted hover:text-text hover:bg-surface-2'
+              }`}
+            >
+              <Sparkles className="w-4 h-4 text-accent" />
+              <span>AI Release Dossier</span>
+            </button>
+            <button
               onClick={() => setActiveTab('compare')}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-left ${
                 activeTab === 'compare' ? 'bg-accent/10 text-accent font-medium' : 'text-text-muted hover:text-text hover:bg-surface-2'
@@ -527,6 +561,7 @@ export default function ShaktIQDashboard() {
             <h2 className="text-base font-semibold capitalize tracking-tight">
               {activeTab === 'overview' && 'Project Overview'}
               {activeTab === 'runs' && 'Compatibility Runs & Findings'}
+              {activeTab === 'dossier' && 'Multi-Layer AI Release Dossier (Gemini 3.8 Flash)'}
               {activeTab === 'compare' && 'Run to Run Comparison'}
               {activeTab === 'memory' && 'Endpoint History & Hotspots'}
               {activeTab === 'analyzer' && 'Interactive OpenAPI Spec Analyzer'}
@@ -928,6 +963,31 @@ export default function ShaktIQDashboard() {
                 </table>
               </div>
             </div>
+          )}
+
+          {/* TAB: AI RELEASE DOSSIER (MULTI-LAYER INTELLIGENCE) */}
+          {activeTab === 'dossier' && (
+            <AiReleaseDossier
+              aiDossier={aiDossier}
+              loadingDossier={loadingDossier}
+              selectedRun={selectedRun}
+              runs={runs}
+              findings={findings}
+              onSelectRun={(runId) => {
+                const run = runs.find((r) => (r._id || r.id) === runId);
+                if (run) {
+                  setSelectedRun(run);
+                  loadRunFindings(selectedProjectId, run._id || run.id || '');
+                  loadAiDossier(selectedProjectId, run._id || run.id || '');
+                }
+              }}
+              onRefreshDossier={() => {
+                if (selectedProjectId && selectedRun) {
+                  loadAiDossier(selectedProjectId, selectedRun._id || selectedRun.id || '');
+                }
+              }}
+              getMethodBadgeClass={getMethodBadgeClass}
+            />
           )}
 
           {/* TAB: COMPARE RUNS */}

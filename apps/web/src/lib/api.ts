@@ -122,6 +122,8 @@ export const api = {
     if (query.method) params.set('method', query.method);
     return request<Finding[]>(`/projects/${projectId}/runs/${runId}/findings?${params.toString()}`);
   },
+  getAiDossier: (projectId: string, runId: string) =>
+    request<import('../types/index.js').MultiLayerDossier>(`/projects/${projectId}/runs/${runId}/ai-dossier`),
   compareRuns: (projectId: string, baseRunId: string, headRunId: string) =>
     request<CompareResult>(`/projects/${projectId}/runs/compare?baseRunId=${baseRunId}&headRunId=${headRunId}`),
 

@@ -1,0 +1,72 @@
+openapi: 3.0.3
+info:
+  title: Checkout & Payment Service
+  version: 1.0.0
+  description: E2E benchmark baseline specification for ShaktIQ intelligence testing
+paths:
+  /checkout:
+    post:
+      summary: Initiate checkout session
+      operationId: initiateCheckout
+      parameters:
+        - name: X-Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - cartId
+                - currency
+              properties:
+                cartId:
+                  type: string
+                currency:
+                  type: string
+                  example: USD
+                discountCode:
+                  type: string
+      responses:
+        '201':
+          description: Checkout session created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessionId:
+                    type: string
+                  checkoutUrl:
+                    type: string
+                  expiresAt:
+                    type: string
+  /checkout/{id}:
+    get:
+      summary: Retrieve checkout session
+      operationId: getCheckout
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Session details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  status:
+                    type: string
+                    enum: [pending, completed, expired]
+                  amountTotal:
+                    type: number

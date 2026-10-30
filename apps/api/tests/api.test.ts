@@ -349,5 +349,22 @@ paths:
     expect(cliJson.ok).toBe(true);
     expect(cliJson.data.runId).toBeDefined();
     expect(cliJson.data.summary.releaseStatus).toBe('blocked');
+
+    // Test GET /projects/:projectId/runs/:runId/ai-dossier
+    const dossierRes = await app.inject({
+      method: 'GET',
+      url: `/api/v1/projects/${projectId}/runs/${cliJson.data.runId}/ai-dossier`,
+      headers: {
+        authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    expect(dossierRes.statusCode).toBe(200);
+    const dossierJson = JSON.parse(dossierRes.body);
+    expect(dossierJson.ok).toBe(true);
+    expect(dossierJson.data.releaseScore).toBeDefined();
+    expect(dossierJson.data.blastRadius).toBeDefined();
+    expect(dossierJson.data.findingInsights).toBeDefined();
+    expect(dossierJson.data.executiveActionPlan).toBeDefined();
   });
 });

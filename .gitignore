@@ -33,6 +33,10 @@ coverage/
 playwright-report/
 test-results/
 
+# Graphify & Intelligence Artifacts
+graphify-out/
+.temp/
+
 # System and IDE
 .DS_Store
 Thumbs.db

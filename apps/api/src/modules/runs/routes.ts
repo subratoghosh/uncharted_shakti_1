@@ -360,6 +360,43 @@ export const runRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
     });
   });
 
+  // GET /projects/:projectId/runs/:runId/ai-dossier
+  app.get('/projects/:projectId/runs/:runId/ai-dossier', { preHandler: [authenticate] }, async (request, reply) => {
+    const user = request.user!;
+    const { projectId, runId } = request.params as { projectId: string; runId: string };
+
+    const project = await verifyProjectOwnership(projectId, user);
+    const { runs, findings } = getCollections();
+
+    const run = await runs.findOne({ _id: new ObjectId(runId), projectId: new ObjectId(projectId) });
+    if (!run) {
+      throw new AppError('NOT_FOUND', 'Run not found');
+    }
+
+    const runFindings = await findings.find({ runId: new ObjectId(runId) }).toArray();
+    const { generateMultiLayerDossier } = await import('../ai/gemini-service.js');
+    const { createHotspotsPipeline } = await import('./pipelines.js');
+
+    const hotspots = await findings.aggregate(createHotspotsPipeline(project.id)).toArray();
+
+    const dossier = await generateMultiLayerDossier(
+      project.fullName,
+      run.currentVersion || 'HEAD',
+      runFindings.map((f) => ({
+        endpoint: f.endpoint,
+        method: f.method,
+        changeType: f.changeType,
+        severity: f.severity,
+        description: f.description,
+        impact: f.impact,
+        recommendation: f.recommendation,
+      })),
+      hotspots.length,
+    );
+
+    return sendSuccess(reply, dossier);
+  });
+
   // GET /projects/:projectId/compare?base=<runId>&head=<runId>
   app.get(ROUTES.RUNS.COMPARE, { preHandler: [authenticate] }, async (request, reply) => {
     const user = request.user!;

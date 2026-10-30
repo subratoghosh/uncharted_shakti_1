@@ -108,3 +108,32 @@ export type AuthUser = {
   email: string;
   role: string;
 };
+
+export type MultiLayerDossier = {
+  releaseScore: number;
+  verdictLabel: string;
+  verdictDescription: string;
+  blastRadius: {
+    mobileAppsRisk: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'NONE';
+    webFrontendRisk: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'NONE';
+    microservicesRisk: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'NONE';
+    thirdPartyRisk: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'NONE';
+    summary: string;
+  };
+  findingInsights: Array<{
+    endpoint: string;
+    method: string;
+    changeType: string;
+    consumerImpact: string;
+    codeFixSnippet: string;
+    mitigationStrategy: string;
+  }>;
+  executiveActionPlan: string[];
+  stakeholderNotes: {
+    techLead: string;
+    qaEngineering: string;
+    productOwner: string;
+  };
+  generatedBy: string;
+};
+
