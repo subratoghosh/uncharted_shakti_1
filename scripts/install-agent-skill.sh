@@ -51,3 +51,4 @@ echo "  - Git Diff:  shaktiq git-diff --spec openapi.yaml --base-ref main --mark
 echo "  - Slash Cmd: /shaktiq"
 echo "  - MCP Tool:  shaktiq_analyze and shaktiq_git_diff"
 echo ""
+

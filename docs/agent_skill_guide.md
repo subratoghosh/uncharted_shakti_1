@@ -195,3 +195,4 @@ Output:
 | 🟢 **SAFE** | 0 breaking, 0 warnings | No breaking changes. Safe to merge or deploy. |
 | 🟡 **REVIEW** | 0 breaking, >0 warnings | Changes require manual engineering verification (e.g. status code changes). |
 | 🔴 **BLOCKED** | >0 breaking changes | **Do NOT merge or release.** Agent must remediate or deprecate first. |
+

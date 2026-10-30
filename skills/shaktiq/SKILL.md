@@ -132,3 +132,4 @@ Add to your `mcp_config.json` (or Antigravity / Claude Desktop / Cursor MCP sett
 Exposed MCP Tools:
 - `shaktiq_analyze({ base_spec: string, head_spec: string })`
 - `shaktiq_git_diff({ spec_path: string, base_ref?: string })`
+

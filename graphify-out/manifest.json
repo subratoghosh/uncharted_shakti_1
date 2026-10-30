@@ -882,33 +882,33 @@
     "semantic_hash": ""
   },
   "packages/analyzer/src/cli.ts": {
-    "mtime": 1793391704.3517444,
-    "seen": 1793392316.850101,
+    "mtime": 1793392921.1299975,
+    "seen": 1793394595.377183,
     "ast_hash": "324186fd8bc0cd597fd80bb10e3a5e39",
     "semantic_hash": ""
   },
   "packages/analyzer/src/mcp.ts": {
-    "mtime": 1793391807.8967755,
-    "seen": 1793392316.850184,
-    "ast_hash": "bf017d4234bea955c83db62039ac4a9a",
+    "mtime": 1793392785.9248836,
+    "seen": 1793394595.3772979,
+    "ast_hash": "fdebb1eb8973c63cabb1189f2f19b43e",
     "semantic_hash": ""
   },
   "plugin.json": {
-    "mtime": 1793391940.6740668,
-    "seen": 1793392316.851004,
-    "ast_hash": "42af5d312fd561e2b0c772de6a01b69f",
+    "mtime": 1793392785.9414277,
+    "seen": 1793394595.378192,
+    "ast_hash": "e4da4fe814dbba483dfbec5ba1a901b5",
     "semantic_hash": ""
   },
   "plugin.yaml": {
-    "mtime": 1793391953.3433838,
-    "seen": 1793392316.8510048,
-    "ast_hash": "eeafb1c56a9f9165a3dfc099d2889ca5",
+    "mtime": 1793392785.9540918,
+    "seen": 1793394595.3781939,
+    "ast_hash": "9f3d5eaaf6ad61572e5d3332a4bdf8d1",
     "semantic_hash": ""
   },
   "scripts/install-agent-skill.sh": {
-    "mtime": 1793391968.3446238,
-    "seen": 1793392316.85103,
-    "ast_hash": "eb4c13ee9b14baef2738a10a8b041cfb",
+    "mtime": 1793392785.9663963,
+    "seen": 1793394595.37823,
+    "ast_hash": "58a4056d541fb80fb8118fc0606102ba",
     "semantic_hash": ""
   },
   "scripts/start-local-mongo.ts": {
@@ -924,8 +924,8 @@
     "semantic_hash": ""
   },
   ".agents/skills/shaktiq/SKILL.md": {
-    "mtime": 1793392225.9870725,
-    "seen": 1793392316.851136,
+    "mtime": 1793392921.0894754,
+    "seen": 1793394595.378401,
     "ast_hash": "cf756212314b8a5db3aef49f740d360a",
     "semantic_hash": ""
   },
@@ -936,15 +936,15 @@
     "semantic_hash": ""
   },
   "docs/agent_skill_guide.md": {
-    "mtime": 1793392295.322211,
-    "seen": 1793392316.8512099,
-    "ast_hash": "585459f6f3a263fade5fd7dd8fd0cf08",
+    "mtime": 1793392785.8781939,
+    "seen": 1793394595.3785212,
+    "ast_hash": "d3e6b062ab25127b3fad3b597215ebb1",
     "semantic_hash": ""
   },
   "skills/shaktiq/SKILL.md": {
-    "mtime": 1793391897.1063166,
-    "seen": 1793392316.85149,
-    "ast_hash": "cf756212314b8a5db3aef49f740d360a",
+    "mtime": 1793392785.9850204,
+    "seen": 1793394595.378787,
+    "ast_hash": "77cf395a038739072f0c7041509e6876",
     "semantic_hash": ""
   },
   "package-lock.json": {
