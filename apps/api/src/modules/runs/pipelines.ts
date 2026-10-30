@@ -1,6 +1,10 @@
 import { ObjectId } from 'mongodb';
 
-export function createComparePipeline(projectId: ObjectId, baseRunId: ObjectId, headRunId: ObjectId) {
+export function createComparePipeline(
+  projectId: ObjectId,
+  baseRunId: ObjectId,
+  headRunId: ObjectId,
+) {
   return [
     {
       $match: {

@@ -59,7 +59,7 @@ export const memoryRoutes: FastifyPluginAsync = async (app: FastifyInstance) => 
 
     return sendSuccess(
       reply,
-      list.map((f) => ({
+      list.map(f => ({
         id: f._id.toHexString(),
         runId: f.runId.toHexString(),
         previousVersion: f.previousVersion,

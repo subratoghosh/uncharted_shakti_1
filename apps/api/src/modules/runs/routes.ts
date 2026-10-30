@@ -36,7 +36,10 @@ export const runRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
 
     if (body.baseSpec) {
       baseSpecHash = sha256(body.baseSpec);
-      const existingBase = await specSnapshots.findOne({ projectId: project.id, sha256: baseSpecHash });
+      const existingBase = await specSnapshots.findOne({
+        projectId: project.id,
+        sha256: baseSpecHash,
+      });
       if (existingBase) {
         baseSnapshotId = existingBase._id;
       } else {
@@ -59,7 +62,10 @@ export const runRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
 
     const headSpecHash = sha256(body.headSpec);
     let headSnapshotId: ObjectId | null = null;
-    const existingHead = await specSnapshots.findOne({ projectId: project.id, sha256: headSpecHash });
+    const existingHead = await specSnapshots.findOne({
+      projectId: project.id,
+      sha256: headSpecHash,
+    });
     if (existingHead) {
       headSnapshotId = existingHead._id;
     } else {
@@ -100,7 +106,11 @@ export const runRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
     } catch (err: any) {
       if (err.code === 11000) {
         const existingEvent = await events.findOne({ eventId });
-        return sendSuccess(reply, { duplicate: true, eventId, runId: existingEvent?.runId?.toHexString() }, 200);
+        return sendSuccess(
+          reply,
+          { duplicate: true, eventId, runId: existingEvent?.runId?.toHexString() },
+          200,
+        );
       }
       throw err;
     }
@@ -146,7 +156,7 @@ export const runRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
           runId: runDoc._id.toHexString(),
           projectId: project.id.toHexString(),
         }),
-      }).catch((e) => logger.warn({ err: e }, 'Async dispatch to n8n failed for manual run'));
+      }).catch(e => logger.warn({ err: e }, 'Async dispatch to n8n failed for manual run'));
     } catch (e) {}
 
     return sendSuccess(
@@ -184,7 +194,7 @@ export const runRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
 
     return sendSuccess(
       reply,
-      list.map((r) => ({
+      list.map(r => ({
         id: r._id.toHexString(),
         projectId: r.projectId.toHexString(),
         eventId: r.eventId,
@@ -279,7 +289,7 @@ export const runRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
 
     return sendSuccess(
       reply,
-      list.map((f) => ({
+      list.map(f => ({
         id: f._id.toHexString(),
         projectId: f.projectId.toHexString(),
         runId: f.runId.toHexString(),
@@ -335,7 +345,7 @@ export const runRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
         summary: run.summary,
         createdAt: run.createdAt.toISOString(),
       },
-      findings: findingList.map((f) => ({
+      findings: findingList.map(f => ({
         id: f._id.toHexString(),
         endpoint: f.endpoint,
         method: f.method,

@@ -7,7 +7,7 @@ export const SSE_EVENT_TYPES = [
 
 export type SseEventType = (typeof SSE_EVENT_TYPES)[number];
 
-export interface SseMessage<T = unknown> {
+export type SseMessage<T = unknown> = {
   type: SseEventType;
   projectId?: string;
   data: T;

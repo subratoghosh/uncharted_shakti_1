@@ -35,7 +35,10 @@ export const cliRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
     let baseSpecHash: string | null = null;
     if (body.baseSpec) {
       baseSpecHash = sha256(body.baseSpec);
-      const existingBase = await specSnapshots.findOne({ projectId: project.id, sha256: baseSpecHash });
+      const existingBase = await specSnapshots.findOne({
+        projectId: project.id,
+        sha256: baseSpecHash,
+      });
       if (existingBase) {
         baseSnapshotId = existingBase._id;
       } else {
@@ -58,7 +61,10 @@ export const cliRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
 
     const headSpecHash = sha256(body.headSpec);
     let headSnapshotId: ObjectId | null = null;
-    const existingHead = await specSnapshots.findOne({ projectId: project.id, sha256: headSpecHash });
+    const existingHead = await specSnapshots.findOne({
+      projectId: project.id,
+      sha256: headSpecHash,
+    });
     if (existingHead) {
       headSnapshotId = existingHead._id;
     } else {
@@ -153,7 +159,7 @@ export const cliRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
 
     // Insert findings
     if (findingDrafts.length > 0) {
-      const docs = findingDrafts.map((f) => ({
+      const docs = findingDrafts.map(f => ({
         _id: new ObjectId(),
         projectId: project.id,
         runId: runDoc._id,

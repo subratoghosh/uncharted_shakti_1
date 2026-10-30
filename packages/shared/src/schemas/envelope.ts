@@ -36,7 +36,7 @@ export const apiFailureEnvelopeSchema = z.object({
 
 export type ApiFailureResponse = z.infer<typeof apiFailureEnvelopeSchema>;
 
-export interface ApiSuccessResponse<T> {
+export type ApiSuccessResponse<T> = {
   ok: true;
   data: T;
   meta?: PaginationMeta;

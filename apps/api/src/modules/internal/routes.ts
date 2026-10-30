@@ -95,7 +95,10 @@ export const internalRoutes: FastifyPluginAsync = async (app: FastifyInstance) =
     if (body.base?.content) {
       baseContent = body.base.content;
       baseSpecHash = sha256(baseContent);
-      const existingBase = await specSnapshots.findOne({ projectId: project._id, sha256: baseSpecHash });
+      const existingBase = await specSnapshots.findOne({
+        projectId: project._id,
+        sha256: baseSpecHash,
+      });
       if (existingBase) {
         baseSnapshotId = existingBase._id;
       } else {
@@ -122,7 +125,10 @@ export const internalRoutes: FastifyPluginAsync = async (app: FastifyInstance) =
     if (body.head?.content) {
       headContent = body.head.content;
       headSpecHash = sha256(headContent);
-      const existingHead = await specSnapshots.findOne({ projectId: project._id, sha256: headSpecHash });
+      const existingHead = await specSnapshots.findOne({
+        projectId: project._id,
+        sha256: headSpecHash,
+      });
       if (existingHead) {
         headSnapshotId = existingHead._id;
       } else {
@@ -156,7 +162,7 @@ export const internalRoutes: FastifyPluginAsync = async (app: FastifyInstance) =
     // Insert findings with ordered:false to ignore duplicate keys on retries
     const now = new Date();
     if (findingDrafts.length > 0) {
-      const docsToInsert = findingDrafts.map((f) => ({
+      const docsToInsert = findingDrafts.map(f => ({
         _id: new ObjectId(),
         projectId: project._id,
         runId: run._id,
@@ -217,8 +223,8 @@ export const internalRoutes: FastifyPluginAsync = async (app: FastifyInstance) =
 
     if (previousRun) {
       const prevFindings = await findings.find({ runId: previousRun._id }).toArray();
-      const prevFingerprints = new Set(prevFindings.map((p) => p.fingerprint));
-      const currentFingerprints = new Set(findingDrafts.map((c) => c.fingerprint));
+      const prevFingerprints = new Set(prevFindings.map(p => p.fingerprint));
+      const currentFingerprints = new Set(findingDrafts.map(c => c.fingerprint));
 
       newCount = 0;
       unresolvedCount = 0;

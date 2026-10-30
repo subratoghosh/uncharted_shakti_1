@@ -1,11 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ['class'],
-  content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
+  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
   theme: {
     extend: {
       colors: {
@@ -15,6 +11,7 @@ module.exports = {
         border: 'var(--border)',
         text: 'var(--text)',
         'text-muted': 'var(--text-muted)',
+        muted: 'var(--text-muted)',
         accent: 'var(--accent)',
         'sev-breaking': 'var(--sev-breaking)',
         'sev-warning': 'var(--sev-warning)',
@@ -22,9 +19,9 @@ module.exports = {
         ok: 'var(--ok)',
       },
       borderRadius: {
-        lg: '10px',
-        md: '6px',
         sm: '4px',
+        md: '6px',
+        lg: '10px',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

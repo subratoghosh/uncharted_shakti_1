@@ -60,7 +60,7 @@ export async function buildServer(): Promise<FastifyInstance> {
   });
 
   // Request logger hook
-  app.addHook('onRequest', async (req) => {
+  app.addHook('onRequest', async req => {
     logger.info({ reqId: req.id, method: req.method, url: req.url }, 'Incoming request');
   });
 
@@ -80,19 +80,17 @@ export async function buildServer(): Promise<FastifyInstance> {
   // Central Error Handler per code_style.md section 5-6
   const errorHandler = (error: any, request: FastifyRequest, reply: FastifyReply) => {
     // 1. Handled AppError
-    if (error instanceof AppError || error.name === 'AppError' || (error.code && error.statusCode)) {
-      return sendError(
-        reply,
-        error.code,
-        error.message,
-        error.statusCode || 500,
-        error.details,
-      );
+    if (
+      error instanceof AppError ||
+      error.name === 'AppError' ||
+      (error.code && error.statusCode)
+    ) {
+      return sendError(reply, error.code, error.message, error.statusCode || 500, error.details);
     }
 
     // 2. Zod Validation Error
     if (error instanceof ZodError) {
-      const details = error.errors.map((e) => ({
+      const details = error.errors.map(e => ({
         path: e.path.join('.'),
         message: e.message,
       }));
@@ -137,7 +135,7 @@ export async function buildServer(): Promise<FastifyInstance> {
 
   // Register API modules under /api/v1
   await app.register(
-    async (api) => {
+    async api => {
       api.setErrorHandler(errorHandler);
       api.setNotFoundHandler(notFoundHandler);
 
@@ -160,7 +158,7 @@ export async function buildServer(): Promise<FastifyInstance> {
 export async function startServer(): Promise<void> {
   try {
     const db = await connectDb();
-    hub.start(db).catch((e) => logger.warn({ err: e }, 'ChangeStreamHub notice'));
+    hub.start(db).catch(e => logger.warn({ err: e }, 'ChangeStreamHub notice'));
 
     const app = await buildServer();
     await app.listen({ port: env.PORT, host: '0.0.0.0' });

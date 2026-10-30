@@ -28,7 +28,7 @@ describe('MongoDB Schema, Indexes, Race Conditions & Aggregations (testing.md §
 
   it('migration creates all 8 collections with indexes and validators', async () => {
     const collections = await db.listCollections().toArray();
-    const names = collections.map((c) => c.name);
+    const names = collections.map(c => c.name);
 
     expect(names).toContain('users');
     expect(names).toContain('apiTokens');
@@ -41,12 +41,12 @@ describe('MongoDB Schema, Indexes, Race Conditions & Aggregations (testing.md §
 
     // Check unique indexes
     const eventIndexes = await db.collection('events').listIndexes().toArray();
-    const eventIdIndex = eventIndexes.find((i) => i.name === 'eventId_1');
+    const eventIdIndex = eventIndexes.find(i => i.name === 'eventId_1');
     expect(eventIdIndex).toBeDefined();
     expect(eventIdIndex?.unique).toBe(true);
 
     const runIndexes = await db.collection('runs').listIndexes().toArray();
-    const runEventIdIndex = runIndexes.find((i) => i.name === 'eventId_1');
+    const runEventIdIndex = runIndexes.find(i => i.name === 'eventId_1');
     expect(runEventIdIndex).toBeDefined();
     expect(runEventIdIndex?.unique).toBe(true);
   });
@@ -113,8 +113,8 @@ describe('MongoDB Schema, Indexes, Race Conditions & Aggregations (testing.md §
 
     const results = await Promise.all(Array.from({ length: 20 }, () => intakeEvent()));
 
-    const duplicates = results.filter((r) => r.duplicate).length;
-    const initial = results.filter((r) => !r.duplicate).length;
+    const duplicates = results.filter(r => r.duplicate).length;
+    const initial = results.filter(r => !r.duplicate).length;
 
     expect(initial).toBe(1);
     expect(duplicates).toBe(19);

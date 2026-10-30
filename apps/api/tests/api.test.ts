@@ -156,7 +156,8 @@ describe('Fastify API Endpoint Integration Tests (testing.md §5)', () => {
       headers: {
         'x-github-delivery': deliveryId,
         'x-github-event': 'push',
-        'x-hub-signature-256': 'sha256=invalidbadsignature00000000000000000000000000000000000000000000',
+        'x-hub-signature-256':
+          'sha256=invalidbadsignature00000000000000000000000000000000000000000000',
         'content-type': 'application/json',
       },
       payload,
@@ -167,7 +168,9 @@ describe('Fastify API Endpoint Integration Tests (testing.md §5)', () => {
     expect(json.error.code).toBe('INVALID_SIGNATURE');
 
     // Verify rejected event recorded in events collection
-    const rejectedEvent = await db.collection('events').findOne({ eventId: `rejected:${deliveryId}` });
+    const rejectedEvent = await db
+      .collection('events')
+      .findOne({ eventId: `rejected:${deliveryId}` });
     expect(rejectedEvent).toBeDefined();
     expect(rejectedEvent?.processingStatus).toBe('rejected');
   });
@@ -306,7 +309,7 @@ paths:
     // Verify findings stored
     const findings = await db.collection('findings').find({ runId }).toArray();
     expect(findings.length).toBeGreaterThanOrEqual(1);
-    const removedEndpoint = findings.find((f) => f.endpoint === '/orders/{id}');
+    const removedEndpoint = findings.find(f => f.endpoint === '/orders/{id}');
     expect(removedEndpoint?.severity).toBe('breaking');
   });
 

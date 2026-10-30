@@ -1,11 +1,6 @@
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import { ObjectId } from 'mongodb';
-import {
-  AppError,
-  paginationQuerySchema,
-  ROUTES,
-  updateUserRequestSchema,
-} from '@shaktiq/shared';
+import { AppError, paginationQuerySchema, ROUTES, updateUserRequestSchema } from '@shaktiq/shared';
 import { env } from '../../config/env.js';
 import { getCollections } from '../../db/collections.js';
 import { logger } from '../../lib/logger.js';
@@ -21,15 +16,16 @@ export const adminRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
   app.get(ROUTES.ADMIN.OVERVIEW, async (request, reply) => {
     const { runs, events, projects, users } = getCollections();
 
-    const [overviewData, totalProjects, totalUsers, duplicateEventCount, rejectedEventCount] = await Promise.all([
-      runs.aggregate(createAdminOverviewPipeline()).toArray(),
-      projects.countDocuments(),
-      users.countDocuments(),
-      events
-        .aggregate([{ $group: { _id: null, totalDuplicates: { $sum: '$duplicateCount' } } }])
-        .toArray(),
-      events.countDocuments({ processingStatus: 'rejected' }),
-    ]);
+    const [overviewData, totalProjects, totalUsers, duplicateEventCount, rejectedEventCount] =
+      await Promise.all([
+        runs.aggregate(createAdminOverviewPipeline()).toArray(),
+        projects.countDocuments(),
+        users.countDocuments(),
+        events
+          .aggregate([{ $group: { _id: null, totalDuplicates: { $sum: '$duplicateCount' } } }])
+          .toArray(),
+        events.countDocuments({ processingStatus: 'rejected' }),
+      ]);
 
     const runStats = overviewData[0] || { runsByStatus: [], runsLast24h: [] };
     const runsByStatus: Record<string, number> = {};
@@ -60,7 +56,7 @@ export const adminRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
 
     return sendSuccess(
       reply,
-      list.map((p) => ({
+      list.map(p => ({
         id: p._id.toHexString(),
         ownerUserId: p.ownerUserId.toHexString(),
         name: p.name,
@@ -88,7 +84,7 @@ export const adminRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
 
     return sendSuccess(
       reply,
-      list.map((r) => ({
+      list.map(r => ({
         id: r._id.toHexString(),
         projectId: r.projectId.toHexString(),
         eventId: r.eventId,
@@ -118,7 +114,7 @@ export const adminRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
 
     return sendSuccess(
       reply,
-      list.map((e) => ({
+      list.map(e => ({
         id: e._id.toHexString(),
         eventId: e.eventId,
         projectId: e.projectId ? e.projectId.toHexString() : null,
@@ -142,10 +138,13 @@ export const adminRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
     let n8nStatus = 'unknown';
 
     try {
-      const res = await fetch(env.N8N_WEBHOOK_URL.replace('/webhook/shaktiq-analyze-run', '/healthz'), {
-        method: 'GET',
-        signal: AbortSignal.timeout(3000),
-      });
+      const res = await fetch(
+        env.N8N_WEBHOOK_URL.replace('/webhook/shaktiq-analyze-run', '/healthz'),
+        {
+          method: 'GET',
+          signal: AbortSignal.timeout(3000),
+        },
+      );
       n8nReachable = res.ok;
       n8nStatus = res.status.toString();
     } catch (e: any) {
@@ -220,7 +219,7 @@ export const adminRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
 
     return sendSuccess(
       reply,
-      list.map((u) => ({
+      list.map(u => ({
         id: u._id.toHexString(),
         email: u.email,
         name: u.name,

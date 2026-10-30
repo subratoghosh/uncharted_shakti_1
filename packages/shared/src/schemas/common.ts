@@ -9,7 +9,7 @@ export const specPathSchema = z
   .min(1)
   .max(500)
   .regex(/^[A-Za-z0-9._/-]+$/, 'Spec path may only contain alphanumeric characters, ., _, -, and /')
-  .refine((val) => !val.includes('..'), {
+  .refine(val => !val.includes('..'), {
     message: 'Spec path must not contain directory traversal (..)',
   });
 

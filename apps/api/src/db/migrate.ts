@@ -30,7 +30,7 @@ export async function migrate(db: Db): Promise<void> {
   logger.info('Starting database migration...');
 
   const existingCollections = await db.listCollections().toArray();
-  const existingNames = new Set(existingCollections.map((c) => c.name));
+  const existingNames = new Set(existingCollections.map(c => c.name));
 
   for (const [name, validator] of Object.entries(VALIDATORS_MAP)) {
     if (!existingNames.has(name)) {
