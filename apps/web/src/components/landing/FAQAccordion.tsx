@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import { ChevronDown, HelpCircle, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
-interface FAQItem {
+type FAQItem = {
   question: string;
   answer: string;
-}
+};
 
 export const SHAKTIQ_FAQS: FAQItem[] = [
   {

@@ -1,9 +1,9 @@
 import React from 'react';
 import type { MultiLayerDossier } from '@/types/index';
 
-interface BlastRadiusMatrixProps {
+type BlastRadiusMatrixProps = {
   blastRadius: MultiLayerDossier['blastRadius'];
-}
+};
 
 function getBadgeClass(risk: string) {
   if (risk === 'CRITICAL' || risk === 'HIGH') return 'badge-breaking';

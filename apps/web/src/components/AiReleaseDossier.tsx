@@ -7,7 +7,7 @@ import { BlastRadiusMatrix } from './BlastRadiusMatrix';
 import { CodeRemediationCard } from './CodeRemediationCard';
 import { ReleaseScoreGauge } from './ReleaseScoreGauge';
 
-interface AiReleaseDossierProps {
+type AiReleaseDossierProps = {
   aiDossier: MultiLayerDossier | null;
   loadingDossier: boolean;
   selectedRun: Run | null;
@@ -16,7 +16,7 @@ interface AiReleaseDossierProps {
   onSelectRun: (runId: string) => void;
   onRefreshDossier: () => void;
   getMethodBadgeClass: (method: string) => string;
-}
+};
 
 export function AiReleaseDossier({
   aiDossier,

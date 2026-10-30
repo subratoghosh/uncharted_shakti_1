@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ArrowRight, ShieldCheck, Terminal } from 'lucide-react';
+import { Menu, X, ArrowRight, Terminal } from 'lucide-react';
 import { ShaktiqBrand } from './ShaktiqBrand';
 
 const NAV_ITEMS = [
@@ -35,10 +35,10 @@ export const Header: React.FC = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-4 sm:px-6 pt-3 sm:pt-4 pointer-events-none">
       <div
-        className={`max-w-[1240px] mx-auto pointer-events-auto transition-all duration-300 rounded-full ${
+        className={`max-w-[1240px] mx-auto pointer-events-auto transition-all duration-300 rounded-full border ${
           isScrolled
-            ? 'bg-green-dark/95 backdrop-blur-md border border-butter-cream/20 shadow-lg py-2.5 px-5 text-butter-cream'
-            : 'bg-green-dark/70 backdrop-blur-sm border border-white/10 py-3.5 px-6 text-butter-cream'
+            ? 'bg-[#0A382C]/95 backdrop-blur-md border-green-light/60 shadow-[0_12px_36px_rgba(8,38,30,0.5)] py-2.5 px-5 text-butter-cream'
+            : 'bg-[#0E4436]/90 backdrop-blur-md border-green-light/40 shadow-[0_8px_28px_rgba(8,38,30,0.35)] py-3.5 px-6 text-butter-cream'
         }`}
       >
         <div className="flex items-center justify-between">
@@ -53,10 +53,10 @@ export const Header: React.FC = () => {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-colors ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 ${
                     isActive
-                      ? 'bg-butter-cream text-green-dark shadow-xs'
-                      : 'text-text-hero-sub hover:text-white hover:bg-white/10'
+                      ? 'bg-butter-cream text-green-dark shadow-sm font-bold'
+                      : 'text-text-hero-sub hover:text-white hover:bg-green-mid/70 hover:shadow-xs'
                   }`}
                 >
                   {item.name}
@@ -69,7 +69,7 @@ export const Header: React.FC = () => {
           <div className="flex items-center gap-3">
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-butter-cream text-green-dark font-bold text-xs hover:bg-butter-gold hover:shadow-md transition-all active:translate-y-0.5"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-butter-cream text-green-dark font-bold text-xs hover:bg-butter-gold hover:shadow-[0_0_20px_rgba(255,240,179,0.35)] transition-all active:translate-y-0.5"
             >
               <Terminal className="w-3.5 h-3.5" />
               <span>Launch Console</span>
@@ -79,7 +79,7 @@ export const Header: React.FC = () => {
             {/* Mobile Hamburger */}
             <button
               onClick={() => setIsMobileOpen(!isMobileOpen)}
-              className="md:hidden p-2 rounded-full bg-white/10 text-butter-cream hover:bg-white/20 transition-colors"
+              className="md:hidden p-2 rounded-full bg-green-mid/70 text-butter-cream border border-green-light/40 hover:bg-green-light/40 transition-colors"
               aria-label="Toggle navigation menu"
             >
               {isMobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -90,21 +90,21 @@ export const Header: React.FC = () => {
 
       {/* Mobile Drawer */}
       {isMobileOpen && (
-        <div className="md:hidden mt-2 mx-auto max-w-[1240px] pointer-events-auto bg-green-dark border border-butter-cream/20 rounded-3xl p-5 shadow-2xl animate-fade-in text-butter-cream">
+        <div className="md:hidden mt-2 mx-auto max-w-[1240px] pointer-events-auto bg-[#0A382C] border border-green-light/50 rounded-3xl p-5 shadow-2xl animate-fade-in text-butter-cream">
           <div className="flex flex-col gap-2">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="px-4 py-2.5 rounded-xl text-sm font-semibold text-text-hero-sub hover:text-white hover:bg-white/10 transition-colors"
+                className="px-4 py-2.5 rounded-xl text-sm font-semibold text-text-hero-sub hover:text-white hover:bg-green-mid/60 transition-colors"
               >
                 {item.name}
               </Link>
             ))}
-            <div className="pt-2 border-t border-white/10 mt-1">
+            <div className="pt-2 border-t border-green-mid/60 mt-1">
               <Link
                 href="/dashboard"
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-butter-cream text-green-dark font-bold text-sm shadow-md"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-butter-cream text-green-dark font-bold text-sm shadow-md hover:bg-butter-gold transition-colors"
               >
                 <Terminal className="w-4 h-4" />
                 <span>Launch Interactive Console</span>

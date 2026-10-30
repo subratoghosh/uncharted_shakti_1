@@ -1,12 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
-import { ShieldCheck, Sparkles } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
-interface ShaktiqBrandProps {
+type ShaktiqBrandProps = {
   href?: string;
   size?: 'sm' | 'md' | 'lg';
   theme?: 'dark' | 'light';
-}
+};
 
 export const ShaktiqBrand: React.FC<ShaktiqBrandProps> = ({
   href = '/',

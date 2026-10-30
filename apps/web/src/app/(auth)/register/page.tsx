@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
-import { ShieldCheck, ArrowRight } from 'lucide-react';
+import { ArrowRight, AlertTriangle, Sparkles, User, Mail, Lock, CheckCircle2 } from 'lucide-react';
+import { ShaktiqBrand } from '../../../components/landing/ShaktiqBrand';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -53,28 +54,43 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center p-4">
-      <div className="w-full max-w-md p-8 bg-surface border border-border rounded-xl shadow-lg space-y-6">
-        <div className="space-y-1 text-center">
-          <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-accent/10 text-accent mb-2">
-            <ShieldCheck className="w-6 h-6" />
+    <div className="min-h-screen bg-butter-bg flex items-center justify-center p-4 selection:bg-butter-cream selection:text-green-dark">
+      <div className="w-full max-w-md bg-[#0C382E] border border-green-light/40 rounded-3xl p-8 sm:p-10 shadow-[0_20px_60px_rgba(8,38,30,0.5)] text-butter-cream space-y-6 relative overflow-hidden backdrop-blur-md">
+        {/* Ambient background glow */}
+        <div className="absolute -top-24 -right-24 w-48 h-48 rounded-full bg-green-accent/20 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-48 h-48 rounded-full bg-butter-cream/10 blur-3xl pointer-events-none" />
+
+        {/* Header with Brand */}
+        <div className="text-center space-y-3 relative z-10">
+          <div className="flex justify-center pb-1">
+            <ShaktiqBrand href="/" theme="dark" size="lg" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-text">Create your Account</h1>
-          <p className="text-sm text-muted">Join ShaktIQ for automated API breaking change detection</p>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-deep/80 border border-green-light/40 text-[11px] font-mono text-green-sage">
+            <Sparkles className="w-3 h-3 text-butter-cream" />
+            <span>Developer Account Setup</span>
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-butter-cream font-slab">
+            Create an Account
+          </h1>
+          <p className="text-xs text-text-hero-sub/90">
+            Join ShaktIQ for autonomous OpenAPI compatibility verification
+          </p>
         </div>
 
+        {/* Error Alert */}
         {error && (
-          <div className="p-3.5 text-xs bg-sev-breaking/10 border border-sev-breaking/30 text-sev-breaking rounded-md flex items-start gap-2">
-            <span>{error}</span>
+          <div className="p-3.5 text-xs bg-red-950/80 border border-red-500/40 text-red-200 rounded-2xl flex items-start gap-2.5 animate-fade-in shadow-xs">
+            <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+            <span className="font-medium">{error}</span>
           </div>
         )}
 
-        {/* OAuth Buttons */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* Social OAuth Buttons */}
+        <div className="grid grid-cols-2 gap-3 relative z-10">
           <button
             type="button"
             onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
-            className="flex items-center justify-center gap-2 h-10 px-4 bg-surface-2 hover:bg-border/60 border border-border rounded-md text-xs font-semibold text-text transition-all"
+            className="flex items-center justify-center gap-2.5 h-11 px-4 bg-[#08261E] hover:bg-green-mid/60 border border-green-light/40 hover:border-butter-cream/40 rounded-2xl text-xs font-semibold text-butter-cream transition-all duration-200 hover:shadow-xs active:scale-[0.98]"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -100,9 +116,9 @@ export default function RegisterPage() {
           <button
             type="button"
             onClick={() => signIn('github', { callbackUrl: '/dashboard' })}
-            className="flex items-center justify-center gap-2 h-10 px-4 bg-surface-2 hover:bg-border/60 border border-border rounded-md text-xs font-semibold text-text transition-all"
+            className="flex items-center justify-center gap-2.5 h-11 px-4 bg-[#08261E] hover:bg-green-mid/60 border border-green-light/40 hover:border-butter-cream/40 rounded-2xl text-xs font-semibold text-butter-cream transition-all duration-200 hover:shadow-xs active:scale-[0.98]"
           >
-            <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 fill-current text-butter-cream" viewBox="0 0 24 24">
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -113,79 +129,96 @@ export default function RegisterPage() {
           </button>
         </div>
 
+        {/* Divider */}
         <div className="relative flex items-center justify-center">
-          <div className="border-t border-border w-full" />
-          <span className="bg-surface px-3 text-[11px] uppercase tracking-wider text-muted font-medium absolute">
+          <div className="border-t border-green-mid/60 w-full" />
+          <span className="bg-[#0C382E] px-3 text-[10px] uppercase tracking-wider text-green-sage font-mono font-semibold absolute">
             Or register with email
           </span>
         </div>
 
-        {/* Email & Password Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-text">Full Name</label>
+            <label className="text-xs font-semibold text-butter-cream flex items-center gap-1.5">
+              <User className="w-3.5 h-3.5 text-green-accent" />
+              <span>Full Name</span>
+            </label>
             <input
               type="text"
               required
               placeholder="Alex Vance"
               value={name}
-              onChange={e => setName(e.target.value)}
-              className="w-full h-10 px-3 text-sm bg-surface-2 border border-border rounded-md focus:outline-none focus:border-accent transition-colors"
+              onChange={(e) => setName(e.target.value)}
+              className="w-full h-11 px-3.5 text-sm bg-[#08261E] border border-green-light/40 rounded-xl text-butter-cream placeholder:text-green-sage/50 focus:outline-none focus:border-butter-cream focus:ring-2 focus:ring-butter-cream/20 transition-all font-mono"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-text">Email Address</label>
+            <label className="text-xs font-semibold text-butter-cream flex items-center gap-1.5">
+              <Mail className="w-3.5 h-3.5 text-green-accent" />
+              <span>Email Address</span>
+            </label>
             <input
               type="email"
               required
               placeholder="alex@acme.dev"
               value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="w-full h-10 px-3 text-sm bg-surface-2 border border-border rounded-md focus:outline-none focus:border-accent transition-colors"
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full h-11 px-3.5 text-sm bg-[#08261E] border border-green-light/40 rounded-xl text-butter-cream placeholder:text-green-sage/50 focus:outline-none focus:border-butter-cream focus:ring-2 focus:ring-butter-cream/20 transition-all font-mono"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-text">Password</label>
+            <label className="text-xs font-semibold text-butter-cream flex items-center gap-1.5">
+              <Lock className="w-3.5 h-3.5 text-green-accent" />
+              <span>Password (Min. 8 characters)</span>
+            </label>
             <input
               type="password"
               required
               minLength={8}
-              placeholder="Min. 8 characters"
+              placeholder="••••••••••••"
               value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full h-10 px-3 text-sm bg-surface-2 border border-border rounded-md focus:outline-none focus:border-accent transition-colors"
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full h-11 px-3.5 text-sm bg-[#08261E] border border-green-light/40 rounded-xl text-butter-cream placeholder:text-green-sage/50 focus:outline-none focus:border-butter-cream focus:ring-2 focus:ring-butter-cream/20 transition-all font-mono"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-text">Confirm Password</label>
+            <label className="text-xs font-semibold text-butter-cream flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-green-accent" />
+              <span>Confirm Password</span>
+            </label>
             <input
               type="password"
               required
               minLength={8}
-              placeholder="Re-enter password"
+              placeholder="••••••••••••"
               value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
-              className="w-full h-10 px-3 text-sm bg-surface-2 border border-border rounded-md focus:outline-none focus:border-accent transition-colors"
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full h-11 px-3.5 text-sm bg-[#08261E] border border-green-light/40 rounded-xl text-butter-cream placeholder:text-green-sage/50 focus:outline-none focus:border-butter-cream focus:ring-2 focus:ring-butter-cream/20 transition-all font-mono"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-10 mt-2 bg-accent text-white text-sm font-semibold rounded-md hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+            className="w-full h-11 mt-2 bg-butter-cream hover:bg-butter-gold text-green-dark text-sm font-bold rounded-2xl shadow-md hover:shadow-[0_0_24px_rgba(255,240,179,0.35)] transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50"
           >
-            <span>{loading ? 'Creating Account...' : 'Create Account'}</span>
+            <span>{loading ? 'Creating Account...' : 'Create Developer Account'}</span>
             {!loading && <ArrowRight className="w-4 h-4" />}
           </button>
         </form>
 
-        <div className="text-xs text-center text-muted">
-          Already registered?{' '}
-          <Link href="/login" className="text-accent hover:underline font-semibold">
-            Sign In
+        {/* Footer link to login */}
+        <div className="text-xs text-center text-text-hero-sub/80 pt-2 border-t border-green-mid/40">
+          Already have an account?{' '}
+          <Link
+            href="/login"
+            className="text-butter-cream hover:text-butter-gold font-bold hover:underline transition-colors ml-1"
+          >
+            Sign In to Console
           </Link>
         </div>
       </div>
