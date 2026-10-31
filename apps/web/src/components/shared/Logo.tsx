@@ -17,9 +17,9 @@ export function Logo({
   className,
 }: Props) {
   const dimensions = {
-    sm: { h: 28, maxW: 84 },
-    md: { h: 36, maxW: 120 },
-    lg: { h: 48, maxW: 160 },
+    sm: { h: 28, maxW: 96 },
+    md: { h: 36, maxW: 130 },
+    lg: { h: 48, maxW: 170 },
   };
 
   const { h, maxW } = dimensions[size];
@@ -27,8 +27,8 @@ export function Logo({
   const logoElement = (
     <div
       className={cn(
-        'relative inline-flex items-center justify-center shrink-0 rounded transition-colors overflow-hidden select-none',
-        collapsed ? 'w-8 h-8 p-0.5' : 'px-1 py-0.5',
+        'relative inline-flex items-center justify-center shrink-0 select-none bg-transparent',
+        collapsed ? 'w-8 h-8' : '',
         className,
       )}
       style={{
@@ -36,29 +36,29 @@ export function Logo({
         maxWidth: collapsed ? '32px' : `${maxW}px`,
       }}
     >
-      {/* Dark theme logo — shown automatically when .dark class is on html/body */}
+      {/* Dark theme logo (Bottom variant: white lightning & text, bright green Q) */}
       <img
-        src="/logo-dark.png"
+        src="/shaktiq-dark.png"
         alt="ShaktIQ Logo"
         style={{
-          maxHeight: `${h - 4}px`,
-          maxWidth: collapsed ? '28px' : `${maxW - 8}px`,
+          maxHeight: `${h}px`,
+          maxWidth: collapsed ? '32px' : `${maxW}px`,
           width: 'auto',
-          height: 'auto',
+          height: '100%',
         }}
-        className="hidden dark:block object-contain pointer-events-none select-none rounded"
+        className="hidden dark:block object-contain pointer-events-none select-none"
       />
-      {/* Light theme logo — shown automatically in light mode */}
+      {/* Light theme logo (Top variant: dark green/black lightning & text, bright green Q) */}
       <img
-        src="/logo-light.png"
+        src="/shaktiq-light.png"
         alt="ShaktIQ Logo"
         style={{
-          maxHeight: `${h - 4}px`,
-          maxWidth: collapsed ? '28px' : `${maxW - 8}px`,
+          maxHeight: `${h}px`,
+          maxWidth: collapsed ? '32px' : `${maxW}px`,
           width: 'auto',
-          height: 'auto',
+          height: '100%',
         }}
-        className="block dark:hidden object-contain pointer-events-none select-none rounded"
+        className="block dark:hidden object-contain pointer-events-none select-none"
       />
     </div>
   );
@@ -77,4 +77,5 @@ export function Logo({
 
   return logoElement;
 }
+
 
