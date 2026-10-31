@@ -967,7 +967,6 @@ export default function ShaktIQDashboard() {
                   <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-text-muted" />
                   <input
                     type="text"
-                    placeholder="Filter by endpoint, method..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="bg-surface border border-border pl-8 pr-3 py-1.5 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-accent w-64"
@@ -1527,7 +1526,6 @@ export default function ShaktIQDashboard() {
                   required
                   value={newProjectName}
                   onChange={(e) => setNewProjectName(e.target.value)}
-                  placeholder="e.g. Orders Service"
                   className="w-full bg-surface-2 border border-border px-3 py-1.5 rounded text-xs focus:outline-none focus:ring-1 focus:ring-accent"
                 />
               </div>
@@ -1538,7 +1536,6 @@ export default function ShaktIQDashboard() {
                   required
                   value={newProjectRepo}
                   onChange={(e) => setNewProjectRepo(e.target.value)}
-                  placeholder="https://github.com/my-org/my-repo"
                   className="w-full bg-surface-2 border border-border px-3 py-1.5 rounded text-xs focus:outline-none focus:ring-1 focus:ring-accent"
                 />
               </div>
@@ -1640,7 +1637,6 @@ export default function ShaktIQDashboard() {
                     required
                     value={newTokenName}
                     onChange={(e) => setNewTokenName(e.target.value)}
-                    placeholder="e.g. VS Code Extension (Laptop)"
                     className="w-full bg-surface-2 border border-border px-3 py-1.5 rounded text-xs focus:outline-none focus:ring-1 focus:ring-accent"
                   />
                 </div>
