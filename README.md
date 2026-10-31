@@ -22,6 +22,14 @@
 
 shaktIQ is an enterprise-grade API release intelligence platform and autonomous compatibility gate built for modern software teams, API platform architects, and microservice ecosystems. Powered by a deterministic Abstract Syntax Tree (AST) diffing engine, multi-model Google Gemini AI remediation, and historical MongoDB Atlas memory, shaktIQ safeguards downstream consumers—including mobile applications (iOS/Android), web frontends, and external API partners—against contract drift, breaking schema alterations, and unannounced parameter changes before code ever hits production.
 
+> [!IMPORTANT]
+> **Platform Scope & Primary Deliverables:**  
+> shaktIQ is **not** a mobile or Android application. shaktIQ is a developer platform composed of three core developer deliverables:
+> 1. **🌐 Web Application & Intelligence Studio (`apps/web`):** Full-stack Next.js 15 platform with an interactive API comparison studio, real-time Server-Sent Events (SSE) telemetry, MongoDB Atlas recurring hotspot radar, and AI Release Dossier generator.
+> 2. **💻 Visual Studio Code Extension (`apps/vscode-ext`):** Native IDE extension (v0.2.1) providing real-time in-editor AST squiggly diagnostics, universal file and folder auditing (supports Python, TypeScript, JavaScript, Go, Java, and OpenAPI without requiring an `openapi.yaml`), and 1-click backward-compatible AI remediations.
+> 3. **🤖 In-Flight AI Coding Agent Skill & MCP Server (`.agents/skills/shaktiq` & `packages/analyzer`):** Standard Model Context Protocol (MCP) server and agent skill for Google Antigravity, Cursor, Windsurf, and Claude Code to verify contracts during automated code refactoring.
+> *(Supported by a standalone Terminal CLI and an automated GitHub Actions CI/CD PR blocking gate).*
+
 ---
 
 ## 📑 Visual Table of Contents
@@ -104,14 +112,14 @@ graph TD
     %% Gateway Connections
     GH -->|Webhook HTTPS| HmacAuth
     VSC -->|REST + PAT| TokenAuth
-    CLI -->|Local In-Process / CLI| AnalyzerCore
-    AGENT -->|MCP Tool / Skill| AnalyzerCore
-    WEBUI -->|HTTPS / HTTP/2| VercelCDN
+    CLI -->|Local CLI Execution| AnalyzerCore
+    AGENT -->|MCP Tool or Skill| AnalyzerCore
+    WEBUI -->|HTTPS Protocol| VercelCDN
 
     %% Edge Connections
     VercelCDN --> EdgeAuth
     EdgeAuth --> NextApp
-    NextApp -->|Internal / Proxy| FastifyServer
+    NextApp -->|Internal Proxy| FastifyServer
 
     %% Backend Ingestion & Orchestration
     HmacAuth --> FastifyServer
@@ -180,7 +188,7 @@ flowchart TD
     
     ParseInput --> EngineSelect{"Analyzer Engine Selection"}
     EngineSelect -->|Primary Execution| OasDiffNode["oasdiff High-Performance Engine<br/>(Compiled AST Binary Runner)"]
-    EngineSelect -->|Fallback / Restricted OS| PureJsNode["Pure-JS Semantic AST Matcher<br/>(Zero Native Dependency Fallback)"]
+    EngineSelect -->|Pure-JS Fallback| PureJsNode["Pure-JS Semantic AST Matcher<br/>(Zero Native Dependency Fallback)"]
     
     OasDiffNode --> DiffResults["Raw Contract Diff Stream"]
     PureJsNode --> DiffResults
@@ -326,7 +334,7 @@ flowchart TD
     subgraph FetchStage ["2. State Transition & Spec Retrieval"]
         D --> E["Start Run Transition<br/>POST /internal/runs/:runId/start"]
         E --> F{"Spec Source Check"}
-        F -->|GitHub PR / Push| G["Fetch Base Spec via GitHub API<br/>(3x Exponential Retry)"]
+        F -->|GitHub PR or Push| G["Fetch Base Spec via GitHub API<br/>(3x Exponential Retry)"]
         G --> H["Fetch Head Spec via GitHub API<br/>(3x Exponential Retry)"]
         H --> I["Decode Base64 Specs to UTF-8"]
         F -->|Direct Snapshots| J["Analyze Snapshots Directly"]
@@ -342,7 +350,7 @@ flowchart TD
         L --> M{"PR Number Present?"}
         M -->|Yes| N["Post GitHub PR Comment<br/>Formatted Markdown Release Dossier"]
         N --> O["Record Notification Event<br/>POST /internal/runs/:runId/notifications"]
-        M -->|No (CLI / Push)| O
+        M -->|No - CLI or Push| O
     end
 
     subgraph ErrorRecoveryStage ["5. Global Error Recovery Handler"]
@@ -382,7 +390,7 @@ flowchart TD
 
 ## 9. Downstream Consumer Blast Radius Matrix
 
-When an API breaking change occurs, different downstream clients suffer unique failures. shaktIQ maps findings to specific consumer categories:
+When a backend engineer introduces an API breaking change, external client applications that consume that API suffer severe outages. In particular, client mobile apps already in end-users' hands cannot update instantaneously. shaktIQ maps findings to specific downstream consumer categories to prevent these outages:
 
 ```mermaid
 pie title Downstream Consumer Blast Radius Distribution
