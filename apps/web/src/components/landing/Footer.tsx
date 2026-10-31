@@ -14,12 +14,12 @@ export const Footer: React.FC = () => {
           <div className="md:col-span-7 lg:col-span-8 space-y-4 max-w-lg">
             <ShaktiqBrand href="/" size="md" theme="dark" />
             <p className="text-xs sm:text-sm text-text-hero-sub/90 leading-relaxed">
-              Continuous OpenAPI compatibility, consumer blast radius assessment, and autonomous Gemini AI release intelligence for platform engineering teams.
+              Continuous release safety, downstream client impact assessment, and automated code remediation intelligence for modern engineering teams.
             </p>
             <div className="pt-2">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-dark border border-green-light/40 text-[11px] font-mono text-butter-cream shadow-xs">
                 <span className="w-2 h-2 rounded-full bg-green-accent animate-pulse" />
-                <span>Engine: Gemini 3.8 Flash • Operational</span>
+                <span>Governance Engine • Operational</span>
               </div>
             </div>
           </div>

@@ -65,12 +65,11 @@ export default function ProjectsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Projects</h1>
-          <p className="text-sm text-muted">Manage your API specification repositories</p>
+          <h1 className="text-2xl font-extrabold tracking-tight text-green-dark">Projects</h1>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white rounded-sm text-sm font-semibold hover:opacity-90"
+          className="inline-flex items-center gap-1.5 px-4 py-2 bg-green-dark text-butter-cream rounded-xl text-xs font-bold hover:bg-green-deep transition-all shadow-xs"
         >
           <Plus className="w-4 h-4" />
           <span>New Project</span>
@@ -98,17 +97,14 @@ export default function ProjectsPage() {
           ))}
         </div>
       ) : projects.length === 0 ? (
-        <div className="p-12 text-center border border-dashed border-border rounded-lg space-y-3">
-          <FolderGit2 className="w-8 h-8 text-muted mx-auto opacity-50" />
+        <div className="p-12 text-center border border-dashed border-border rounded-2xl bg-white shadow-xs space-y-4">
+          <FolderGit2 className="w-8 h-8 text-green-mid mx-auto opacity-70" />
           <div className="space-y-1">
-            <h3 className="font-semibold text-sm">No projects found</h3>
-            <p className="text-xs text-muted max-w-sm mx-auto">
-              Add your GitHub repository to enable automatic PR checks and change detection.
-            </p>
+            <h3 className="font-bold text-base text-green-dark">No projects found</h3>
           </div>
           <button
             onClick={() => setShowModal(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white rounded-sm text-xs font-semibold hover:opacity-90"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-green-dark text-butter-cream rounded-xl text-xs font-bold hover:bg-green-deep transition-all shadow-xs"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Project</span>
@@ -216,14 +212,14 @@ export default function ProjectsPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-3 py-1.5 border border-border rounded-sm text-xs font-medium hover:bg-surface-2"
+                  className="px-3.5 py-2 border border-border rounded-xl text-xs font-semibold hover:bg-butter-warm text-green-dark transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={createMutation.isPending}
-                  className="px-4 py-1.5 bg-accent text-white rounded-sm text-xs font-semibold hover:opacity-90 disabled:opacity-50"
+                  className="px-4 py-2 bg-green-dark text-butter-cream rounded-xl text-xs font-bold hover:bg-green-deep disabled:opacity-50 transition-all shadow-xs"
                 >
                   {createMutation.isPending ? 'Registering...' : 'Register Project'}
                 </button>

@@ -3,30 +3,30 @@
 @tailwind utilities;
 
 :root {
-  --bg: #FAFAF9;
+  --bg: #FAF4E6;
   --surface: #FFFFFF;
-  --surface-2: #F4F4F2;
-  --border: #E4E4E0;
-  --text: #18181B;
-  --text-muted: #6B6B73;
-  --accent: #2B50E6;
+  --surface-2: #FFFDF6;
+  --border: rgba(12, 56, 46, 0.12);
+  --text: #0C382E;
+  --text-muted: #4A6F62;
+  --accent: #0C382E;
   --sev-breaking: #DC2626;
   --sev-warning: #B45309;
-  --sev-info: #0369A1;
-  --ok: #15803D;
+  --sev-info: #16A34A;
+  --ok: #16A34A;
 }
 
 .dark {
-  --bg: #0C0C0D;
-  --surface: #151517;
-  --surface-2: #1C1C1F;
-  --border: #2A2A2E;
-  --text: #ECECEE;
-  --text-muted: #9A9AA3;
-  --accent: #6C8CFF;
+  --bg: #0C382E;
+  --surface: #08261E;
+  --surface-2: #164E3E;
+  --border: rgba(255, 240, 179, 0.2);
+  --text: #FFF0B3;
+  --text-muted: #8EBDAA;
+  --accent: #16A34A;
   --sev-breaking: #F87171;
   --sev-warning: #FBBF24;
-  --sev-info: #38BDF8;
+  --sev-info: #4ADE80;
   --ok: #4ADE80;
 }
 
@@ -40,4 +40,3 @@ body {
 code, pre, .font-mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
-

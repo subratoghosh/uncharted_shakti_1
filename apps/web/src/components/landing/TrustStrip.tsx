@@ -5,21 +5,21 @@ export const TrustStrip: React.FC = () => {
   const pillars = [
     {
       icon: Layers,
-      title: '100% Deterministic AST Engine',
+      title: '100% Deterministic Code Verification',
       description:
-        'No hallucinated false alarms or naive text-diff flaws. Deep AST comparison across OpenAPI paths, parameters, payloads, and response headers.',
+        'No hallucinated false alarms or naive text-diff flaws. Deep structural comparison across routes, parameters, data payloads, and response structures.',
     },
     {
       icon: ShieldAlert,
-      title: 'Blast Radius & Consumer Matrix',
+      title: 'Downstream Impact & Client Matrix',
       description:
-        'Calculates real-world downstream blast radius. Immediately flags which microservice consumers, mobile SDKs, or web clients will break.',
+        'Calculates real-world downstream release impact. Immediately flags which microservice services, mobile apps, or web clients will break.',
     },
     {
       icon: Zap,
-      title: 'Gemini 3.8 Flash Remediation',
+      title: 'Automated Patch Remediation',
       description:
-        'Autonomous synthesis of production-ready backward-compatible fixes, deprecation shims, and v2 evolution strategies.',
+        'Automated synthesis of production-ready backward-compatible fixes, deprecation shims, and safe evolution strategies.',
     },
   ];
 

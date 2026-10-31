@@ -14,7 +14,6 @@ import {
   Copy,
   Check,
   RotateCcw,
-  Sparkles,
   GitCommit,
   History,
   Wrench,
@@ -42,7 +41,7 @@ import type {
 // Default presets for instant exploration
 const PRESET_OPENAPI = `openapi: 3.0.0
 info:
-  title: Orders & Checkout API
+  title: Orders & Checkout Service
   version: 2.1.0
   description: Core microservice powering mobile and web checkout flows.
 paths:
@@ -127,7 +126,7 @@ paths:
         '200':
           description: Refund accepted`;
 
-const PRESET_CONTROLLER = `import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+const PRESET_CONTROLLER = `import { RouteService, HttpRequest, HttpResponse } from '@core/routing';
 import { z } from 'zod';
 
 const createOrderSchema = z.object({
@@ -141,24 +140,24 @@ const createOrderSchema = z.object({
   priorityShipping: z.boolean(),
 });
 
-export async function orderRoutes(app: FastifyInstance) {
-  // GET /api/v1/orders
-  app.get('/api/v1/orders', async (req: FastifyRequest, reply: FastifyReply) => {
+export async function orderRoutes(app: RouteService) {
+  // GET /v1/orders
+  app.get('/v1/orders', async (req: HttpRequest, reply: HttpResponse) => {
     return reply.send({ success: true, orders: [] });
   });
 
-  // POST /api/v1/orders
-  app.post('/api/v1/orders', async (req: FastifyRequest, reply: FastifyReply) => {
+  // POST /v1/orders
+  app.post('/v1/orders', async (req: HttpRequest, reply: HttpResponse) => {
     const payload = createOrderSchema.parse(req.body);
     return reply.status(201).send({ success: true, orderId: 'ord_98765', payload });
   });
 
-  // DELETE /api/v1/orders/:id
-  app.delete('/api/v1/orders/:id', async (req: FastifyRequest, reply: FastifyReply) => {
+  // DELETE /v1/orders/:id
+  app.delete('/v1/orders/:id', async (req: HttpRequest, reply: HttpResponse) => {
     // Notice: Missing Deprecation header for legacy clients
     return reply.status(204).send();
   });
-}`;
+};`;
 
 const MOCK_COMMITS: StudioCommitLog[] = [
   {
@@ -381,7 +380,7 @@ export function CodeIntelligenceStudio({
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-[#52B143]/20 text-[#52B143] border border-[#52B143]/30">
-                <Sparkles className="w-3 h-3" />
+                <Code2 className="w-3 h-3" />
                 Live Code Intelligence Studio
               </span>
               <span className="text-xs text-text-muted">
@@ -422,27 +421,27 @@ export function CodeIntelligenceStudio({
             <div className="h-6 w-px bg-emerald-500/20 hidden sm:block" />
 
             {/* Quick Presets */}
-            <div className="flex items-center gap-1.5 bg-black/40 p-1 rounded-xl border border-emerald-500/20">
-              <span className="text-[10px] text-text-muted px-2 font-medium">Presets:</span>
+            <div className="flex items-center gap-1.5 bg-surface-2 p-1 rounded-xl border border-border">
+              <span className="text-[10px] text-muted px-2 font-medium">Presets:</span>
               <button
                 onClick={() => handleSelectFile('openapi.yaml')}
                 className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
                   selectedFile === 'openapi.yaml'
-                    ? 'bg-[#52B143] text-black font-semibold shadow-xs'
-                    : 'text-butter-cream/80 hover:text-white'
+                    ? 'bg-accent text-white font-semibold shadow-xs'
+                    : 'text-muted hover:text-foreground'
                 }`}
               >
-                OpenAPI Spec
+                Service Spec
               </button>
               <button
                 onClick={() => handleSelectFile('order-controller.ts')}
                 className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
                   selectedFile === 'order-controller.ts'
-                    ? 'bg-[#52B143] text-black font-semibold shadow-xs'
-                    : 'text-butter-cream/80 hover:text-white'
+                    ? 'bg-accent text-white font-semibold shadow-xs'
+                    : 'text-muted hover:text-foreground'
                 }`}
               >
-                TypeScript Controller
+                Route Controller
               </button>
             </div>
           </div>
@@ -489,14 +488,14 @@ export function CodeIntelligenceStudio({
               filteredRoutes.map((r, i) => {
                 const methodColor =
                   r.method === 'GET'
-                    ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30'
+                    ? 'bg-emerald-500/10 text-emerald-800 border-emerald-500/30'
                     : r.method === 'POST'
-                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                    ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/30'
                     : r.method === 'PUT'
-                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                    ? 'bg-amber-500/10 text-amber-700 border-amber-500/30'
                     : r.method === 'DELETE'
-                    ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
-                    : 'bg-purple-500/10 text-purple-400 border-purple-500/30';
+                    ? 'bg-rose-500/10 text-rose-700 border-rose-500/30'
+                    : 'bg-purple-500/10 text-purple-700 border-purple-500/30';
 
                 return (
                   <div
@@ -542,7 +541,7 @@ export function CodeIntelligenceStudio({
               }`}
             >
               <FileCode className="w-4 h-4 text-emerald-400" />
-              <span className="truncate">openapi.yaml</span>
+              <span className="truncate">service-spec.yaml</span>
               <span className="text-[10px] ml-auto text-muted">Spec</span>
             </div>
 
@@ -554,7 +553,7 @@ export function CodeIntelligenceStudio({
                   : 'bg-surface-2/40 border-border text-foreground hover:bg-surface-2'
               }`}
             >
-              <Code2 className="w-4 h-4 text-cyan-400" />
+              <Code2 className="w-4 h-4 text-emerald-600" />
               <span className="truncate">order-controller.ts</span>
               <span className="text-[10px] ml-auto text-muted">Controller</span>
             </div>
@@ -562,16 +561,16 @@ export function CodeIntelligenceStudio({
         </div>
 
         {/* CENTER PANE: Interactive Code Viewer / Editor (Col 5) */}
-        <div className="lg:col-span-5 rounded-2xl border border-border bg-[#081814] text-butter-cream p-4 space-y-3 shadow-md flex flex-col">
+        <div className="lg:col-span-5 rounded-2xl border border-border bg-white text-green-dark p-4 space-y-3 shadow-sm flex flex-col">
           {/* Header Action Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-emerald-500/20">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-border">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold text-emerald-400 flex items-center gap-1.5">
-                <FileCode className="w-3.5 h-3.5" />
+              <span className="text-xs font-mono font-bold text-green-dark flex items-center gap-1.5">
+                <FileCode className="w-3.5 h-3.5 text-accent" />
                 {selectedFile}
               </span>
               {selectedLineRange && (
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#52B143]/20 text-[#52B143] border border-[#52B143]/30 font-semibold animate-pulse">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-semibold animate-pulse">
                   Selected: {selectedLineRange}
                 </span>
               )}
@@ -583,9 +582,9 @@ export function CodeIntelligenceStudio({
                 <button
                   onClick={() => handleRunReview(true)}
                   disabled={isReviewing}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#52B143] text-black hover:opacity-90 transition-all shadow-sm animate-scale-in"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-accent text-white hover:opacity-90 transition-all shadow-sm animate-scale-in"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Shield className="w-3.5 h-3.5" />
                   <span>Review Selection</span>
                 </button>
               ) : null}
@@ -594,12 +593,12 @@ export function CodeIntelligenceStudio({
               <button
                 onClick={() => handleRunReview(false)}
                 disabled={isReviewing}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-surface border border-emerald-500/30 text-butter-cream hover:bg-surface-2 transition-all shadow-xs"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-butter-panel border border-border text-green-dark hover:bg-butter-muted transition-all shadow-xs"
               >
                 {isReviewing ? (
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-400" />
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-accent" />
                 ) : (
-                  <Play className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400" />
+                  <Play className="w-3.5 h-3.5 text-accent fill-accent" />
                 )}
                 <span>Review Whole File</span>
               </button>
@@ -607,11 +606,11 @@ export function CodeIntelligenceStudio({
               {/* Copy Code */}
               <button
                 onClick={() => handleCopy(codeContent, 'editor-code')}
-                className="p-1.5 rounded-lg bg-surface border border-emerald-500/20 text-butter-cream/80 hover:text-white transition-all"
+                className="p-1.5 rounded-lg bg-butter-panel border border-border text-green-dark hover:bg-butter-muted transition-all"
                 title="Copy Code"
               >
                 {copiedKey === 'editor-code' ? (
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <Check className="w-3.5 h-3.5 text-accent" />
                 ) : (
                   <Copy className="w-3.5 h-3.5" />
                 )}
@@ -620,9 +619,9 @@ export function CodeIntelligenceStudio({
           </div>
 
           {/* Line Numbers + Interactive Textarea */}
-          <div className="relative flex rounded-xl border border-emerald-500/20 bg-[#040f0c] overflow-hidden min-h-[460px]">
+          <div className="relative flex rounded-xl border border-border bg-[#FFFDF7] overflow-hidden min-h-[460px]">
             {/* Line numbers column */}
-            <div className="select-none py-3 px-2 text-right bg-[#030a08] border-r border-emerald-500/10 text-muted/40 font-mono text-xs w-10 flex-shrink-0">
+            <div className="select-none py-3 px-2 text-right bg-butter-muted/30 border-r border-border text-muted font-mono text-xs w-10 flex-shrink-0">
               {codeContent.split('\n').map((_, idx) => (
                 <div key={idx} className="leading-5">
                   {idx + 1}
@@ -639,12 +638,12 @@ export function CodeIntelligenceStudio({
               onKeyUp={handleSelectCode}
               onMouseUp={handleSelectCode}
               spellCheck={false}
-              className="flex-1 w-full bg-transparent p-3 font-mono text-xs text-butter-cream focus:outline-none resize-none leading-5 selection:bg-[#52B143]/30 selection:text-white"
+              className="flex-1 w-full bg-transparent p-3 font-mono text-xs text-green-dark focus:outline-none resize-none leading-5 selection:bg-emerald-500/20 selection:text-green-dark"
               rows={24}
             />
           </div>
 
-          <div className="flex items-center justify-between text-[11px] text-butter-cream/60 px-1 pt-1">
+          <div className="flex items-center justify-between text-[11px] text-muted px-1 pt-1">
             <span>Tip: Select any portion of code with your mouse to trigger targeted selection review.</span>
             <span>{codeContent.split('\n').length} lines</span>
           </div>
@@ -665,7 +664,7 @@ export function CodeIntelligenceStudio({
                   : 'text-muted hover:text-foreground'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Shield className="w-3.5 h-3.5" />
               <span>Review</span>
             </button>
 
@@ -744,7 +743,7 @@ export function CodeIntelligenceStudio({
               {isReviewing ? (
                 <div className="p-8 text-center space-y-3 bg-surface-2/40 rounded-xl border border-border">
                   <RefreshCw className="w-6 h-6 animate-spin text-accent mx-auto" />
-                  <p className="text-xs text-muted">Gemini 3.8 Flash is reviewing contracts & compatibility...</p>
+                  <p className="text-xs text-muted">Automated Intelligence is reviewing contracts & compatibility...</p>
                 </div>
               ) : reviewResult ? (
                 <div className="space-y-3">
@@ -789,16 +788,16 @@ export function CodeIntelligenceStudio({
                             <span className="text-xs font-semibold text-foreground">{issue.title}</span>
                             <span className={`text-[10px] font-bold uppercase px-1.5 py-0.2 rounded ${
                               issue.severity === 'critical'
-                                ? 'bg-rose-500/20 text-rose-400'
+                                ? 'bg-rose-500/20 text-rose-600'
                                 : issue.severity === 'warning'
-                                ? 'bg-amber-500/20 text-amber-400'
-                                : 'bg-blue-500/20 text-blue-400'
+                                ? 'bg-amber-500/20 text-amber-700'
+                                : 'bg-emerald-500/15 text-emerald-800'
                             }`}>
                               {issue.severity}
                             </span>
                           </div>
                           <p className="text-[11px] text-muted">{issue.description}</p>
-                          <div className="text-[11px] text-emerald-400 bg-black/40 p-1.5 rounded font-mono">
+                          <div className="text-[11px] text-emerald-800 bg-[#FFFDF7] p-1.5 rounded font-mono border border-border">
                             Fix: {issue.suggestion}
                           </div>
                         </div>
@@ -869,7 +868,7 @@ export function CodeIntelligenceStudio({
                       </button>
                     </div>
 
-                    <pre className="p-2.5 rounded-lg bg-black/70 border border-emerald-500/20 text-[11px] font-mono text-butter-cream overflow-x-auto max-h-48 leading-4">
+                    <pre className="p-2.5 rounded-lg bg-[#FFFDF7] border border-border text-[11px] font-mono text-green-dark overflow-x-auto max-h-48 leading-4">
                       {fixResult.diff}
                     </pre>
                   </div>
@@ -967,7 +966,7 @@ export function CodeIntelligenceStudio({
                       </button>
                     </div>
 
-                    <div className="font-mono text-xs text-foreground font-bold bg-black/40 p-2 rounded border border-border">
+                    <div className="font-mono text-xs text-green-dark font-bold bg-[#FFFDF7] p-2 rounded border border-border">
                       {commitMsgResult.title}
                     </div>
 
@@ -1006,7 +1005,7 @@ export function CodeIntelligenceStudio({
                   <GitCommit className="w-5 h-5 text-accent mx-auto" />
                   <p className="text-xs text-foreground font-semibold">Generate Semantic Commit</p>
                   <p className="text-[11px] text-muted">
-                    Let Gemini 3.8 Flash formulate an optimized Conventional Commit message reflecting your API modifications.
+                    Let Automated Intelligence formulate an optimized Conventional Commit message reflecting your code modifications.
                   </p>
                   <button
                     onClick={handleRunCommitMsg}
@@ -1188,7 +1187,7 @@ export function CodeIntelligenceStudio({
 
             {importType === 'upload' && (
               <div className="space-y-3">
-                <label className="text-xs font-semibold text-foreground">Choose OpenAPI or Route File</label>
+                <label className="text-xs font-semibold text-foreground">Choose Service Spec or Route File</label>
                 <div className="border-2 border-dashed border-border rounded-xl p-6 text-center space-y-2 hover:border-accent/50 cursor-pointer transition-all">
                   <Upload className="w-8 h-8 text-muted mx-auto" />
                   <p className="text-xs font-semibold text-foreground">
@@ -1221,7 +1220,7 @@ export function CodeIntelligenceStudio({
 
             {importType === 'paste' && (
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-foreground">Paste OpenAPI or Code snippet</label>
+                <label className="text-xs font-semibold text-foreground">Paste Service Contract or Code snippet</label>
                 <textarea
                   rows={8}
                   value={uploadText}

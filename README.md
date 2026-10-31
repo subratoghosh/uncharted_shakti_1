@@ -1,11 +1,11 @@
-# shaktIQ ⚡
+# shaktIQ ⚡ — Autonomous API Release Intelligence & Breaking Change Governance Platform
 
 <p align="center">
   <img src="apps/web/public/logo.png" alt="shaktIQ Logo" width="220" />
 </p>
 
 <p align="center">
-  <strong>Deterministic OpenAPI Breaking Change Detection, Release Compatibility Gating & Historical Hotspot Intelligence</strong>
+  <strong>Deterministic OpenAPI Breaking Change Detection, Multi-Model AI Remediation & Enterprise Release Compatibility Gates</strong>
 </p>
 
 <p align="center">
@@ -14,36 +14,515 @@
   <a href="https://uncharted-shakti-1.onrender.com/api/v1/health"><img src="https://img.shields.io/badge/API_Backend-Render_Live-46E3B7.svg" alt="API Backend"></a>
   <a href="https://www.mongodb.com/atlas"><img src="https://img.shields.io/badge/Database-MongoDB_Atlas-47A248.svg?logo=mongodb&logoColor=white" alt="MongoDB Atlas"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-20.x%20LTS-brightgreen.svg" alt="Node.js"></a>
+  <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-15.0_App_Router-black.svg?logo=next.js" alt="Next.js"></a>
+  <a href="https://fastify.dev/"><img src="https://img.shields.io/badge/Fastify-4.x-000000.svg?logo=fastify&logoColor=white" alt="Fastify"></a>
+  <a href="https://n8n.io/"><img src="https://img.shields.io/badge/Orchestrator-n8n_Workflow-EA4B71.svg?logo=n8n&logoColor=white" alt="n8n"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License"></a>
 </p>
 
----
-
-## 📑 Table of Contents
-
-- [⚡ Quick Start: 5 Ways to Use shaktIQ](#-quick-start-5-ways-to-use-shaktiq)
-  - [1. Web Dashboard (Zero Install)](#1-web-dashboard-zero-install)
-  - [2. Visual Studio Code Extension](#2-visual-studio-code-extension)
-  - [3. Google Antigravity (AI Coding Agent Skill)](#3-google-antigravity-ai-coding-agent-skill)
-  - [4. Cursor / Windsurf / Claude Code (MCP)](#4-cursor--windsurf--claude-code-mcp)
-  - [5. CLI (Command Line & Terminal)](#5-cli-command-line--terminal)
-  - [6. CI/CD & GitHub Actions (Automated PR Gate)](#6-cicd--github-actions-automated-pr-gate)
-- [📌 The Problem shaktIQ Solves](#-the-problem-shaktiq-solves)
-- [🚦 Understanding Release Safety Verdicts](#-understanding-release-safety-verdicts)
-- [🌟 Key Features](#-key-features)
-- [🏗️ System Architecture](#️-system-architecture)
-- [🍃 Production MongoDB Atlas Deep Dive](#-production-mongodb-atlas-deep-dive)
-- [🚀 Step-by-Step Local Development & Self-Hosting](#-step-by-step-local-development--self-hosting)
-- [📁 Monorepo Workspace Structure](#-monorepo-workspace-structure)
-- [🔒 Security & Threat Modeling](#-security--threat-modeling)
-- [🧪 Testing & Quality Assurance](#-testing--quality-assurance)
-- [👥 Team & Hackathon Ownership](#-team--hackathon-ownership)
-- [📖 System Documentation](#-system-documentation)
-- [⚖️ License](#️-license)
+shaktIQ is an enterprise-grade API release intelligence platform and autonomous compatibility gate built for modern software teams, API platform architects, and microservice ecosystems. Powered by a deterministic Abstract Syntax Tree (AST) diffing engine, multi-model Google Gemini AI remediation, and historical MongoDB Atlas memory, shaktIQ safeguards downstream consumers—including mobile applications (iOS/Android), web frontends, and external API partners—against contract drift, breaking schema alterations, and unannounced parameter changes before code ever hits production.
 
 ---
 
-## ⚡ Quick Start: 5 Ways to Use shaktIQ
+## 📑 Visual Table of Contents
+
+| Section | Visual Type | Focus Area |
+| :--- | :--- | :--- |
+| **[1. End-to-End System Architecture](#1-end-to-end-system-architecture)** | System Flow Diagram | Developer Gateways, Vercel Edge, Fastify Core, MongoDB Atlas, Gemini AI |
+| **[2. The Core Problem & How shaktIQ Differentiates](#2-the-core-problem--how-shaktiq-differentiates)** | Competitive Matrix | shaktIQ vs. Manual PR Review vs. Raw LLM Bots vs. Linters vs. Git Diff |
+| **[3. Deterministic AST Analysis & Decision Machine](#3-deterministic-ast-analysis--decision-machine)** | Decision Pipeline | OpenAPI 3.0/3.1 AST parser, oasdiff engine, SHA-256 fingerprints |
+| **[4. The 3-Tier Release Safety Verdict Engine](#4-the-3-tier-release-safety-verdict-engine)** | Gate Decision Flowchart | SAFE 🟢, REVIEW 🟡, BLOCKED 🔴 verdict evaluation and CI exit codes |
+| **[5. Triple Developer Gateway Architecture](#5-triple-developer-gateway-architecture)** | Multi-Gateway Flowchart | Gateway 1: GitHub PR Gate · Gateway 2: VS Code · Gateway 3: Web Console & Agents |
+| **[6. In-Flight AI Coding Agent Skill & MCP Server](#6-in-flight-ai-coding-agent-skill--mcp-server)** | Agent Cycle Flowchart | Antigravity, Cursor, Windsurf, Claude Code contract verification loop |
+| **[7. n8n Event-Driven Orchestration Workflow](#7-n8n-event-driven-orchestration-workflow)** | Asynchronous Pipeline | Webhook signature verification, spec fetching, analysis dispatch, PR comments |
+| **[8. Speculative Multi-Model Gemini AI Engine](#8-speculative-multi-model-gemini-ai-engine)** | Parallel Race Flow | Dual-model racing (`gemini-3.5-flash-lite` + `gemini-flash-lite-latest`) for sub-2s fixes |
+| **[9. Downstream Consumer Blast Radius Matrix](#9-downstream-consumer-blast-radius-matrix)** | Impact Breakdown | Mobile apps (iOS/Android), Web SPAs, Microservices, Partner APIs |
+| **[10. Historical Hotspot Intelligence & Memory](#10-historical-hotspot-intelligence--project-memory)** | Aggregation Pipeline | MongoDB Atlas aggregations identifying recurring API fragility across sprints |
+| **[11. Production MongoDB Atlas Architecture](#11-production-mongodb-atlas-architecture)** | Storage Architecture | Strict `$jsonSchema`, unique compound indexes, Change Streams + SSE, TTL cleanup |
+| **[12. Cryptographic Security & Threat Model](#12-cryptographic-security--threat-model)** | Sequence & Redaction | HMAC-SHA256 signature verification, Argon2id passwords, SHA-256 PATs, AI privacy |
+| **[13. Continuous Integration & DevOps Pipeline](#13-continuous-integration--devops-pipeline)** | Build Pipeline Flow | GitHub Actions, TypeScript verification, Vitest test suites, and Playwright E2E |
+| **[14. Step-by-Step Operator Guide (5 Ways to Use)](#14-step-by-step-operator-guide-5-ways-to-use)** | Chronological Walkthrough | Web Dashboard, VS Code Extension, Coding Agent Skill, CLI, and CI/CD PR Gates |
+| **[15. Local Development & Monorepo Quickstart](#15-local-development--monorepo-quickstart)** | Code Configuration | Step-by-step local bootstrap, Docker, migrations, and environment schema |
+| **[16. Team & Ownership](#16-team--ownership)** | Team Credits & Docs | Engineering ownership, architecture specifications, and MIT License |
+
+---
+
+## 1. End-to-End System Architecture
+
+shaktIQ connects developer tooling, version control, deterministic analyzers, and cloud intelligence into a unified, high-availability platform:
+
+```mermaid
+graph TD
+    subgraph DeveloperGateways ["Developer Gateways & Input Channels"]
+        GH["GitHub Pull Request / Push<br/>(Automated PR Check Gate)"]
+        VSC["VS Code Extension<br/>(Real-Time Editor Diagnostics)"]
+        CLI["shaktIQ Terminal CLI<br/>(DevOps & Local Spec Diffs)"]
+        AGENT["AI Coding Agents<br/>(Antigravity · Cursor · Windsurf · Claude Code)"]
+        WEBUI["Web Console Client / PWA<br/>(Interactive Comparison & AI Assistant)"]
+    end
+
+    subgraph EdgeLayer ["Vercel Edge & Cloud Distribution"]
+        VercelCDN["Vercel Global Anycast CDN<br/>(100+ Edge Locations)"]
+        EdgeAuth["Next.js Edge Middleware<br/>(JWT Session & Cookie Verification)"]
+        NextApp["Next.js 15 App Router<br/>(React 19 Server Components)"]
+    end
+
+    subgraph BackendAPI ["Fastify Core API Engine (Render Cloud)"]
+        FastifyServer["Fastify 4.x REST Server<br/>(/api/v1 Router)"]
+        HmacAuth["HMAC-SHA256 Webhook Guard<br/>(Timing-Safe Signature Verification)"]
+        TokenAuth["PAT Authentication Engine<br/>(SHA-256 Hashed Tokens)"]
+        SSEHub["Server-Sent Events (SSE) Bus<br/>(/api/v1/runs/stream)"]
+    end
+
+    subgraph DeterministicEngine ["Deterministic AST Analysis Engine"]
+        AnalyzerCore["@shaktiq/analyzer Core<br/>(AST Semantic Diff Engine)"]
+        OasDiffBin["oasdiff Native Binary<br/>(300+ OpenAPI 3.0/3.1 Rules)"]
+        JsFallback["Pure-JS AST Parser Fallback<br/>(100% Zero-Dependency Resilience)"]
+        FingerprintGen["SHA-256 Finding Fingerprinter<br/>(Stable Finding Identity)"]
+    end
+
+    subgraph OrchestrationTier ["Asynchronous Workflow Orchestrator"]
+        N8nHub["n8n Workflow Engine<br/>(Event Orchestrator)"]
+        GhClient["GitHub Octokit Client<br/>(Commit Specs & PR Comments)"]
+        ErrorWorkflow["Global Error Recovery Flow<br/>(Automatic State Reconciliation)"]
+    end
+
+    subgraph StorageTier ["Persistence & Organizational Memory"]
+        MongoAtlas[("MongoDB Atlas Replica Set<br/>(Strict $jsonSchema Validation)")]
+        ChangeStreams["MongoDB Change Streams<br/>(Live Run State Observers)"]
+        HotspotAggs["Aggregation Pipelines<br/>(Historical Hotspots & Compare Diffs)"]
+    end
+
+    subgraph AIIntelligence ["Multi-Model AI Intelligence Engine"]
+        ModelRace{"Speculative Model Race<br/>(Parallel Promise.any)"}
+        GeminiFlashLite["gemini-flash-lite-latest<br/>(Ultra-Low Latency ~1.2s)"]
+        Gemini35Lite["gemini-3.5-flash-lite<br/>(Grounded Technical Reasoning)"]
+        GeminiFallback["gemini-3.6-flash / 3.7-flash<br/>(Resilient Secondary Fallback)"]
+        DossierSynth["AI Release Dossier Synthesizer<br/>(AST Code Patches & Blast Radius)"]
+    end
+
+    %% Gateway Connections
+    GH -->|Webhook HTTPS| HmacAuth
+    VSC -->|REST + PAT| TokenAuth
+    CLI -->|Local In-Process / CLI| AnalyzerCore
+    AGENT -->|MCP Tool / Skill| AnalyzerCore
+    WEBUI -->|HTTPS / HTTP/2| VercelCDN
+
+    %% Edge Connections
+    VercelCDN --> EdgeAuth
+    EdgeAuth --> NextApp
+    NextApp -->|Internal / Proxy| FastifyServer
+
+    %% Backend Ingestion & Orchestration
+    HmacAuth --> FastifyServer
+    TokenAuth --> FastifyServer
+    FastifyServer -->|Idempotent Event Log| MongoAtlas
+    FastifyServer -->|Dispatch Run| N8nHub
+    N8nHub --> GhClient
+    GhClient -->|Fetch Specs| FastifyServer
+    N8nHub -->|Trigger Analysis| FastifyServer
+    N8nHub -.->|On Failure| ErrorWorkflow
+
+    %% Analysis Engine
+    FastifyServer --> AnalyzerCore
+    AnalyzerCore --> OasDiffBin
+    OasDiffBin -.->|On System Fallback| JsFallback
+    AnalyzerCore --> FingerprintGen
+    FingerprintGen -->|Save Runs & Findings| MongoAtlas
+
+    %% Live Events & Telemetry
+    MongoAtlas --> ChangeStreams
+    ChangeStreams --> SSEHub
+    SSEHub -->|Live Run Updates| WEBUI
+    MongoAtlas --> HotspotAggs
+
+    %% AI Pipeline
+    NextApp -->|AI Assistant Query| ModelRace
+    FastifyServer -->|Synthesize Dossier| ModelRace
+    ModelRace --> GeminiFlashLite
+    ModelRace --> Gemini35Lite
+    ModelRace -.->|Demand Spike Fallback| GeminiFallback
+    GeminiFlashLite --> DossierSynth
+    Gemini35Lite --> DossierSynth
+    DossierSynth --> NextApp
+```
+
+---
+
+## 2. The Core Problem & How shaktIQ Differentiates
+
+### The Industry Challenge
+Software engineering organizations build microservices, public APIs, and mobile backends at rapid velocity. However, altering an OpenAPI contract—such as renaming a field, tightening regex validation, changing a response type, or adding a required request parameter—causes catastrophic downstream outages. Mobile apps running older client versions in the wild crash instantly, partner integrations break, and frontend user flows fail silently.
+
+### Feature & Architectural Differentiation Matrix
+
+| Evaluation Dimension | Manual PR Review | Raw LLM Bots (ChatGPT / Claude) | Static Linters (Spectral / Vacuum) | Basic Git Diff | shaktIQ Platform ⚡ |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Deterministic Rule Evaluation** | ❌ Fatigue-prone | ❌ Hallucination risk | ✅ Deterministic | ❌ Text-only | **✅ 100% Deterministic (300+ Rules)** |
+| **CI/CD Hard Blocking Exit Code** | ❌ Manual | ❌ Non-deterministic | ⚠️ Style only | ❌ Unreliable | **✅ Non-Bypassable (Code 1 on BREAKING)** |
+| **Version-to-Version Git Diffing** | ⚠️ High effort | ⚠️ Slow / Costly | ❌ Single file only | ⚠️ False positives on whitespace | **✅ Semantic AST Diff (Branch & Head)** |
+| **Mobile App Blast Radius Analysis** | ❌ Blind spot | ⚠️ Generic guessing | ❌ None | ❌ None | **✅ Segmented: iOS/Android, Web, Services** |
+| **Automated Code Fix Synthesis** | ❌ None | ⚠️ High hallucination | ❌ None | ❌ None | **✅ Context-Grounded AST Patch Shims** |
+| **Sub-2s Real-Time AI Generation** | ❌ N/A | ❌ 15–35s latency | ❌ N/A | ❌ N/A | **✅ ~1.2s Speculative Model Race** |
+| **Historical Hotspot Memory** | ❌ Team amnesia | ❌ Zero memory | ❌ Stateless | ❌ Stateless | **✅ MongoDB Atlas Recurring Break Tracker** |
+| **In-Editor Real-Time Diagnostics** | ❌ None | ❌ Chat only | ⚠️ Style warnings | ❌ None | **✅ Native VS Code Squiggly Diagnostics** |
+| **Coding Agent In-Flight Integration** | ❌ None | ❌ None | ❌ None | ❌ None | **✅ Antigravity Skill + MCP Protocol** |
+
+---
+
+## 3. Deterministic AST Analysis & Decision Machine
+
+shaktIQ separates deterministic contract verification from generative AI synthesis. The core AST engine parses specifications, builds structured object representations, and evaluates changes across hundreds of strict compatibility rules.
+
+```mermaid
+flowchart TD
+    Start["Receive Base & Head API Specifications<br/>(OpenAPI 3.0.x / 3.1.x / Swagger 2.0)"] --> ParseInput["Format Detection & YAML/JSON Parser<br/>(Sanitize, Dereference & Validate)"]
+    
+    ParseInput --> EngineSelect{"Analyzer Engine Selection"}
+    EngineSelect -->|Primary Execution| OasDiffNode["oasdiff High-Performance Engine<br/>(Compiled AST Binary Runner)"]
+    EngineSelect -->|Fallback / Restricted OS| PureJsNode["Pure-JS Semantic AST Matcher<br/>(Zero Native Dependency Fallback)"]
+    
+    OasDiffNode --> DiffResults["Raw Contract Diff Stream"]
+    PureJsNode --> DiffResults
+    
+    DiffResults --> RuleClassifier["300+ Rule Compatibility Classifier<br/>(Map Breaking, Warning, Informational)"]
+    
+    RuleClassifier --> FingerprintStage["SHA-256 Fingerprint Generator<br/>hash(method + endpoint + ruleId + location)"]
+    
+    FingerprintStage --> ImpactMapping["Downstream Impact Annotator<br/>(Infer Mobile App, Web SPA, and Gateway Risks)"]
+    
+    ImpactMapping --> RemediationHints["Generate AST Remediation Directives<br/>(Deprecation headers, optional fallbacks)"]
+    
+    RemediationHints --> ComputeVerdict{"Calculate Release Safety Verdict"}
+    
+    ComputeVerdict -->|&ge; 1 Breaking Change| VerdictBlocked["🔴 BLOCKED (Exit Code 1)<br/>Action: Stop Deployment & Patch"]
+    ComputeVerdict -->|0 Breaking, &ge; 1 Warning| VerdictReview["🟡 REVIEW (Exit Code 0)<br/>Action: Team Sign-Off Required"]
+    ComputeVerdict -->|Only Additive / Safe Changes| VerdictSafe["🟢 SAFE (Exit Code 0)<br/>Action: Immediate Zero-Downtime Release"]
+```
+
+### Breaking Change Rule Spectrum (Sample)
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                               CRITICAL BREAKING RULES                                  │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ • api-path-removed-without-deprecation         • response-required-property-removed    │
+│ • api-method-removed-without-deprecation       • response-property-type-changed        │
+│ • request-parameter-became-required            • request-body-type-changed             │
+│ • request-parameter-type-changed               • response-status-code-removed          │
+│ • request-parameter-enum-value-removed         • response-success-status-changed       │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 4. The 3-Tier Release Safety Verdict Engine
+
+Every run produces an unambiguous verdict calculated from deterministic rule outcomes:
+
+```mermaid
+flowchart LR
+    ScanOutput["AST Finding Stream"] --> SeverityCount{"Inspect Finding Severities"}
+    
+    SeverityCount -->|breaking &gt; 0| V_Blocked["🔴 BLOCKED<br/>Score: 0–59<br/>Exit Code: 1"]
+    SeverityCount -->|breaking == 0 & warning &gt; 0| V_Review["🟡 REVIEW<br/>Score: 60–84<br/>Exit Code: 0"]
+    SeverityCount -->|breaking == 0 & warning == 0| V_Safe["🟢 SAFE<br/>Score: 85–100<br/>Exit Code: 0"]
+    
+    V_Blocked --> CI_Fail["GitHub Actions Check: FAILED<br/>Blocks Pull Request Merge"]
+    V_Review --> CI_Warn["GitHub Actions Check: NEUTRAL<br/>Annotates PR with Advisory Warnings"]
+    V_Safe --> CI_Pass["GitHub Actions Check: SUCCESS<br/>Permits Instant Production Release"]
+```
+
+### Detailed Verdict Policy Breakdown
+
+| Verdict | Indicator | Score Band | CI Exit Code | Production Implication | Action Required |
+| :--- | :---: | :---: | :---: | :--- | :--- |
+| **`SAFE`** | 🟢 | **85 – 100** | `0` | Strictly non-breaking (additive endpoints, optional query params, new response fields). | Merge and deploy immediately with zero downtime. |
+| **`REVIEW`** | 🟡 | **60 – 84** | `0` | Deprecations, altered property descriptions, or structural warnings present. | Engineering team review advised before releasing to production. |
+| **`BLOCKED`** | 🔴 | **0 – 59** | `1` | One or more critical breaking contract modifications detected. | **Hard CI block.** Apply backward-compatible patch shims. |
+
+---
+
+## 5. Triple Developer Gateway Architecture
+
+shaktIQ meets engineers wherever they write and deploy code through three dedicated gateways:
+
+```mermaid
+flowchart TD
+    CodeModification["Developer Modifies OpenAPI Spec / Controller Code"] --> GatewayBranch{"Select Working Gateway"}
+    
+    subgraph Gateway1 ["Gateway 1: GitHub Pre-Release Gate"]
+        G1_Push["git push / Pull Request Opened"] --> G1_Hook["GitHub Webhook Received"]
+        G1_Hook --> G1_Verify["HMAC-SHA256 Signature Verified"]
+        G1_Verify --> G1_Diff["Automated Branch-to-Main Spec Diff"]
+        G1_Diff --> G1_Verdict["Calculate Release Verdict"]
+        G1_Verdict --> G1_Comment["Post Detailed PR Comment Dossier"]
+        G1_Verdict --> G1_Status["Set Commit Status (Pass / Fail)"]
+    end
+    
+    subgraph Gateway2 ["Gateway 2: Visual Studio Code Extension"]
+        G2_Type["Developer Edits openapi.yaml in VS Code"] --> G2_Command["Run 'shaktIQ: Analyze API changes'"]
+        G2_Command --> G2_LocalDiff["Local Working File vs. git HEAD Diff"]
+        G2_LocalDiff --> G2_Diag["Red Squiggly Inline Code Diagnostics"]
+        G2_Diag --> G2_Problems["Grouped Checklist in Problems Panel"]
+        G2_Problems --> G2_Hover["Hover Explanations & Blast Radius Hints"]
+    end
+    
+    subgraph Gateway3 ["Gateway 3: Web Console & Coding Agent Skill"]
+        G3_User["User / Agent Accesses shaktIQ"] --> G3_Choice{"Choose Channel"}
+        G3_Choice -->|Web Dashboard| G3_Web["Interactive Web Console (shaktiq.vercel.app)<br/>Visual Diffs · Hotspot Charts · SSE Streams"]
+        G3_Choice -->|Coding Agent| G3_Agent["AI Coding Agent Skill (Antigravity · MCP)<br/>Runs in-flight contract verification between edits"]
+    end
+
+    GatewayBranch --> Gateway1
+    GatewayBranch --> Gateway2
+    GatewayBranch --> Gateway3
+```
+
+---
+
+## 6. In-Flight AI Coding Agent Skill & MCP Server
+
+When AI coding agents (such as Google Antigravity, Cursor, Windsurf, or Claude Code) refactor backend routes and controllers, they often inadvertently alter API contracts. The **shaktIQ Agent Skill & MCP Server** closes this loop by providing autonomous contract auditing tools directly to the agent.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Dev as Developer
+    participant Agent as AI Coding Agent (Antigravity / Cursor)
+    participant Skill as shaktIQ Skill & MCP Server
+    participant Engine as @shaktiq/analyzer Engine
+    participant Repo as Local Git Repository
+
+    Dev->>Agent: "Refactor POST /api/v1/orders to support multi-currency payments"
+    Agent->>Repo: Edit controllers & update openapi.yaml
+    Note over Agent,Skill: Autonomous In-Flight Verification
+    Agent->>Skill: shaktiq_git_diff({ spec_path: "./openapi.yaml", base_ref: "origin/main" })
+    Skill->>Engine: Run semantic AST diff against main
+    Engine-->>Skill: Return JSON findings (1 BREAKING: 'currency' field made required)
+    Skill-->>Agent: Verdict: BLOCKED. Field 'currency' has no default and breaks mobile apps.
+    Note over Agent,Repo: Autonomous Self-Remediation
+    Agent->>Agent: Analyze finding recommendation
+    Agent->>Repo: Update schema: make 'currency' optional with default 'USD'
+    Agent->>Skill: Re-verify shaktiq_git_diff()
+    Skill-->>Agent: Verdict: SAFE 🟢 (0 Breaking Changes)
+    Agent-->>Dev: "Refactoring completed safely without breaking existing mobile clients."
+```
+
+---
+
+## 7. n8n Event-Driven Orchestration Workflow
+
+shaktIQ integrates **n8n** as an asynchronous workflow orchestrator between the Fastify backend, GitHub REST APIs, and downstream alert webhooks. Workflows are version-controlled in [`n8n/workflows/`](n8n/workflows/).
+
+```mermaid
+flowchart TD
+    subgraph TriggerStage ["1. Ingestion & HMAC Verification"]
+        A["Incoming Webhook Event<br/>POST /webhook/shaktiq-analyze-run"] --> B{"Verify Header Token<br/>x-shaktiq-webhook-token"}
+        B -->|Invalid Token| C["403 Forbidden<br/>(Immediate Drop)"]
+        B -->|Valid Token| D["202 Accepted<br/>(Immediate Non-Blocking Envelope)"]
+    end
+
+    subgraph FetchStage ["2. State Transition & Spec Retrieval"]
+        D --> E["Start Run Transition<br/>POST /internal/runs/:runId/start"]
+        E --> F{"Spec Source Check"}
+        F -->|GitHub PR / Push| G["Fetch Base Spec via GitHub API<br/>(3x Exponential Retry)"]
+        G --> H["Fetch Head Spec via GitHub API<br/>(3x Exponential Retry)"]
+        H --> I["Decode Base64 Specs to UTF-8"]
+        F -->|Direct Snapshots| J["Analyze Snapshots Directly"]
+    end
+
+    subgraph AnalysisStage ["3. Deterministic AST Diffing"]
+        I --> K["Dispatch to AST Analyzer<br/>POST /internal/runs/:runId/analyze"]
+        J --> K
+        K --> L["Store Findings & Fingerprints in MongoDB"]
+    end
+
+    subgraph NotificationStage ["4. PR Comment & Lifecycle Audit"]
+        L --> M{"PR Number Present?"}
+        M -->|Yes| N["Post GitHub PR Comment<br/>Formatted Markdown Release Dossier"]
+        N --> O["Record Notification Event<br/>POST /internal/runs/:runId/notifications"]
+        M -->|No (CLI / Push)| O
+    end
+
+    subgraph ErrorRecoveryStage ["5. Global Error Recovery Handler"]
+        FailEvent["Any Node Execution Failure"] -.-> ErrorHandler["shaktiq-error-handler<br/>(Error Workflow Trigger)"]
+        ErrorHandler --> ContextExtract["Extract Failure Context<br/>(Failing Node, Error Message, runId)"]
+        ContextExtract --> ReportFail["Reconcile Run State<br/>POST /internal/runs/:runId/fail<br/>errorCode: WORKFLOW_FAILED"]
+    end
+```
+
+---
+
+## 8. Speculative Multi-Model Gemini AI Engine
+
+To synthesize human-grade **AI Release Dossiers** and actionable code fixes without slowing down developers, shaktIQ uses a **speculative parallel model racing pattern**.
+
+```mermaid
+flowchart TD
+    TriggerReq["AI Remediation Requested<br/>(User / Web Console / Dossier)"] --> PromptBuild["Grounded Prompt Construction<br/>(Inject Project Context, Recent Runs & AST Findings)"]
+    
+    PromptBuild --> RaceStage{"Parallel Speculative Race<br/>(Promise.any with KeepAlive Pools)"}
+    
+    RaceStage -->|Concurrent Request 1| ModelA["Google Gemini 3.5 Flash Lite<br/>(High Structural Accuracy)"]
+    RaceStage -->|Concurrent Request 2| ModelB["Google Gemini Flash Lite Latest<br/>(Ultra-Fast Response)"]
+    
+    ModelA --> FirstResponse["Fastest Successful Model Wins<br/>(Typical Latency: ~1,200ms – 1,500ms)"]
+    ModelB --> FirstResponse
+    
+    RaceStage -.->|If Both Experience High Demand| FallbackStage["Sequential Tier 2 Fallbacks<br/>gemini-3.6-flash &rarr; gemini-3.7-flash"]
+    FallbackStage --> FirstResponse
+    
+    FirstResponse --> JsonParser["Structured JSON Extraction & Validation<br/>(answer, suggestedFix, riskLevel, relatedEndpoints)"]
+    
+    JsonParser --> FinalResult["Deliver Real-Time Intelligence<br/>(Tagged with Winning Model Citation)"]
+```
+
+---
+
+## 9. Downstream Consumer Blast Radius Matrix
+
+When an API breaking change occurs, different downstream clients suffer unique failures. shaktIQ maps findings to specific consumer categories:
+
+```mermaid
+pie title Downstream Consumer Blast Radius Distribution
+    "Mobile Applications (iOS & Android)" : 40
+    "Web Frontends & SPAs" : 25
+    "Internal Microservices & RPC" : 20
+    "External Partners & Public Integrations" : 15
+```
+
+### Impact Breakdown by Consumer Category
+
+| Consumer Tier | Vulnerability Characteristics | Typical Failure Symptoms | shaktIQ Protective Mechanism |
+| :--- | :--- | :--- | :--- |
+| **Mobile Apps (`iOS / Android`)** | **Cannot update in real-time.** Older client versions remain installed on user devices for months. | JSON parsing null-pointer crashes, screen freeze on launch, `400 Bad Request`. | Detects deleted fields and enforces server-side non-breaking defaults. |
+| **Web Frontends (`SPAs`)** | Cached bundles in user browser tabs may send old payload schemas before page refresh. | Checkout form validation errors, unhandled promise rejections, broken routing. | Suggests dual-read middleware supporting old and new parameter keys. |
+| **Backend Microservices** | Automated service-to-service RPC calls with strict deserialization models. | Broken event ingestion, queue dead-lettering, downstream cascading 500s. | Verifies response status code continuity and header consistency. |
+| **Partner & Public APIs** | External third-party developers relying on published contract promises. | Partner integration outages, SLA breach penalties, emergency hotfixes. | Mandates HTTP `Deprecation` and `Sunset` headers before endpoint removal. |
+
+---
+
+## 10. Historical Hotspot Intelligence & Project Memory
+
+Unlike stateless linters, shaktIQ leverages **MongoDB Atlas Aggregation Pipelines** to build continuous project memory, surfacing endpoints that break repeatedly across releases.
+
+```mermaid
+flowchart TD
+    RunsCollection[("MongoDB Atlas: runs")] --> MatchStage["1. $match Stage<br/>Filter completed runs for projectId"]
+    FindingsCollection[("MongoDB Atlas: findings")] --> LookupStage["2. $lookup Stage<br/>Join findings by runId"]
+    
+    LookupStage --> UnwindStage["3. $unwind Stage<br/>Flatten individual finding records"]
+    
+    UnwindStage --> GroupStage["4. $group Stage by (method, endpoint)<br/>- totalBreaks: $sum(severity == 'breaking')<br/>- distinctRuns: $addToSet(runId)<br/>- lastBrokenAt: $max(createdAt)"]
+    
+    GroupStage --> FilterHotspots["5. $match Stage: distinctRuns &ge; 2<br/>(Isolate Fragile Endpoint Hotspots)"]
+    
+    FilterHotspots --> SortStage["6. $sort by totalBreaks DESC<br/>Rank by cumulative release risk"]
+    
+    SortStage --> HotspotMatrix["Display Hotspot Radar on Dashboard<br/>Alerts team: 'Endpoint /orders/{id} has broken 4 times'"]
+```
+
+---
+
+## 11. Production MongoDB Atlas Architecture
+
+shaktIQ implements an enterprise-ready MongoDB Atlas architecture:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor GitHub as GitHub / Client
+    participant Fastify as Fastify API Engine
+    participant DB as MongoDB Atlas Cluster
+    participant Streams as Mongo Change Streams
+    participant SSE as Server-Sent Events Bus
+    participant Web as Web Dashboard Client
+
+    GitHub->>Fastify: POST /api/v1/events/github (Webhook payload)
+    Fastify->>Fastify: Verify HMAC-SHA256 signature
+    Fastify->>DB: Atomically insert into events collection (Unique index: eventId)
+    alt Duplicate Event ID Detected (E11000)
+        DB-->>Fastify: Duplicate Key Exception
+        Fastify->>DB: Atomically increment duplicateCount
+        Fastify-->>GitHub: 200 OK (Idempotent acknowledge)
+    else New Event
+        DB-->>Fastify: Event Logged Successfully
+        Fastify->>DB: Insert new run into runs collection (Status: 'queued')
+        DB->>Streams: Emit Change Stream insert event
+        Streams->>SSE: Broadcast run.created event
+        SSE->>Web: Live UI update: New run queued in real-time
+        Fastify-->>GitHub: 202 Accepted (runId generated)
+    end
+```
+
+### Database Design & Integrity Controls
+
+1. **Strict `$jsonSchema` Validation:** Enforced on collections (`users`, `apiTokens`, `projects`, `events`, `runs`, `findings`, `specSnapshots`, `notifications`) with `validationLevel: "strict"` and `validationAction: "error"`.
+2. **Idempotency & Race-Condition Defense:**
+   - `events.eventId`: Unique compound index (`github:<delivery_uuid>`) preventing duplicate webhooks.
+   - `findings`: Unique compound index on `{ runId: 1, fingerprint: 1 }` ensuring retry safety.
+3. **Automated Data Lifecycle (TTL Indexes):**
+   - `events.receivedAt`: 30-day TTL automatically purges raw event logs.
+   - `notifications.createdAt`: 90-day TTL index cleans historical delivery records.
+4. **Spec De-duplication:** `specSnapshots` collection stores specs de-duplicated by `(projectId, sha256)` hash.
+
+---
+
+## 12. Cryptographic Security & Threat Model
+
+```mermaid
+flowchart LR
+    subgraph InboundSecurity ["Inbound Payload Security"]
+        RawBody["Raw Byte Buffer"] --> TimingVerify["crypto.timingSafeEqual<br/>HMAC-SHA256 Verification"]
+        TimingVerify --> AuthCheck{"Valid Signature?"}
+        AuthCheck -->|No| Reject401["401 Unauthorized<br/>(Log Rejected Signature)"]
+        AuthCheck -->|Yes| ParseZod["Zod Strict Schema Validation"]
+    end
+
+    subgraph CredentialSecurity ["Token & Session Defense"]
+        Password["User Password"] --> Argon2id["Argon2id Memory-Hard Hash"]
+        PAT["Personal Access Token (sq_...)"] --> Sha256Hash["SHA-256 One-Way Hash"]
+        JWT["Web Dashboard Session"] --> HttpOnlyCookie["HTTP-Only, SameSite=Lax Cookie"]
+    end
+
+    subgraph ExecutionSecurity ["Zero Untrusted Code Execution"]
+        SpecInput["OpenAPI YAML/JSON"] --> ASTOnly["Parse as Static Data Structures"]
+        ASTOnly --> SafeEvaluation["Zero User Code Executed on Server"]
+    end
+```
+
+- **Zero Untrusted Execution:** OpenAPI documents are parsed purely as static JSON/YAML data structures; user repository code is never evaluated or executed.
+- **HMAC-SHA256 Ingestion:** GitHub webhooks are verified with raw byte buffering and `crypto.timingSafeEqual` against timing attacks.
+- **Argon2id Password Security:** Passwords hashed with state-of-the-art Argon2id algorithm.
+- **PAT Hashing:** Personal Access Tokens (`sq_...`) are hashed using SHA-256 before storage; raw tokens are shown only once at creation.
+- **Redacted AI Prompts:** Gemini queries receive strictly structured finding metadata (method, endpoint, changeType). Proprietary application business logic is never sent to external LLMs.
+
+---
+
+## 13. Continuous Integration & DevOps Pipeline
+
+Every commit and pull request to `main` undergoes an automated multi-stage verification pipeline:
+
+```mermaid
+flowchart LR
+    PushCommit["git push origin main / PR"] --> CIJob["GitHub Actions CI Pipeline"]
+    
+    subgraph Stages ["Automated Verification Stages"]
+        S1["1. npm ci<br/>(Deterministic lockfile)"] --> S2["2. npm run lint<br/>(ESLint code quality)"]
+        S2 --> S3["3. npm run typecheck<br/>(tsc --noEmit strict check)"]
+        S3 --> S4["4. npm test<br/>(Vitest: Unit & Integration tests)"]
+        S4 --> S5["5. npm run build<br/>(Fastify & Next.js production builds)"]
+    end
+
+    CIJob --> Stages
+    Stages --> DeploySuccess["✅ Atomic Deployment<br/>(Vercel Web + Render API)"]
+    Stages -.->|Any Stage Fails| AlertFail["❌ Build Blocked & Alerted"]
+```
+
+---
+
+## 14. Step-by-Step Operator Guide (5 Ways to Use)
 
 Choose the environment where you work. You can be up and running in **under 2 minutes**:
 
@@ -60,19 +539,19 @@ Choose the environment where you work. You can be up and running in **under 2 mi
 
 ---
 
-### 1. Web Dashboard (Zero Install)
+### Gateway 1: Web Dashboard (Zero Install)
 
-The fastest way to experience shaktIQ without installing any software or extensions:
+The fastest way to experience shaktIQ without installing any software:
 
 1. Open the live console at **[https://shaktiq.vercel.app](https://shaktiq.vercel.app)**.
-2. Sign in or register a new user in 10 seconds.
-3. Select an existing project or run an interactive spec comparison.
+2. Sign in with Google OAuth or register an account in 10 seconds.
+3. Select an existing project or run an interactive spec comparison between two OpenAPI versions.
 4. Inspect the **Blast Radius Matrix** across Mobile (iOS/Android), Web SPAs, and Backend Microservices.
-5. Click **AI Release Dossier** to interact with the **shaktIQ Gemini 3.8 AI Assistant** for instant non-breaking patch code!
+5. Click **AI Release Dossier** to interact with the **shaktIQ Real-Time Intelligence Engine** for instant non-breaking patch code!
 
 ---
 
-### 2. Visual Studio Code Extension (v0.2.0)
+### Gateway 2: Visual Studio Code Extension (v0.2.0)
 
 Catch breaking API changes, contract flaws, and runtime bugs in real-time as you write code, right inside your editor:
 
@@ -102,7 +581,7 @@ Catch breaking API changes, contract flaws, and runtime bugs in real-time as you
 
 ---
 
-### 3. Coding Agent Gateway & AI Skill (`/shaktiq`)
+### Gateway 3: Coding Agent Gateway & AI Skill (`/shaktiq`)
 
 Equip your AI coding agent (Google Antigravity, Cursor, Windsurf, Claude Code) with the `shaktIQ` skill so it automatically audits code contracts, detects breaking changes, and generates safe fixes **in-between code writing steps (similar to `graphify` for knowledge graphs, `shaktiq` provides the contract safety gateway)**:
 
@@ -137,9 +616,9 @@ Prompt your agent in chat:
 
 ---
 
-### 4. Cursor / Windsurf / Claude Code (MCP)
+### Gateway 4: Model Context Protocol (MCP) Server
 
-Connect `shaktIQ` as a standard **Model Context Protocol (MCP)** tool server:
+Connect `shaktIQ` to **Cursor**, **Windsurf**, or **Claude Code** as a standard **Model Context Protocol (MCP)** tool server:
 
 Add the following to your agent configuration (`mcp_config.json` or Cursor Settings ➔ Features ➔ MCP):
 
@@ -163,7 +642,7 @@ Exposed native tools:
 
 ---
 
-### 5. CLI (Command Line & Terminal)
+### Gateway 5: Terminal CLI & CI/CD GitHub Actions Gate
 
 Run deterministic OpenAPI checks and intelligent code audits directly from your terminal:
 
@@ -192,13 +671,7 @@ npm run shaktiq -- analyze --base ./base.yaml --head ./head.yaml --json
 npm run shaktiq -- analyze --base ./base.yaml --head ./head.yaml --fail-on-breaking
 ```
 
----
-
-### 6. CI/CD & GitHub Actions (Automated PR Gate)
-
-Prevent breaking API changes from ever merging into your production branch by adding an automated compatibility gate.
-
-Create `.github/workflows/shaktiq.yml` in your repository:
+#### Automated Pull Request Gate (`.github/workflows/shaktiq.yml`):
 
 ```yaml
 name: shaktIQ API Release Gate
@@ -218,7 +691,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Full git history required for branch diffing
+          fetch-depth: 0
 
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
@@ -238,221 +711,46 @@ jobs:
             --markdown >> $GITHUB_STEP_SUMMARY
 ```
 
-If a pull request deletes an endpoint or changes a parameter type, the CI workflow will exit with code `1`, blocking the merge and printing a clear markdown table directly into the GitHub Actions Step Summary!
+If a pull request deletes an endpoint or changes a parameter type, the CI workflow exits with code `1`, blocking the merge and printing a clear markdown table directly into the GitHub Actions Step Summary!
 
 ---
 
-## 📌 The Problem shaktIQ Solves
+## 15. Local Development & Monorepo Quickstart
 
-API teams update OpenAPI specifications constantly. Removing an endpoint, adding a required request parameter, or changing a field type silently breaks mobile applications, partner integrations, and internal microservices.
+### Monorepo Structure
 
-- **Human Code Review Fails:** Engineers cannot reliably diff 3,000-line YAML files during busy pull request reviews.
-- **LLM Diffing Is Unreliable:** LLM-based diffing is non-deterministic, hallucinates breaking rules, and cannot be trusted as a hard CI gate.
-- **Teams Suffer from Amnesia:** Nobody remembers that an endpoint like `/orders/{id}` has broken downstream consumers three times across the last four sprints.
-
-### The Question shaktIQ Answers:
-> *"Will our latest API changes break existing consumers, which clients will be affected, and how do we fix it before deploying?"*
-
-shaktIQ answers this deterministically before changes hit production, tracks project memory across releases, and delivers verdicts where developers already work: **GitHub PRs**, **VS Code**, **AI Coding Agents**, and a **Web Dashboard**.
-
----
-
-## 🚦 Understanding Release Safety Verdicts
-
-Every shaktIQ run evaluates ~300 OpenAPI 3.0/3.1 rules and computes an unambiguous release verdict:
-
-| Verdict | Indicator | Meaning | CI Exit Code | Recommended Action |
-|:---|:---:|:---|:---:|:---|
-| **`SAFE`** | 🟢 | Only additive or backward-compatible changes detected (e.g. new optional parameters, new endpoints, new non-breaking response fields). | `0` | Safe to merge and deploy immediately. |
-| **`REVIEW`** | 🟡 | Contract warnings detected that do not immediately crash consumers but require engineering attention (e.g. endpoint deprecation, altered descriptions). | `0` | Review with team before release. |
-| **`BLOCKED`** | 🔴 | One or more breaking changes detected (e.g. removed paths, changed data types, new required fields, removed enum values). | `1` | **Block merge/release.** Apply non-breaking remediation recipes. |
-
----
-
-## 🌟 Key Features
-
-- 🎯 **Deterministic Breaking Change Detection:** Powered by `oasdiff` via `@shaktiq/analyzer` with an in-process pure-JS fallback for 100% zero-dependency uptime. Evaluates rules against OpenAPI 3.0 and 3.1 specs with zero hallucination.
-- 🤖 **Google Gemini 3.8 Flash AI Intelligence:** Synthesizes AST code fix snippets, blast radius risk assessments for mobile/web/microservice clients, and comprehensive Release Dossiers.
-- 💬 **Natural Language Project Assistant:** Ask shaktIQ questions in plain English (*"Will this release break our mobile app?"*, *"How do I fix the parameter mismatch on POST /orders?"*) with instant answers grounded in MongoDB release memory.
-- 🛡️ **Three Developer Gateways:**
-  - **Gateway 1: GitHub Pre-Release Gate:** Webhook triggers on `push` / `pull_request`, classifies risk, and posts automated compatibility comments.
-  - **Gateway 2: VS Code Extension:** Developers compare their local working spec against `git HEAD` in real-time with diagnostics in the Problems panel.
-  - **Gateway 3: Coding Agent Skill & Web Console:** Interactive Next.js console with run comparisons, endpoint hotspot tracking, and an AI chat assistant.
-- 📊 **Historical Hotspot Intelligence:** Uses MongoDB aggregation pipelines to track endpoints that break repeatedly across releases, alerting teams to fragile API surfaces.
-
----
-
-## 🏗️ System Architecture
-
-```mermaid
-flowchart TD
-  GH[GitHub Repo] -- webhook push / PR --> API[Fastify API Backend]
-  VSC[VS Code Extension] -- PAT + Two Specs --> API
-  WEB[Next.js Web: User & Admin] -- Cookie JWT --> API
-  AGENT[Antigravity / Coding Agent] -- shaktIQ Skill --> ANALYZER[packages/analyzer CLI]
-  
-  API -- Verify HMAC, Validate Zod, Idempotent Insert --> DB[(MongoDB Atlas)]
-  API -- POST Run Event + Secret Key --> N8N[n8n Orchestrator]
-  
-  N8N -- Fetch Specs --> GHAPI[GitHub REST API]
-  N8N -- Internal Lifecycle API --> API
-  API -- AST Diff / oasdiff --> ANALYZER
-  
-  API -. AI Release Dossier .-> GEMINI[Google Gemini 3.8 Flash]
-  N8N -- PR Compatibility Comment --> GHAPI
-  
-  DB -- Change Streams --> API
-  API -- Server-Sent Events SSE --> WEB
+```
+shaktiq/
+├── apps/
+│   ├── api/            # Fastify backend (Auth, Ingestion, MongoDB, SSE, Gemini)
+│   ├── web/            # Next.js 15 App Router (Console, AI Dossier, Tailwind)
+│   └── vscode-ext/     # VS Code Extension (Publisher: shaktIQ)
+├── packages/
+│   ├── shared/         # Zod schemas, types, DTOs, ROUTES, error codes
+│   └── analyzer/       # Deterministic AST diff engine, rule mappings & CLI/MCP
+├── .agents/
+│   └── skills/         # AI coding agent skills (Antigravity skill: shaktiq)
+├── scripts/            # Local bootstrap & agent skill installers
+├── fixtures/openapi/   # Versioned OpenAPI 3.0/3.1 test fixtures
+├── infra/              # Docker Compose, Dockerfiles, .env.example
+├── n8n/                # Version-controlled n8n workflow JSON definitions
+└── docs/               # System architecture & engineering specifications
 ```
 
----
-
-## ⚡ n8n Orchestration Workflows
-
-ShaktIQ uses **n8n** as an asynchronous event-driven orchestrator between the Fastify API, GitHub repositories, and downstream consumer notifications. All workflows are defined as version-controlled JSON files in [`n8n/workflows/`](n8n/workflows/).
-
-### Complete Workflow Pipeline Diagram
-
-```mermaid
-flowchart TD
-    subgraph Trigger ["1. Trigger & Authentication"]
-        A["Incoming Webhook Event<br/>POST /webhook/shaktiq-analyze-run"] --> B{"Verify Header Auth<br/>x-shaktiq-webhook-token"}
-        B -- "Invalid Token" --> C["Respond 403 Forbidden"]
-        B -- "Valid Token" --> D["Respond 202 Accepted<br/>(Immediate Non-Blocking)"]
-    end
-
-    subgraph Ingestion ["2. Run Initialization & Spec Fetching"]
-        D --> E["HTTP Start Run<br/>POST /internal/runs/:runId/start"]
-        E --> F{"Check Spec Source"}
-        F -- "GitHub PR / Push" --> G["Fetch Base Spec<br/>GitHub REST API"]
-        G --> H["Fetch Head Spec<br/>GitHub REST API"]
-        H --> I["Decode GitHub Specs<br/>(Base64 to UTF-8)"]
-        F -- "Direct Snapshots" --> J["HTTP Analyze Snapshots<br/>POST /internal/runs/:runId/analyze"]
-    end
-
-    subgraph Analysis ["3. AST Diffing & Deterministic Analysis"]
-        I --> K["HTTP Analyze GitHub Specs<br/>POST /internal/runs/:runId/analyze"]
-        J --> L{"Check AI Condition"}
-        K --> L
-    end
-
-    subgraph Intelligence ["4. Intelligence & Verdict"]
-        L -- "AI Enabled & Anthropic Key Present" --> M["Claude Messages API<br/>Generate Plain Explanations"]
-        M --> N["Parse Claude Output"]
-        N --> O["HTTP Submit Explanations<br/>POST /internal/runs/:runId/explanations"]
-        L -- "Claude Skipped / Disabled" --> P{"Check PR Notification Condition"}
-        O --> P
-    end
-
-    subgraph Notifications ["5. Notification & Audit"]
-        P -- "PR Number Present" --> Q["Post GitHub PR Comment<br/>Markdown Compatibility Report"]
-        Q --> R["HTTP Record Notification<br/>POST /internal/runs/:runId/notifications"]
-        P -- "No PR (Direct Push / CLI)" --> R
-    end
-
-    subgraph ErrorRecovery ["6. Global Error Handler"]
-        ERR["Any Node Failure"] -.-> EH["shaktiq-error-handler<br/>(Error Trigger)"]
-        EH --> ECTX["Extract Error Context<br/>(Node, Message, runId)"]
-        ECTX --> EFAIL["HTTP Report Failure<br/>POST /internal/runs/:runId/fail<br/>errorCode: WORKFLOW_FAILED"]
-    end
-
-    classDef success fill:#0C382E,stroke:#428E75,stroke-width:2px,color:#FFF0B3;
-    classDef warning fill:#FEE790,stroke:#D97706,stroke-width:2px,color:#0C382E;
-    classDef error fill:#DC2626,stroke:#991B1B,stroke-width:2px,color:#FFFFFF;
-    class A,D,E,G,H,I,J,K,Q,R success;
-    class B,F,L,P warning;
-    class C,ERR,EH,ECTX,EFAIL error;
-```
-
-### Detailed Node Specifications
-
-1. **`Webhook Trigger` & `Verify Header Auth`:**
-   - Listens on `POST /webhook/shaktiq-analyze-run`.
-   - Validates `x-shaktiq-webhook-token` against environment configuration. Rejects unauthorized traffic immediately with `403 Forbidden`.
-   - Returns an immediate `202 Accepted` envelope so calling services are never blocked waiting for analysis.
-2. **`HTTP Start Run`:**
-   - Calls `POST /api/v1/internal/runs/:runId/start` authenticated by `x-shaktiq-internal-key`.
-   - Transitions run state in MongoDB from `queued` to `running`, triggering real-time UI status updates via Change Streams and SSE.
-3. **Spec Fetching (`Fetch Base Spec GitHub` & `Fetch Head Spec GitHub`):**
-   - Automatically retrieves specification content from GitHub's Contents API using the repository path and commit refs with `Bearer {{ $env.GITHUB_TOKEN }}`.
-   - Built-in 3x retry with 2000ms exponential backoff for network resilience.
-4. **`HTTP Analyze Specs`:**
-   - Dispatches specs to the core AST analyzer engine at `POST /api/v1/internal/runs/:runId/analyze`.
-   - Executes deterministic AST diffing (`oasdiff`), generates SHA-256 finding fingerprints, and calculates the release verdict (`safe`, `review`, or `blocked`).
-5. **`Check AI Condition` & Explanations:**
-   - Evaluates whether AI explanations are requested and an Anthropic key is present. If skipped, continues automatically without blocking.
-6. **`Post GitHub PR Comment`:**
-   - Posts a rich markdown compatibility report directly to the pull request conversation on GitHub.
-7. **`shaktiq-error-handler` (Error Recovery):**
-   - Attached as the designated `errorWorkflow`. On any failure, captures the failing node and message, reporting the failure to `POST /internal/runs/:runId/fail` with `errorCode: WORKFLOW_FAILED` to guarantee clean state reconciliation.
-
----
-
-## 🍃 Production MongoDB Atlas Deep Dive
-
-shaktIQ is built with production-grade MongoDB Atlas architecture:
-
-### 1. Strict Schema Validation (`$jsonSchema`)
-All collections (`users`, `apiTokens`, `projects`, `events`, `runs`, `findings`, `specSnapshots`, `notifications`) are strictly validated at the database level with `validationLevel: "strict"` and `validationAction: "error"`:
-- Rejects unexpected field structures or invalid enum values.
-- Applied automatically via idempotent migration scripts (`apps/api/src/db/migrate.ts`).
-
-### 2. High-Performance Aggregation Pipelines
-- **Run-to-Run Diff (Compare Pipeline):** Categorizes findings between any base and head run into `new`, `resolved`, and `unresolved` using stable SHA-256 finding fingerprints.
-- **Project Memory (Endpoint Hotspots):** Aggregates findings by `(method, endpoint)` across completed runs to highlight endpoints with recurring breaks (`distinctRuns >= 2`).
-- **Release Verdict Summary:** Evaluates release readiness into honest status states (`safe`, `review`, `blocked`).
-- **Admin System Telemetry:** Single `$facet` aggregation summarizing run statuses, duplicate delivery counts, and rejected signatures over 24-hour windows.
-
-### 3. Change Streams + Server-Sent Events (SSE)
-- Listens to native Change Streams on `runs` and `events`.
-- Emits real-time SSE events (`run.updated`, `event.received`, `event.duplicate`) to connected dashboard clients.
-- Scoped strictly to user authorization and project boundaries.
-
-### 4. Zero-Duplicate Idempotent Ingestion
-- `events` collection enforces a unique index on `eventId` (`github:<delivery_uuid>`).
-- On duplicate delivery (MongoDB error code `11000`), atomically increments `duplicateCount` and returns the existing `runId` without dispatching duplicate workloads.
-- Secondary unique index on `runs.eventId` prevents race conditions.
-- Findings enforce `{ runId: 1, fingerprint: 1 }` unique constraint, making analysis retries idempotent.
-
-### 5. Automated Data Lifecycle (TTL Indexes)
-- `events.receivedAt`: 30-day TTL index automatically purges raw event logs.
-- `notifications.createdAt`: 90-day TTL index cleans delivery history.
-- `specSnapshots`: De-duplicated by `(projectId, sha256)` hash to store identical spec files only once.
-
----
-
-## 🚀 Step-by-Step Local Development & Self-Hosting
-
-Follow these simple steps to run the complete shaktIQ stack locally on your machine:
-
-### Prerequisites
-- **Node.js:** `^20.0.0` (LTS recommended)
-- **npm:** `^10.0.0`
-- **Git**
-- **MongoDB Atlas** Free Tier M0 (or local MongoDB replica set with change streams enabled)
-
-### Step 1: Clone the Repository
+### 1. Clone Repository & Install Dependencies
 ```bash
 git clone https://github.com/subratoghosh/uncharted_shakti_1.git shaktiq
 cd shaktiq
-```
-
-### Step 2: Install Dependencies
-```bash
 npm install
 ```
 
-### Step 3: Configure Environment Variables
-Copy `.env.example` to `.env` in the root and in `apps/api`:
+### 2. Configure Local Environment
 ```bash
-# In project root:
 cp .env.example .env
-
-# In API directory:
 cp infra/.env.example apps/api/.env
 ```
 
-Ensure the following variables are filled in your `.env`:
+Ensure the following variables are configured in `.env`:
 ```ini
 NODE_ENV=development
 PORT=4000
@@ -465,102 +763,64 @@ WEB_ORIGIN=http://localhost:3000
 GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-### Step 4: Run Database Migrations
+### 3. Initialize Database Migrations
 Initialize all strict `$jsonSchema` validators and production indexes in MongoDB:
 ```bash
 npm run db:migrate -w apps/api
 ```
 
-### Step 5: Start Backend & Frontend
-Run both services in separate terminals (or concurrently):
-
+### 4. Launch Development Servers
+Run both services in separate terminals:
 ```bash
-# Terminal 1: Backend Fastify API (Runs on port 4000)
+# Terminal 1: Fastify API Engine (Port 4000)
 npm run dev -w apps/api
 
-# Terminal 2: Web Dashboard (Runs on port 3000)
+# Terminal 2: Next.js Web Console (Port 3000)
 npm run dev -w apps/web
 ```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Visit **`http://localhost:3000`** in your browser!
-
-### Step 6: (Optional) Test the VS Code Extension Locally
-1. Open the `apps/vscode-ext` folder in VS Code.
-2. Press `F5` to launch an Extension Development Host window.
-3. Open any folder with an OpenAPI spec and run `Ctrl+Shift+P` ➔ **`shaktIQ: Analyze API changes`**.
-
----
-
-## 📁 Monorepo Workspace Structure
-
-```
-shaktiq/
-├── apps/
-│   ├── api/            # Fastify backend (Auth, Ingestion, MongoDB, SSE, Gemini)
-│   ├── web/            # Next.js App Router (Dashboard, AI Dossier, shadcn/ui)
-│   └── vscode-ext/     # VS Code Extension (Publisher: shaktIQ)
-├── packages/
-│   ├── shared/         # Zod schemas, types, DTOs, ROUTES, error codes
-│   └── analyzer/       # Deterministic AST diff engine, rule mappings & CLI/MCP
-├── .agents/
-│   └── skills/         # AI coding agent skills (Antigravity skill: shaktiq)
-├── scripts/
-│   ├── install-agent-skill.sh   # Bash installer for Linux/macOS
-│   └── install-agent-skill.ps1  # PowerShell installer for Windows
-├── fixtures/openapi/   # Versioned OpenAPI 3.0/3.1 test fixtures
-├── infra/              # Docker Compose, Dockerfiles, .env.example
-└── docs/               # Full system documentation & specifications
-```
-
----
-
-## 🔒 Security & Threat Modeling
-
-- **Zero Untrusted Execution:** shaktIQ parses OpenAPI specs purely as structured text; user repository code is never executed.
-- **HMAC-SHA256 Signature Verification:** GitHub webhooks are verified with raw byte buffering and `crypto.timingSafeEqual`. Invalid signatures are rejected immediately (HTTP 401) and logged.
-- **Authentication:**
-  - **Web Dashboard:** Argon2id password hashing + HTTP-only, `SameSite=Lax`, secure JWT cookies.
-  - **VS Code Extension:** Personal Access Tokens (`sq_...`) stored strictly as SHA-256 hashes.
-- **Network Isolation:** Internal lifecycle routes (`/api/v1/internal/*`) require a 32+ character `INTERNAL_API_KEY`.
-- **AI Safety & Privacy:** Gemini receives strictly structured finding metadata (method, endpoint, changeType). Raw user proprietary code is never forwarded to external LLMs.
-
----
-
-## 🧪 Testing & Quality Assurance
-
-shaktIQ maintains high code quality with automated test suites:
-
+### 5. Execute Quality Verification
 ```bash
-# Typecheck all workspaces
-npm run typecheck
-
-# Lint codebase
-npm run lint
-
-# Run unit & integration test suite (Vitest)
-npm test
-
-# Run End-to-End browser tests (Playwright)
-npm run e2e
+npm run typecheck     # Verify TypeScript types (tsc --noEmit)
+npm run lint          # Run ESLint validation
+npm test              # Run unit & integration test suites
 ```
 
 ---
 
-## 👥 Team & Hackathon Ownership
+## 16. Environment Configuration Reference
 
-Built with ❤️ for the **MongoDB Student Hackathon**:
+| Variable | Description | Required in Production |
+| :--- | :--- | :---: |
+| `NODE_ENV` | Application environment (`development`, `production`, `test`) | Yes |
+| `PORT` | Fastify API backend port (default: `4000`) | Yes |
+| `MONGODB_URI` | MongoDB Atlas replica set connection string | Yes |
+| `MONGODB_DB` | Target MongoDB database name (default: `shaktiq`) | Yes |
+| `JWT_SECRET` | 32+ character secret for signing authentication JWT cookies | Yes |
+| `INTERNAL_API_KEY` | 32+ character pre-shared key for internal lifecycle endpoints | Yes |
+| `GITHUB_WEBHOOK_SECRET` | HMAC-SHA256 secret for validating inbound GitHub webhooks | Yes |
+| `WEB_ORIGIN` | Allowed CORS origin for Next.js web application | Yes |
+| `GEMINI_API_KEY` | Google Gemini API key for real-time AI release intelligence | Yes |
+| `GITHUB_TOKEN` | Optional GitHub Personal Access Token for high-rate API fetching | No |
 
-| Member | Focus Area | Owned Codebases |
-|---|---|---|
+---
+
+## 17. Team & Ownership
+
+Built with ❤️ for modern software engineering teams and the **MongoDB Student Hackathon**:
+
+| Member | Focus Area | Owned Codebases & Modules |
+| :--- | :--- | :--- |
 | **Subrato Ghosh** | Backend, Database, Security & Agent Skills | `apps/api`, `packages/shared`, `.agents/skills`, `docs/database.md`, `docs/security.md` |
 | **Lavanya** | Frontend, AI Release Dossier & UI/UX | `apps/web`, `docs/design_system.md` |
 | **Vicky** | Analyzer Engine, VS Code Extension & QA | `packages/analyzer`, `apps/vscode-ext`, `n8n/`, `fixtures/`, `docs/testing.md` |
 
 ---
 
-## 📖 System Documentation
+## 18. Technical Documentation Directory
 
-Detailed technical guides are available in the [`docs/`](docs/) directory:
+Comprehensive engineering specifications are maintained in the [`docs/`](docs/) directory:
 - 📄 [Product Requirements Document (`docs/prd.md`)](docs/prd.md)
 - 🏛️ [System Architecture & Lifecycle (`docs/architecture.md`)](docs/architecture.md)
 - 💾 [MongoDB Schema, Indexes & Aggregations (`docs/database.md`)](docs/database.md)
@@ -572,6 +832,6 @@ Detailed technical guides are available in the [`docs/`](docs/) directory:
 
 ---
 
-## ⚖️ License
+## 19. License
 
-Distributed under the MIT License. See [`LICENSE`](LICENSE) for more information.
+Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for complete terms.

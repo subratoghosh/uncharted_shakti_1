@@ -15,25 +15,25 @@ const FEATURE_MODULES = [
     title: '4-Step Workflow Engine',
     href: '/workflow',
     icon: Workflow,
-    tag: 'Contract Governance',
+    tag: 'Release Governance',
     description:
-      'Structured pipeline from schema ingestion to deep AST semantic diffing, blast radius calculation, and non-bypassable CI release gate approval.',
+      'Structured pipeline from code ingestion to deep semantic diffing, client impact calculation, and non-bypassable CI release gate approval.',
   },
   {
     title: 'Blast Radius Intelligence',
     href: '/intelligence',
     icon: Network,
-    tag: 'Consumer Matrix',
+    tag: 'Client Protection',
     description:
-      'Cross-references registered consumer microservices, mobile apps, and SDKs to calculate objective downstream breaking impact before code is merged.',
+      'Cross-references registered consumer services, mobile apps, and web clients to calculate objective downstream breaking impact before code is merged.',
   },
   {
     title: 'Autonomous AI Dossier',
     href: '/dashboard',
     icon: Zap,
-    tag: 'Gemini 3.8 Flash',
+    tag: 'Intelligent Engine',
     description:
-      'Synthesizes production-grade backward-compatible schema shims, route deprecation wrappers, and copy-paste ready migration code in under 300ms.',
+      'Synthesizes production-grade backward-compatible shims, route deprecation wrappers, and copy-paste ready safe migration code in under 300ms.',
   },
   {
     title: 'Why shaktIQ Architecture',
@@ -41,7 +41,7 @@ const FEATURE_MODULES = [
     icon: ShieldCheck,
     tag: 'Enterprise Reliability',
     description:
-      'Mathematical AST parsing eliminates false alarms while catching subtle schema ruptures that static linters and human code reviews consistently miss.',
+      'Deterministic structural parsing eliminates false alarms while catching subtle breaking regressions that static linters and human reviews consistently miss.',
   },
 ];
 
@@ -55,10 +55,10 @@ export const FeatureModules: React.FC = () => {
             PLATFORM ARCHITECTURE
           </div>
           <h2 className="heading-font text-3xl sm:text-4xl font-extrabold text-green-dark tracking-tight mb-3">
-            Everything platform teams need to release APIs safely
+            Everything engineering teams need to release software safely
           </h2>
           <p className="text-text-dim text-sm sm:text-base leading-relaxed">
-            Explore our specialized platform modules engineered to automate breaking change detection, blast radius assessment, and remediation with institutional rigor.
+            Explore our specialized platform modules engineered to automate release risk detection, client impact assessment, and automated patch remediation.
           </p>
         </div>
 

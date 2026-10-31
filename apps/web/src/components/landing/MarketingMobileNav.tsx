@@ -3,18 +3,23 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, ShieldCheck, Layers, Zap, Terminal } from 'lucide-react';
-
-const PRIMARY_TABS = [
-  { label: 'Home', href: '/', icon: Home },
-  { label: 'Workflow', href: '/workflow', icon: Layers },
-  { label: 'Why Us', href: '/why-us', icon: ShieldCheck },
-  { label: 'Intelligence', href: '/intelligence', icon: Zap },
-  { label: 'Console', href: '/dashboard', icon: Terminal },
-];
+import { useSession } from 'next-auth/react';
+import { Home, ShieldCheck, Layers, Zap, Terminal, LogIn } from 'lucide-react';
 
 export const MarketingMobileNav: React.FC = () => {
   const pathname = usePathname();
+  const { data: session, status } = useSession();
+  const isLoggedIn = status === 'authenticated' && !!session?.user;
+
+  const tabs = [
+    { label: 'Home', href: '/', icon: Home },
+    { label: 'Workflow', href: '/workflow', icon: Layers },
+    { label: 'Why Us', href: '/why-us', icon: ShieldCheck },
+    { label: 'Intelligence', href: '/intelligence', icon: Zap },
+    isLoggedIn
+      ? { label: 'Console', href: session?.user?.role === 'admin' ? '/admin/overview' : '/dashboard', icon: Terminal }
+      : { label: 'Login', href: '/login', icon: LogIn },
+  ];
 
   return (
     <nav
@@ -22,7 +27,7 @@ export const MarketingMobileNav: React.FC = () => {
       className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0C382E]/95 backdrop-blur-md border-t border-green-light/40 py-1.5 px-3 text-butter-cream shadow-[0_-8px_24px_rgba(0,0,0,0.3)]"
     >
       <div className="flex items-center justify-around max-w-md mx-auto">
-        {PRIMARY_TABS.map((tab) => {
+        {tabs.map((tab) => {
           const isActive =
             tab.href === '/'
               ? pathname === '/'

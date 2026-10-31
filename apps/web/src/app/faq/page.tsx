@@ -6,9 +6,9 @@ import { MarketingLayout } from '@/components/landing/MarketingLayout';
 import { FAQAccordion } from '@/components/landing/FAQAccordion';
 
 export const metadata: Metadata = {
-  title: 'Knowledge Base & FAQ | shaktIQ - OpenAPI Release Intelligence',
+  title: 'Knowledge Base & FAQ | shaktIQ - Release Safety & Compatibility Intelligence',
   description:
-    'Frequently asked questions about deterministic AST diffing, blast radius scoring, Gemini AI remediation, and CI/CD pull request gate integration.',
+    'Frequently asked questions about deterministic semantic diffing, client impact scoring, automated remediation, and CI/CD pull request gate integration.',
 };
 
 export default function FAQPage() {
@@ -31,7 +31,7 @@ export default function FAQPage() {
                   Need custom breaking change policies for your organization?
                 </h3>
                 <p className="text-text-dim text-sm sm:text-base leading-relaxed">
-                  Whether you manage high-throughput financial transaction APIs or multi-tenant microservice meshes, our platform engineers can help configure custom severity thresholds and automated webhook pipelines.
+                  Whether you manage high-throughput financial transaction systems or multi-tenant microservice architectures, our platform engineers can help configure custom severity thresholds and automated webhook pipelines.
                 </p>
               </div>
 

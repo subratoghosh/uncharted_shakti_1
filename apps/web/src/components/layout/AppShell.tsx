@@ -6,6 +6,7 @@ import { Sidebar } from './Sidebar';
 import { TopNav } from './TopNav';
 import { ConsoleMobileNav } from './ConsoleMobileNav';
 import { PullToRefresh } from '../common/PullToRefresh';
+import { AskAiAssistant } from '../shared/AskAiAssistant';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -19,10 +20,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     pathname === '/privacy' ||
     pathname === '/terms';
 
-  if (isAuthPage || isMarketingPage) {
+  if (isAuthPage) {
     return (
       <PullToRefresh>
         <main className="min-h-screen w-full bg-butter-bg text-green-dark">{children}</main>
+      </PullToRefresh>
+    );
+  }
+
+  if (isMarketingPage) {
+    return (
+      <PullToRefresh>
+        <main className="min-h-screen w-full bg-butter-bg text-green-dark">{children}</main>
+        <AskAiAssistant />
       </PullToRefresh>
     );
   }
@@ -37,6 +47,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <ConsoleMobileNav />
         </div>
       </div>
+      <AskAiAssistant />
     </PullToRefresh>
   );
 }

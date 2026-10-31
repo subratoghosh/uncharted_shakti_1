@@ -1,8 +1,15 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
-import { Terminal, ShieldCheck, ArrowRight } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { Terminal, ShieldCheck, ArrowRight, LogIn } from 'lucide-react';
 
 export const CallToAction: React.FC = () => {
+  const { data: session, status } = useSession();
+  const isLoggedIn = status === 'authenticated' && !!session?.user;
+  const consoleHref = session?.user?.role === 'admin' ? '/admin/overview' : '/dashboard';
+
   return (
     <section className="py-20 bg-butter-bg border-b border-green-dark/10">
       <div className="max-w-[1240px] mx-auto px-6">
@@ -20,16 +27,24 @@ export const CallToAction: React.FC = () => {
               Zero breaking changes shipped to production.
             </h3>
             <p className="text-text-hero-sub text-sm sm:text-base leading-relaxed">
-              Connect your OpenAPI repository or paste base and candidate schemas directly into our live sandbox. Instant AST diffing, blast radius matrix, and Gemini AI release dossiers.
+              Connect your software repository or inspect base and candidate versions directly in our live console. Instant semantic diffing, downstream client protection, and automated release dossiers.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3.5 shrink-0 relative z-10 w-full sm:w-auto">
-            <Link href="/dashboard" className="btn-butter">
-              <Terminal className="w-4 h-4" />
-              <span>Launch Live Console</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            {isLoggedIn ? (
+              <Link href={consoleHref} className="btn-butter">
+                <Terminal className="w-4 h-4" />
+                <span>Go to Console</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            ) : (
+              <Link href="/login" className="btn-butter">
+                <LogIn className="w-4 h-4" />
+                <span>Get Started / Login</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            )}
             <Link href="/workflow" className="btn-hero-ghost">
               <span>Explore 4-Step Workflow</span>
             </Link>

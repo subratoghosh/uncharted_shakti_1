@@ -19,7 +19,7 @@ import { MarketingLayout } from '@/components/landing/MarketingLayout';
 export const metadata: Metadata = {
   title: 'Workflow Engine | shaktIQ - 5 Disciplined Steps to Zero Breaking Changes',
   description:
-    'Discover shaktIQ’s 5-step release intelligence lifecycle: from git push schema ingestion to AST semantic diffing, blast radius calculation, and Gemini AI remediation.',
+    'Discover shaktIQ’s 5-step release intelligence lifecycle: from git push code ingestion to deep semantic diffing, client impact calculation, and automated remediation.',
 };
 
 export const revalidate = 3600; // Cache static page for ultra-fast, zero-lag delivery
@@ -27,35 +27,35 @@ export const revalidate = 3600; // Cache static page for ultra-fast, zero-lag de
 const WORKFLOW_STEPS = [
   {
     step: '01',
-    title: 'Automated Schema Ingestion',
-    subtitle: 'GitHub Webhooks, GitLab CI, or Direct CLI Spec Upload',
+    title: 'Automated Contract & Code Ingestion',
+    subtitle: 'GitHub Webhooks, GitLab CI, or Direct CLI Upload',
     description:
-      'Whenever a developer creates a commit or opens a pull request modifying an OpenAPI specification file (.yaml or .json), shaktIQ triggers instantaneously via webhook or pre-commit hook.',
+      'Whenever a developer creates a commit or opens a pull request modifying service specifications or route controllers, shaktIQ triggers instantaneously via webhook or pre-commit hook.',
     badge: 'Step 1: Ingestion',
   },
   {
     step: '02',
-    title: 'AST Semantic Diff Engine',
-    subtitle: 'Deep node-by-node Abstract Syntax Tree comparison',
+    title: 'Deterministic Semantic Diff Engine',
+    subtitle: 'Deep structural comparison across models, routes, and constraints',
     description:
-      'shaktIQ parses both the base branch and candidate branch specs into deep AST hierarchies, isolating semantic modifications (removed params, changed types, required payload fields) from benign formatting noise.',
+      'shaktIQ parses both the base branch and candidate branch into deep semantic hierarchies, isolating genuine disruptions (removed parameters, changed types, required payload fields) from benign formatting noise.',
     badge: 'Step 2: Semantic Diff',
   },
   {
     step: '03',
-    title: 'Blast Radius & Consumer Matrix',
-    subtitle: 'Downstream dependency mapping and impact evaluation',
+    title: 'Downstream Client & Consumer Matrix',
+    subtitle: 'Downstream dependency mapping and client impact evaluation',
     description:
-      'Modified endpoints are mapped against registered consumers. shaktIQ determines if breaking changes touch core payment gateways, internal microservices, or public mobile SDKs.',
+      'Modified endpoints and routes are mapped against registered consumers. shaktIQ determines if breaking changes touch core payment gateways, internal microservices, or public mobile clients.',
     badge: 'Step 3: Impact Analysis',
   },
   {
     step: '04',
-    title: 'Autonomous Gemini AI Remediation',
-    subtitle: 'Gemini 3.8 Flash synthesizes backward-compatible patches',
+    title: 'Automated Patch Remediation',
+    subtitle: 'Intelligent synthesis of backward-compatible code patches',
     description:
-      'Rather than stopping at error alerts, shaktIQ automatically generates non-breaking shims, deprecation headers with RFC 8594 sunset schedules, and sample migration route code.',
-    badge: 'Step 4: AI Synthesis',
+      'Rather than stopping at error alerts, shaktIQ automatically generates non-breaking shims, deprecation headers with standard sunset schedules, and sample migration route code.',
+    badge: 'Step 4: Automated Patching',
   },
   {
     step: '05',
@@ -82,7 +82,7 @@ export default function WorkflowPage() {
               From git push to verified release in 4 disciplined steps
             </h1>
             <p className="text-text-dim text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-              How platform engineering teams achieve continuous API backward compatibility without bottlenecking product velocity.
+              How platform engineering teams achieve continuous software release safety and backward compatibility without bottlenecking product velocity.
             </p>
           </div>
         </section>
@@ -125,7 +125,7 @@ export default function WorkflowPage() {
                 Why engineering teams ship 3x faster with <span>shakt<span className="text-[#52B143]">IQ</span></span>
               </h2>
               <p className="text-text-dim text-sm sm:text-base">
-                Eliminating manual API review bureaucracy while preventing catastrophic downstream contract drift.
+                Eliminating manual release review bureaucracy while preventing catastrophic downstream contract drift.
               </p>
             </div>
 
@@ -144,7 +144,7 @@ export default function WorkflowPage() {
                 </div>
                 <div className="pt-4 border-t border-green-dark/8 text-xs font-semibold text-green-mid flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-green-accent" />
-                  <span>Sub-50ms AST diff turnaround</span>
+                  <span>Sub-50ms diff turnaround</span>
                 </div>
               </div>
 
@@ -157,7 +157,7 @@ export default function WorkflowPage() {
                     Remediation Autopilot
                   </h3>
                   <p className="text-text-dim text-sm leading-relaxed mb-6">
-                    No need to guess how to refactor. Gemini 3.8 Flash synthesizes backward-compatible alternatives, showing developers exactly how to support legacy consumers without stalling new features.
+                    No need to guess how to refactor. Automated code intelligence synthesizes backward-compatible alternatives, showing developers exactly how to support legacy consumers without stalling new features.
                   </p>
                 </div>
                 <div className="pt-4 border-t border-green-dark/8 text-xs font-semibold text-green-mid flex items-center gap-2">
@@ -196,7 +196,7 @@ export default function WorkflowPage() {
                   Experience the 4-step workflow in action
                 </h3>
                 <p className="text-text-dim text-sm sm:text-base leading-relaxed">
-                  Open the interactive console to test sample base and head OpenAPI documents, inspect breaking change detections, and review AI-generated release dossiers.
+                  Open the interactive console to test sample base and candidate service specifications, inspect breaking change detections, and review automated release dossiers.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3.5 shrink-0 w-full sm:w-auto">

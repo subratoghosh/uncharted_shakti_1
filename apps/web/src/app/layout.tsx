@@ -6,9 +6,9 @@ import { Providers } from '../components/Providers';
 import { AppShell } from '../components/layout/AppShell';
 
 export const metadata: Metadata = {
-  title: 'shaktIQ – OpenAPI Compatibility & Release Intelligence',
+  title: 'shaktIQ – Continuous Release Safety & Compatibility Intelligence',
   description:
-    'Deterministic OpenAPI breaking change detection, history tracking, and release impact assessment.',
+    'Deterministic breaking change prevention, release governance, and downstream client impact protection.',
   icons: {
     icon: [
       { url: '/icon.svg', type: 'image/svg+xml' },

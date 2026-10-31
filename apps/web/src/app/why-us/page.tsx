@@ -18,9 +18,9 @@ import {
 import { MarketingLayout } from '@/components/landing/MarketingLayout';
 
 export const metadata: Metadata = {
-  title: 'Why Us | shaktIQ - Deterministic OpenAPI Governance & Release Intelligence',
+  title: 'Why Us | shaktIQ - Continuous Release Governance & Safety Platform',
   description:
-    'Learn how shaktIQ prevents breaking downstream API consumers, eliminates false alarms with deterministic AST diffing, and automates non-breaking patches with Gemini AI.',
+    'Learn how shaktIQ prevents breaking downstream software consumers, eliminates false alarms with deterministic semantic analysis, and automates non-breaking patches.',
 };
 
 export const revalidate = 3600; // Cache static page for ultra-fast, zero-lag delivery
@@ -29,38 +29,38 @@ export default function WhyUsPage() {
   const securityFeatures = [
     {
       icon: GitBranch,
-      title: 'Deterministic AST Semantic Engine',
-      subtitle: 'Abstract Syntax Tree comparison across endpoints, types, and constraints',
+      title: 'Deterministic Semantic Engine',
+      subtitle: 'Structural comparison across routes, models, types, and constraints',
       description:
-        'Line-by-line git diffs and regex linters trigger false alarms on reordered keys or formatting changes. shaktIQ parses both base and candidate OpenAPI documents into formal Abstract Syntax Trees, comparing types, default values, validations, and response schemas with mathematical certainty.',
+        'Line-by-line git diffs and regex linters trigger false alarms on reordered keys or formatting changes. shaktIQ parses both base and candidate software interfaces into formal semantic hierarchies, comparing types, default values, validations, and response schemas with mathematical certainty.',
       bullets: [
-        'Full support for OpenAPI 3.0.x, 3.1.x, and Swagger 2.0 (YAML & JSON)',
-        'Resolves nested $ref pointers, polymorphs (oneOf, anyOf), and complex schemas',
-        'Sub-50ms execution time inside high-frequency CI pipelines',
+        'Universal support for service interface contracts in YAML and JSON',
+        'Resolves nested schema pointers, polymorphs, and complex data models',
+        'Real-time execution velocity inside high-frequency CI pipelines',
       ],
     },
     {
       icon: Network,
-      title: 'Blast Radius & Downstream Consumer Matrix',
+      title: 'Downstream Client Impact Matrix',
       subtitle: 'Measure true downstream consumer breakage before code merges',
       description:
-        'API schemas don’t live in a vacuum. A changed query parameter on a payment endpoint might silently break native iOS apps, merchant checkout integrations, or microservice listeners. shaktIQ maps every altered endpoint to registered consumers to calculate objective blast radius severity.',
+        'Software services do not live in a vacuum. A changed parameter on a payment service might silently break native iOS apps, web frontends, or microservice listeners. shaktIQ maps every altered route and contract to registered consumers to calculate objective blast radius severity.',
       bullets: [
-        'Categorizes impact across Core Microservices, Mobile Apps, and Public SDKs',
+        'Categorizes impact across Core Microservices, Mobile Apps, and Web Clients',
         'Automatic severity classification: BREAKING, WARNING, and INFO',
-        'Prevents unexpected outages and customer-facing integration churn',
+        'Prevents unexpected outages and customer-facing integration downtime',
       ],
     },
     {
       icon: Cpu,
-      title: 'Autonomous Gemini 3.8 Flash Remediation',
-      subtitle: 'AI that writes production-grade backward-compatible schema patches',
+      title: 'Automated Patch Remediation',
+      subtitle: 'Intelligent synthesis of production-grade backward-compatible code',
       description:
-        'Detecting a breaking change is only half the battle. shaktIQ harnesses Gemini 3.8 Flash to synthesize a complete Release Dossier containing root-cause analysis, deprecation roadmaps, and copy-paste ready non-breaking patches in milliseconds.',
+        'Detecting a breaking change is only half the battle. shaktIQ harnesses automated code intelligence to synthesize a complete Release Dossier containing root-cause analysis, deprecation roadmaps, and copy-paste ready non-breaking patches in milliseconds.',
       bullets: [
         'Instant backward-compatible shim generation and route alias code',
-        'Deprecation tagging with Sunset and Link headers per IETF RFC 8594',
-        'Structured executive impact briefings for API review committees',
+        'Deprecation tagging with industry-standard sunset headers and migration paths',
+        'Structured executive impact briefings for engineering review teams',
       ],
     },
     {
@@ -68,7 +68,7 @@ export default function WhyUsPage() {
       title: 'Strict Non-Bypassable CI/CD Release Gate',
       subtitle: 'Enforce SAFE, REVIEW, or BLOCKED release verdicts automatically',
       description:
-        'Eliminate human oversight from your API release process. shaktIQ integrates into GitHub Actions, GitLab CI, and custom webhooks to evaluate schema pull requests against your organizational breaking change policy.',
+        'Eliminate human oversight from your software release process. shaktIQ integrates into GitHub Actions, GitLab CI, and custom webhooks to evaluate code pull requests against your organizational breaking change policy.',
       bullets: [
         'Calculates objective 0-100 release confidence score per run',
         'Blocks pull requests automatically when critical breaking changes exist',
@@ -80,7 +80,7 @@ export default function WhyUsPage() {
   const comparisonItems = [
     {
       feature: 'Diff Technique',
-      shaktiq: 'Deterministic AST node & semantic type parsing',
+      shaktiq: 'Deterministic semantic node & structural type parsing',
       traditional: 'Naive line diffing or regex keyword matching',
       manual: 'Manual eye-balling of 1,000+ line PR diffs',
     },
@@ -92,9 +92,9 @@ export default function WhyUsPage() {
     },
     {
       feature: 'Remediation & Fixes',
-      shaktiq: 'Gemini 3.8 Flash generates non-breaking code patches',
+      shaktiq: 'Automated intelligence generates non-breaking code patches',
       traditional: 'Raw error list with zero remediation advice',
-      manual: 'Days of architect debates over v2 migration strategy',
+      manual: 'Days of architect debates over migration strategy',
     },
     {
       feature: 'CI/CD Gate & Status',
@@ -105,8 +105,8 @@ export default function WhyUsPage() {
     {
       feature: 'Performance & Speed',
       shaktiq: 'Sub-50ms engine with instant sandbox playground',
-      traditional: 'Heavy Java CLI tools that slow down pipelines',
-      manual: 'Days or weeks waiting for API council approval',
+      traditional: 'Heavy legacy CLI tools that slow down pipelines',
+      manual: 'Days or weeks waiting for manual architecture approval',
     },
   ];
 
@@ -124,7 +124,7 @@ export default function WhyUsPage() {
               Why leading platform teams standardize on <span>shakt<span className="text-[#52B143]">IQ</span></span>
             </h1>
             <p className="text-text-dim text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-              Eliminate breaking API changes before they reach staging, protect downstream consumer contracts, and accelerate release cycles with deterministic AST intelligence.
+              Eliminate breaking release changes before they reach staging, protect downstream consumer contracts, and accelerate release cycles with deterministic code intelligence.
             </p>
           </div>
         </section>
@@ -243,10 +243,10 @@ export default function WhyUsPage() {
                   TRY IT IN YOUR BROWSER
                 </div>
                 <h3 className="display-font text-2xl sm:text-3xl font-bold text-green-dark mb-2">
-                  Test your OpenAPI specs in the live sandbox
+                  Test your service contracts in the live sandbox
                 </h3>
                 <p className="text-text-dim text-sm sm:text-base leading-relaxed">
-                  No installation or API credentials required. Paste base and head specs or choose from our built-in production samples to inspect AST diffs in real-time.
+                  No installation or service credentials required. Paste base and head specs or choose from our built-in production samples to inspect semantic diffs in real-time.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3.5 shrink-0 w-full sm:w-auto">

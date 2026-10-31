@@ -8,20 +8,20 @@ export function ReleaseVerdictBanner({ status }: { status?: ReleaseStatus | stri
   let title = 'Safe based on configured checks';
   let badgeColor = 'bg-ok/10 text-ok border-ok/30';
   let Icon = CheckCircle;
-  let description = 'No breaking changes detected between compared API specifications.';
+  let description = 'No breaking changes detected between compared software specifications.';
 
   if (s === 'blocked') {
     title = 'Not ready: blocking changes detected';
     badgeColor = 'bg-sev-breaking/10 text-sev-breaking border-sev-breaking/30';
     Icon = AlertCircle;
     description =
-      'Breaking API modifications were detected that will cause downstream consumer failures if released.';
+      'Breaking modifications were detected that will cause downstream client failures if released.';
   } else if (s === 'review') {
     title = 'Warning: review required';
     badgeColor = 'bg-sev-warning/10 text-sev-warning border-sev-warning/30';
     Icon = AlertTriangle;
     description =
-      'Potentially breaking or significant API changes were detected that require manual review.';
+      'Potentially breaking or significant changes were detected that require review before release.';
   }
 
   return (
@@ -32,7 +32,7 @@ export function ReleaseVerdictBanner({ status }: { status?: ReleaseStatus | stri
           <h3 className="font-semibold text-base leading-tight">{title}</h3>
           <p className="text-sm opacity-90">{description}</p>
           <p className="text-xs italic opacity-75 mt-2">
-            *This report assesses API compatibility based on the OpenAPI specifications provided. It
+            *This report assesses release compatibility based on the specifications provided. It
             does not guarantee the release is safe.*
           </p>
         </div>
