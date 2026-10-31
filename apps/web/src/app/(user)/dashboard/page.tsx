@@ -24,7 +24,9 @@ import {
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { api } from '@/lib/api';
+import { ShaktiqLogoIcon } from '@/components/shared/ShaktiqLogoIcon';
 import { Skeleton } from '@/components/common/Skeleton';
+import { CodeIntelligenceStudio } from '@/components/CodeIntelligenceStudio';
 
 const AiReleaseDossier = dynamic(
   () => import('@/components/AiReleaseDossier').then((mod) => mod.AiReleaseDossier),
@@ -130,7 +132,7 @@ paths:
 `;
 
 export default function ShaktIQDashboard() {
-  const [activeTab, setActiveTab] = useState<'overview' | 'runs' | 'compare' | 'memory' | 'dossier' | 'analyzer' | 'tokens' | 'admin'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'studio' | 'runs' | 'compare' | 'memory' | 'dossier' | 'analyzer' | 'tokens' | 'admin'>('overview');
   const [user, setUser] = useState<AuthUser | null>(null);
   const [sseConnected, setSseConnected] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -431,10 +433,13 @@ export default function ShaktIQDashboard() {
           <div className="px-5 py-4 border-b border-border flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded bg-accent flex items-center justify-center font-bold text-white text-xs">
-                  S
+                <div className="w-6 h-6 rounded-md bg-[#0A382C] flex items-center justify-center p-1 border border-emerald-500/20 shadow-xs">
+                  <ShaktiqLogoIcon className="w-4 h-4" theme="dark" />
                 </div>
-                <span className="font-semibold tracking-tight text-base">ShaktIQ</span>
+                <span className="font-extrabold tracking-tight text-base">
+                  <span className="text-foreground">shakt</span>
+                  <span className="text-[#52B143]">IQ</span>
+                </span>
               </div>
               <p className="text-[11px] text-text-muted mt-0.5">API Release Intelligence</p>
             </div>
@@ -478,6 +483,20 @@ export default function ShaktIQDashboard() {
             >
               <Layers className="w-4 h-4" />
               <span>Overview</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('studio')}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-md transition-colors text-left ${
+                activeTab === 'studio' ? 'bg-accent/10 text-accent font-medium' : 'text-text-muted hover:text-text hover:bg-surface-2'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <FileCode className="w-4 h-4 text-emerald-400" />
+                <span>Code Studio</span>
+              </div>
+              <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-[#52B143]/20 text-[#52B143] font-bold border border-[#52B143]/30">
+                LIVE
+              </span>
             </button>
             <button
               onClick={() => setActiveTab('runs')}
@@ -581,6 +600,7 @@ export default function ShaktIQDashboard() {
           <div className="flex items-center gap-3">
             <h2 className="text-base font-semibold capitalize tracking-tight">
               {activeTab === 'overview' && 'Project Overview'}
+              {activeTab === 'studio' && 'Code Intelligence Studio & Route Review'}
               {activeTab === 'runs' && 'Compatibility Runs & Findings'}
               {activeTab === 'dossier' && 'Multi-Layer AI Release Dossier (Gemini 3.8 Flash)'}
               {activeTab === 'compare' && 'Run to Run Comparison'}
@@ -628,9 +648,29 @@ export default function ShaktIQDashboard() {
 
         {/* Main View Container */}
         <main className="flex-1 overflow-y-auto p-6 max-w-7xl w-full mx-auto space-y-6">
+          {/* TAB: STUDIO */}
+          {activeTab === 'studio' && (
+            <div className="space-y-6">
+              <CodeIntelligenceStudio
+                projects={projects}
+                runs={runs}
+                activeProject={projects.find((p) => (p._id || p.id) === selectedProjectId) || projects[0] || null}
+                onSelectProject={(proj) => setSelectedProjectId(proj._id || proj.id || '')}
+              />
+            </div>
+          )}
+
           {/* TAB: OVERVIEW */}
           {activeTab === 'overview' && (
             <div className="space-y-6">
+              {/* Primary Code Intelligence Studio Workspace */}
+              <CodeIntelligenceStudio
+                projects={projects}
+                runs={runs}
+                activeProject={projects.find((p) => (p._id || p.id) === selectedProjectId) || projects[0] || null}
+                onSelectProject={(proj) => setSelectedProjectId(proj._id || proj.id || '')}
+              />
+
               {/* KPI Cards Row */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="border border-border bg-surface p-4 rounded-lg">

@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "prebuild": "npm run build --workspace=@shaktiq/shared || npm --prefix ../../packages/shared run build || tsc -b ../../packages/shared",
+    "build": "(npm run build --workspace=@shaktiq/shared || npm --prefix ../../packages/shared run build) && next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
@@ -12,8 +13,13 @@
   "dependencies": {
     "@shaktiq/shared": "*",
     "@tanstack/react-query": "^5.51.1",
+    "@upstash/ratelimit": "^2.2.0",
+    "@upstash/redis": "^1.40.0",
+    "argon2": "^0.41.1",
     "clsx": "^2.1.1",
+    "dotenv": "^16.4.7",
     "lucide-react": "^0.408.0",
+    "mongodb": "^6.12.0",
     "next": "^14.2.5",
     "next-auth": "^4.24.15",
     "react": "^18.3.1",

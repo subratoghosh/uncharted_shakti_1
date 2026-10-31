@@ -1,45 +1,266 @@
-# ShaktIQ ⚡
+# shaktIQ ⚡
 
-> **Deterministic OpenAPI Breaking Change Detection, Release Compatibility Gating & Historical Hotspot Intelligence**
->
-> *Built for the MongoDB Student Hackathon – Track 3: Developer Tools for Production Use Cases.*
+<p align="center">
+  <img src="apps/web/public/logo.png" alt="shaktIQ Logo" width="220" />
+</p>
 
-[![Node.js Version](https://img.shields.io/badge/Node.js-20.x%20LTS-brightgreen.svg)](https://nodejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x%20Strict-blue.svg)](https://www.typescriptlang.org/)
-[![Database](https://img.shields.io/badge/MongoDB-Atlas%20%2F%20Change%20Streams-green.svg)](https://www.mongodb.com/atlas)
-[![Fastify](https://img.shields.io/badge/Fastify-4.x-black.svg)](https://www.fastify.io/)
-[![Next.js](https://img.shields.io/badge/Next.js-App%20Router-black.svg)](https://nextjs.org/)
-[![n8n](https://img.shields.io/badge/n8n-Orchestration-orange.svg)](https://n8n.io/)
-[![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
+<p align="center">
+  <strong>Deterministic OpenAPI Breaking Change Detection, Release Compatibility Gating & Historical Hotspot Intelligence</strong>
+</p>
+
+<p align="center">
+  <a href="https://marketplace.visualstudio.com/items?itemName=shaktIQ.shaktiq-vscode"><img src="https://img.shields.io/badge/VS_Code_Marketplace-shaktIQ-007ACC.svg?logo=visualstudiocode&logoColor=white" alt="VS Code Marketplace"></a>
+  <a href="https://shaktiq.vercel.app"><img src="https://img.shields.io/badge/Web_Dashboard-shaktiq.vercel.app-10b981.svg" alt="Web Dashboard"></a>
+  <a href="https://uncharted-shakti-1.onrender.com/api/v1/health"><img src="https://img.shields.io/badge/API_Backend-Render_Live-46E3B7.svg" alt="API Backend"></a>
+  <a href="https://www.mongodb.com/atlas"><img src="https://img.shields.io/badge/Database-MongoDB_Atlas-47A248.svg?logo=mongodb&logoColor=white" alt="MongoDB Atlas"></a>
+  <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-20.x%20LTS-brightgreen.svg" alt="Node.js"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License"></a>
+</p>
 
 ---
 
-## 📌 The Problem
+## 📑 Table of Contents
 
-API providers change OpenAPI specifications constantly. Removing an endpoint, adding a required request parameter, or changing a field type silently breaks mobile applications, partner integrations, and internal microservices.
+- [⚡ Quick Start: 5 Ways to Use shaktIQ](#-quick-start-5-ways-to-use-shaktiq)
+  - [1. Web Dashboard (Zero Install)](#1-web-dashboard-zero-install)
+  - [2. Visual Studio Code Extension](#2-visual-studio-code-extension)
+  - [3. Google Antigravity (AI Coding Agent Skill)](#3-google-antigravity-ai-coding-agent-skill)
+  - [4. Cursor / Windsurf / Claude Code (MCP)](#4-cursor--windsurf--claude-code-mcp)
+  - [5. CLI (Command Line & Terminal)](#5-cli-command-line--terminal)
+  - [6. CI/CD & GitHub Actions (Automated PR Gate)](#6-cicd--github-actions-automated-pr-gate)
+- [📌 The Problem shaktIQ Solves](#-the-problem-shaktiq-solves)
+- [🚦 Understanding Release Safety Verdicts](#-understanding-release-safety-verdicts)
+- [🌟 Key Features](#-key-features)
+- [🏗️ System Architecture](#️-system-architecture)
+- [🍃 Production MongoDB Atlas Deep Dive](#-production-mongodb-atlas-deep-dive)
+- [🚀 Step-by-Step Local Development & Self-Hosting](#-step-by-step-local-development--self-hosting)
+- [📁 Monorepo Workspace Structure](#-monorepo-workspace-structure)
+- [🔒 Security & Threat Modeling](#-security--threat-modeling)
+- [🧪 Testing & Quality Assurance](#-testing--quality-assurance)
+- [👥 Team & Hackathon Ownership](#-team--hackathon-ownership)
+- [📖 System Documentation](#-system-documentation)
+- [⚖️ License](#️-license)
 
-- Reviewers rarely diff complex YAML line-by-line during code reviews.
-- LLM-based diffing is non-deterministic, hallucinates breaking rules, and cannot be trusted as a hard CI gate.
-- Teams suffer from amnesia: nobody remembers that an endpoint like `/orders/{id}` has already broken downstream consumers three times across recent releases.
+---
 
-### The Question ShaktIQ Solves
-> *"Will the latest API changes break existing consumers, and what could be affected?"*
+## ⚡ Quick Start: 5 Ways to Use shaktIQ
 
-ShaktIQ answers this deterministically before changes hit production, tracks project memory across releases, and delivers verdicts where developers already work: **GitHub PRs**, **VS Code**, and a **Web Dashboard**.
+Choose the environment where you work. You can be up and running in **under 2 minutes**:
+
+```
+                       ┌──────────────────────────────────────┐
+                       │             shaktIQ Hub              │
+                       └──────────────────┬───────────────────┘
+                                          │
+         ┌───────────────┬────────────────┼───────────────┬───────────────┐
+         ▼               ▼                ▼               ▼               ▼
+   🌐 Web Console   💻 VS Code Ext   🤖 Antigravity  🖥️ Terminal/CLI  🚀 GitHub Actions
+  (Instant Trial)  (In-Editor Lint) (AI Agent Skill) (DevOps/Scripts)  (PR Block Gate)
+```
+
+---
+
+### 1. Web Dashboard (Zero Install)
+
+The fastest way to experience shaktIQ without installing any software or extensions:
+
+1. Open the live console at **[https://shaktiq.vercel.app](https://shaktiq.vercel.app)**.
+2. Sign in or register a new user in 10 seconds.
+3. Select an existing project or run an interactive spec comparison.
+4. Inspect the **Blast Radius Matrix** across Mobile (iOS/Android), Web SPAs, and Backend Microservices.
+5. Click **AI Release Dossier** to interact with the **shaktIQ Gemini 3.8 AI Assistant** for instant non-breaking patch code!
+
+---
+
+### 2. Visual Studio Code Extension
+
+Catch breaking API changes in real-time as you type, right inside your editor:
+
+1. **Install from Marketplace:**
+   - In VS Code, press `Ctrl+Shift+X` (or `Cmd+Shift+X` on macOS).
+   - Search for **`shaktIQ`**.
+   - Click **Install** (or install directly from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=shaktIQ.shaktiq-vscode)).
+2. **Analyze an OpenAPI File:**
+   - Open any workspace containing an `openapi.yaml`, `openapi.json`, or `swagger.json` file.
+   - Press `Ctrl+Shift+P` ➔ run **`shaktIQ: Analyze API changes`**.
+3. **Inspect Diagnostics:**
+   - Breaking changes are highlighted directly in your code with red squiggly error diagnostics.
+   - Hover over any flagged line to see the rule violation, client blast radius, and remediation advice.
+   - Open the **Problems** tab (`Ctrl+Shift+M`) for a complete grouped checklist of all API issues.
+4. *(Optional)* **Connect to Your Team Backend:**
+   - Open VS Code Settings (`Ctrl+,`) and search for `shaktiq`.
+   - Set `shaktiq.apiUrl` to your live API (default: `https://uncharted-shakti-1.onrender.com/api/v1`).
+   - Paste your Personal Access Token (`shaktiq.apiToken`) generated from your Web Dashboard profile.
+
+---
+
+### 3. Google Antigravity (AI Coding Agent Skill)
+
+Equip your AI coding agent with the `shaktIQ` skill so it automatically verifies API contracts and catches breaking changes **in-between code writing and controller refactoring**:
+
+#### Option A: In Your Current Project (Recommended)
+Run this single command inside your project root:
+
+```bash
+# macOS / Linux / Git Bash:
+mkdir -p .agents/skills/shaktiq
+curl -sSL https://raw.githubusercontent.com/subratoghosh/uncharted_shakti_1/main/.agents/skills/shaktiq/SKILL.md -o .agents/skills/shaktiq/SKILL.md
+
+# Windows PowerShell:
+New-Item -ItemType Directory -Force .agents\skills\shaktiq
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/subratoghosh/uncharted_shakti_1/main/.agents/skills/shaktiq/SKILL.md" -OutFile ".agents\skills\shaktiq\SKILL.md"
+```
+
+#### Option B: Globally Across All Projects
+Make `shaktIQ` available to Antigravity across all your workspaces:
+
+- **Windows PowerShell:**
+  ```powershell
+  New-Item -ItemType Directory -Force "$env:USERPROFILE\.gemini\config\skills\shaktiq"
+  Invoke-WebRequest -Uri "https://raw.githubusercontent.com/subratoghosh/uncharted_shakti_1/main/.agents/skills/shaktiq/SKILL.md" -OutFile "$env:USERPROFILE\.gemini\config\skills\shaktiq\SKILL.md"
+  ```
+- **macOS / Linux:**
+  ```bash
+  mkdir -p ~/.gemini/config/skills/shaktiq
+  curl -sSL https://raw.githubusercontent.com/subratoghosh/uncharted_shakti_1/main/.agents/skills/shaktiq/SKILL.md -o ~/.gemini/config/skills/shaktiq/SKILL.md
+  ```
+
+#### How to Use It in Agent Chat:
+Whenever you or your agent edits routes, controllers, or schemas, prompt your agent:
+> *"Run shaktIQ to check if my changes to the users API introduce any breaking changes against main."*
+
+The agent will execute the in-flight check, review the deterministic findings, and automatically apply non-breaking AST remedies.
+
+---
+
+### 4. Cursor / Windsurf / Claude Code (MCP)
+
+Connect `shaktIQ` as a standard **Model Context Protocol (MCP)** tool server:
+
+Add the following to your agent configuration (`mcp_config.json` or Cursor Settings ➔ Features ➔ MCP):
+
+```json
+{
+  "mcpServers": {
+    "shaktiq": {
+      "command": "node",
+      "args": ["packages/analyzer/dist/mcp.js"]
+    }
+  }
+}
+```
+
+Exposed native tools:
+- `shaktiq_analyze({ base_spec, head_spec })`: Analyzes two OpenAPI files directly.
+- `shaktiq_git_diff({ spec_path, base_ref })`: Compares your working spec against git `HEAD` or any branch.
+
+---
+
+### 5. CLI (Command Line & Terminal)
+
+Run deterministic OpenAPI checks directly from your terminal or shell scripts:
+
+```bash
+# 1. Compare your current working spec against git main branch:
+npm run shaktiq -- git-diff --spec ./openapi.yaml --base-ref main --markdown
+
+# 2. Compare two OpenAPI specification files directly:
+npm run shaktiq -- analyze --base fixtures/openapi/v1-base.yaml --head fixtures/openapi/v2-breaking.yaml --markdown
+
+# 3. Output machine-readable JSON (ideal for custom scripts and agents):
+npm run shaktiq -- analyze --base ./base.yaml --head ./head.yaml --json
+
+# 4. Strict CI gate (exits with code 1 if any breaking change is detected):
+npm run shaktiq -- analyze --base ./base.yaml --head ./head.yaml --fail-on-breaking
+```
+
+---
+
+### 6. CI/CD & GitHub Actions (Automated PR Gate)
+
+Prevent breaking API changes from ever merging into your production branch by adding an automated compatibility gate.
+
+Create `.github/workflows/shaktiq.yml` in your repository:
+
+```yaml
+name: shaktIQ API Release Gate
+
+on:
+  pull_request:
+    paths:
+      - '**/openapi.yaml'
+      - '**/openapi.json'
+      - '**/swagger.json'
+
+jobs:
+  verify-api-compatibility:
+    name: Verify Backward Compatibility
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full git history required for branch diffing
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run shaktIQ Compatibility Check
+        run: |
+          node packages/analyzer/dist/cli.js git-diff \
+            --spec ./openapi.yaml \
+            --base-ref origin/main \
+            --fail-on-breaking \
+            --markdown >> $GITHUB_STEP_SUMMARY
+```
+
+If a pull request deletes an endpoint or changes a parameter type, the CI workflow will exit with code `1`, blocking the merge and printing a clear markdown table directly into the GitHub Actions Step Summary!
+
+---
+
+## 📌 The Problem shaktIQ Solves
+
+API teams update OpenAPI specifications constantly. Removing an endpoint, adding a required request parameter, or changing a field type silently breaks mobile applications, partner integrations, and internal microservices.
+
+- **Human Code Review Fails:** Engineers cannot reliably diff 3,000-line YAML files during busy pull request reviews.
+- **LLM Diffing Is Unreliable:** LLM-based diffing is non-deterministic, hallucinates breaking rules, and cannot be trusted as a hard CI gate.
+- **Teams Suffer from Amnesia:** Nobody remembers that an endpoint like `/orders/{id}` has broken downstream consumers three times across the last four sprints.
+
+### The Question shaktIQ Answers:
+> *"Will our latest API changes break existing consumers, which clients will be affected, and how do we fix it before deploying?"*
+
+shaktIQ answers this deterministically before changes hit production, tracks project memory across releases, and delivers verdicts where developers already work: **GitHub PRs**, **VS Code**, **AI Coding Agents**, and a **Web Dashboard**.
+
+---
+
+## 🚦 Understanding Release Safety Verdicts
+
+Every shaktIQ run evaluates ~300 OpenAPI 3.0/3.1 rules and computes an unambiguous release verdict:
+
+| Verdict | Indicator | Meaning | CI Exit Code | Recommended Action |
+|:---|:---:|:---|:---:|:---|
+| **`SAFE`** | 🟢 | Only additive or backward-compatible changes detected (e.g. new optional parameters, new endpoints, new non-breaking response fields). | `0` | Safe to merge and deploy immediately. |
+| **`REVIEW`** | 🟡 | Contract warnings detected that do not immediately crash consumers but require engineering attention (e.g. endpoint deprecation, altered descriptions). | `0` | Review with team before release. |
+| **`BLOCKED`** | 🔴 | One or more breaking changes detected (e.g. removed paths, changed data types, new required fields, removed enum values). | `1` | **Block merge/release.** Apply non-breaking remediation recipes. |
 
 ---
 
 ## 🌟 Key Features
 
-- 🎯 **Deterministic Breaking Change Detection:** Powered by `oasdiff` via `@shaktiq/analyzer`. Evaluates ~300 rules against OpenAPI 3.0/3.1 specs with zero hallucination.
-- 🛡️ **Three Surfaces, One Unified Pipeline:**
-  - **GitHub Pre-Release Gate:** Webhook triggers on `push` / `pull_request`, classifies risk, and posts automated compatibility comments.
-  - **VS Code Extension:** Developers compare their local working spec against `git HEAD` in real-time with diagnostics in the Problems panel.
-  - **User & Admin Web Dashboard:** Interactive Next.js console with run comparisons, endpoint hotspot tracking, and an admin audit trail.
-- 🧠 **Project Memory & Endpoint Hotspots:** Identifies chronic risk areas by aggregating breaking changes across releases (`distinctRuns >= 2`).
-- ⚡ **Real-Time Live Updates:** MongoDB Change Streams push real-time status transitions (`queued` → `running` → `completed`) over Server-Sent Events (SSE).
-- 🔒 **Zero-Duplicate Idempotent Webhook Intake:** Guaranteed single execution under webhook delivery retries and races via MongoDB unique indexes and atomic updates.
-- 🤖 **Optional Isolated AI Explanations:** Claude API (orchestrated via n8n) translates technical diffs into plain-language consumer impact and migration guides without compromising security.
+- 🎯 **Deterministic Breaking Change Detection:** Powered by `oasdiff` via `@shaktiq/analyzer` with an in-process pure-JS fallback for 100% zero-dependency uptime. Evaluates rules against OpenAPI 3.0 and 3.1 specs with zero hallucination.
+- 🤖 **Google Gemini 3.8 Flash AI Intelligence:** Synthesizes AST code fix snippets, blast radius risk assessments for mobile/web/microservice clients, and comprehensive Release Dossiers.
+- 💬 **Natural Language Project Assistant:** Ask shaktIQ questions in plain English (*"Will this release break our mobile app?"*, *"How do I fix the parameter mismatch on POST /orders?"*) with instant answers grounded in MongoDB release memory.
+- 🛡️ **Three Developer Gateways:**
+  - **Gateway 1: GitHub Pre-Release Gate:** Webhook triggers on `push` / `pull_request`, classifies risk, and posts automated compatibility comments.
+  - **Gateway 2: VS Code Extension:** Developers compare their local working spec against `git HEAD` in real-time with diagnostics in the Problems panel.
+  - **Gateway 3: Coding Agent Skill & Web Console:** Interactive Next.js console with run comparisons, endpoint hotspot tracking, and an AI chat assistant.
+- 📊 **Historical Hotspot Intelligence:** Uses MongoDB aggregation pipelines to track endpoints that break repeatedly across releases, alerting teams to fragile API surfaces.
 
 ---
 
@@ -50,36 +271,21 @@ flowchart TD
   GH[GitHub Repo] -- webhook push / PR --> API[Fastify API Backend]
   VSC[VS Code Extension] -- PAT + Two Specs --> API
   WEB[Next.js Web: User & Admin] -- Cookie JWT --> API
+  AGENT[Antigravity / Coding Agent] -- shaktIQ Skill --> ANALYZER[packages/analyzer CLI]
   
   API -- Verify HMAC, Validate Zod, Idempotent Insert --> DB[(MongoDB Atlas)]
   API -- POST Run Event + Secret Key --> N8N[n8n Orchestrator]
   
   N8N -- Fetch Specs --> GHAPI[GitHub REST API]
   N8N -- Internal Lifecycle API --> API
-  API -- oasdiff CLI --> ANALYZER[packages/analyzer]
+  API -- AST Diff / oasdiff --> ANALYZER
   
-  N8N -. Optional AI Explanation .-> CLAUDE[Claude API]
+  API -. AI Release Dossier .-> GEMINI[Google Gemini 3.8 Flash]
   N8N -- PR Compatibility Comment --> GHAPI
   
   DB -- Change Streams --> API
   API -- Server-Sent Events SSE --> WEB
 ```
-
-### Separation of Concerns: Backend vs. n8n
-
-| Concern | Fastify Backend (`apps/api`) | n8n Orchestrator (`n8n/`) |
-|---|:---:|:---:|
-| Webhook HMAC Verification & Zod Validation | ✅ | ❌ |
-| Auth (Argon2id, JWT, PAT) & Role Guardrails | ✅ | ❌ |
-| Idempotent Event Intake & Run Creation | ✅ | ❌ |
-| Core Diffing (`oasdiff`), Fingerprints & Rules | ✅ (`packages/analyzer`) | ❌ |
-| MongoDB Aggregations, Memory & Release Reports | ✅ | ❌ |
-| Change Streams & SSE Hub | ✅ | ❌ |
-| Direct MongoDB Access | ✅ (Official Driver) | ❌ (Strictly forbidden) |
-| Fetching Specs & Branch Artifacts from GitHub | ❌ | ✅ |
-| External Step Retries (3x backoff) & Branching | ❌ | ✅ |
-| GitHub PR Commenting & Notifications | ❌ | ✅ |
-| Failure Recovery (`shaktiq-error-handler`) | ❌ (Receives fail report) | ✅ |
 
 ---
 
@@ -162,31 +368,27 @@ flowchart TD
 7. **`shaktiq-error-handler` (Error Recovery):**
    - Attached as the designated `errorWorkflow`. On any failure, captures the failing node and message, reporting the failure to `POST /internal/runs/:runId/fail` with `errorCode: WORKFLOW_FAILED` to guarantee clean state reconciliation.
 
-
 ---
 
-## 🍃 Deep Dive: Production MongoDB Atlas Usage
+## 🍃 Production MongoDB Atlas Deep Dive
 
-ShaktIQ showcases production-grade MongoDB features tailored for developer tooling:
+shaktIQ is built with production-grade MongoDB Atlas architecture:
 
 ### 1. Strict Schema Validation (`$jsonSchema`)
 All collections (`users`, `apiTokens`, `projects`, `events`, `runs`, `findings`, `specSnapshots`, `notifications`) are strictly validated at the database level with `validationLevel: "strict"` and `validationAction: "error"`:
-- Rejects unexpected field structures or invalid enum values (e.g. unknown severities or event types).
+- Rejects unexpected field structures or invalid enum values.
 - Applied automatically via idempotent migration scripts (`apps/api/src/db/migrate.ts`).
 
 ### 2. High-Performance Aggregation Pipelines
 - **Run-to-Run Diff (Compare Pipeline):** Categorizes findings between any base and head run into `new`, `resolved`, and `unresolved` using stable SHA-256 finding fingerprints.
 - **Project Memory (Endpoint Hotspots):** Aggregates findings by `(method, endpoint)` across completed runs to highlight endpoints with recurring breaks (`distinctRuns >= 2`).
-- **Release Verdict Summary:** Evaluates release readiness into honest status states:
-  - `safe`: No breaking or warning changes.
-  - `review`: Warnings detected (requires human confirmation).
-  - `blocked`: One or more breaking changes detected.
+- **Release Verdict Summary:** Evaluates release readiness into honest status states (`safe`, `review`, `blocked`).
 - **Admin System Telemetry:** Single `$facet` aggregation summarizing run statuses, duplicate delivery counts, and rejected signatures over 24-hour windows.
 
 ### 3. Change Streams + Server-Sent Events (SSE)
 - Listens to native Change Streams on `runs` and `events`.
 - Emits real-time SSE events (`run.updated`, `event.received`, `event.duplicate`) to connected dashboard clients.
-- Scoped to user authorization and project boundaries.
+- Scoped strictly to user authorization and project boundaries.
 
 ### 4. Zero-Duplicate Idempotent Ingestion
 - `events` collection enforces a unique index on `eventId` (`github:<delivery_uuid>`).
@@ -201,180 +403,114 @@ All collections (`users`, `apiTokens`, `projects`, `events`, `runs`, `findings`,
 
 ---
 
+## 🚀 Step-by-Step Local Development & Self-Hosting
+
+Follow these simple steps to run the complete shaktIQ stack locally on your machine:
+
+### Prerequisites
+- **Node.js:** `^20.0.0` (LTS recommended)
+- **npm:** `^10.0.0`
+- **Git**
+- **MongoDB Atlas** Free Tier M0 (or local MongoDB replica set with change streams enabled)
+
+### Step 1: Clone the Repository
+```bash
+git clone https://github.com/subratoghosh/uncharted_shakti_1.git shaktiq
+cd shaktiq
+```
+
+### Step 2: Install Dependencies
+```bash
+npm install
+```
+
+### Step 3: Configure Environment Variables
+Copy `.env.example` to `.env` in the root and in `apps/api`:
+```bash
+# In project root:
+cp .env.example .env
+
+# In API directory:
+cp infra/.env.example apps/api/.env
+```
+
+Ensure the following variables are filled in your `.env`:
+```ini
+NODE_ENV=development
+PORT=4000
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/shaktiq?retryWrites=true&w=majority
+MONGODB_DB=shaktiq
+JWT_SECRET=super_secret_jwt_key_at_least_32_chars_long
+INTERNAL_API_KEY=super_secret_internal_key_at_least_32_chars_long
+GITHUB_WEBHOOK_SECRET=your_github_webhook_secret
+WEB_ORIGIN=http://localhost:3000
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+### Step 4: Run Database Migrations
+Initialize all strict `$jsonSchema` validators and production indexes in MongoDB:
+```bash
+npm run db:migrate -w apps/api
+```
+
+### Step 5: Start Backend & Frontend
+Run both services in separate terminals (or concurrently):
+
+```bash
+# Terminal 1: Backend Fastify API (Runs on port 4000)
+npm run dev -w apps/api
+
+# Terminal 2: Web Dashboard (Runs on port 3000)
+npm run dev -w apps/web
+```
+
+Visit **`http://localhost:3000`** in your browser!
+
+### Step 6: (Optional) Test the VS Code Extension Locally
+1. Open the `apps/vscode-ext` folder in VS Code.
+2. Press `F5` to launch an Extension Development Host window.
+3. Open any folder with an OpenAPI spec and run `Ctrl+Shift+P` ➔ **`shaktIQ: Analyze API changes`**.
+
+---
+
 ## 📁 Monorepo Workspace Structure
 
 ```
 shaktiq/
 ├── apps/
-│   ├── api/            # Fastify backend (Auth, Ingestion, MongoDB, SSE)
-│   ├── web/            # Next.js App Router (User & Admin Portals, shadcn/ui)
-│   └── vscode-ext/     # VS Code Extension (Local pre-commit analysis)
+│   ├── api/            # Fastify backend (Auth, Ingestion, MongoDB, SSE, Gemini)
+│   ├── web/            # Next.js App Router (Dashboard, AI Dossier, shadcn/ui)
+│   └── vscode-ext/     # VS Code Extension (Publisher: shaktIQ)
 ├── packages/
 │   ├── shared/         # Zod schemas, types, DTOs, ROUTES, error codes
-│   └── analyzer/       # oasdiff Go CLI wrapper, rule mappings & templates
-├── n8n/
-│   ├── workflows/      # Exported workflows (shaktiq-analyze-run, shaktiq-error-handler)
-│   └── stub-api/       # Local development stub for internal endpoints
+│   └── analyzer/       # Deterministic AST diff engine, rule mappings & CLI/MCP
+├── .agents/
+│   └── skills/         # AI coding agent skills (Antigravity skill: shaktiq)
+├── scripts/
+│   ├── install-agent-skill.sh   # Bash installer for Linux/macOS
+│   └── install-agent-skill.ps1  # PowerShell installer for Windows
 ├── fixtures/openapi/   # Versioned OpenAPI 3.0/3.1 test fixtures
 ├── infra/              # Docker Compose, Dockerfiles, .env.example
 └── docs/               # Full system documentation & specifications
-    ├── prd.md          # Product Requirements Document
-    ├── architecture.md # Monorepo & System Architecture
-    ├── database.md     # MongoDB Schema, Indexes & Aggregations
-    ├── security.md     # Zero Trust Security & Threat Modeling
-    ├── testing.md      # Testing Pyramid & Fixtures Suite
-    ├── design_system.md# UI Philosophy, Design Tokens & Rules
-    ├── code_style.md   # TypeScript & Repository Conventions
-    └── agents.md       # Team Roles, Workspaces & Contracts
 ```
 
 ---
 
 ## 🔒 Security & Threat Modeling
 
-- **Zero Untrusted Execution:** ShaktIQ parses OpenAPI specs purely as structured text using `oasdiff`; repository code is never executed.
+- **Zero Untrusted Execution:** shaktIQ parses OpenAPI specs purely as structured text; user repository code is never executed.
 - **HMAC-SHA256 Signature Verification:** GitHub webhooks are verified with raw byte buffering and `crypto.timingSafeEqual`. Invalid signatures are rejected immediately (HTTP 401) and logged.
 - **Authentication:**
   - **Web Dashboard:** Argon2id password hashing + HTTP-only, `SameSite=Lax`, secure JWT cookies.
   - **VS Code Extension:** Personal Access Tokens (`sq_...`) stored strictly as SHA-256 hashes.
-- **Network Isolation:** Internal lifecycle routes (`/api/v1/internal/*`) require a 32+ character `INTERNAL_API_KEY` and are isolated to internal container networks.
-- **AI Injection Mitigation:** Claude API receives strictly structured finding metadata (method, endpoint, changeType). Raw user specifications are never forwarded to the LLM.
-
----
-
-## 👥 Team & Ownership
-
-This project was built for the **MongoDB Student Hackathon** with clean monorepo ownership boundaries:
-
-| Member | Focus Area | Owned Codebases |
-|---|---|---|
-| **Subrato Ghosh** | Backend, Database & Security | `apps/api`, `packages/shared`, `docs/database.md`, `docs/security.md` |
-| **Lavanya** | Frontend & UI/UX | `apps/web`, `docs/design_system.md` |
-| **Vicky** | Automation, Analyzer, VS Code & QA | `packages/analyzer`, `apps/vscode-ext`, `n8n/`, `fixtures/`, `infra/`, `docs/testing.md` |
-
----
-
-## 🚀 Quick Start (Local Development)
-
-### Prerequisites
-- **Node.js:** `^20.0.0`
-- **npm:** `^10.0.0`
-- **Docker & Docker Compose** (for n8n and API containerization)
-- **MongoDB Atlas** cluster (M0 free tier or higher with replica sets enabled for change streams)
-- **oasdiff:** [Installed locally](https://github.com/Tufin/oasdiff) or run via Docker (`tufin/oasdiff`)
-
-### 1. Clone & Install Dependencies
-```bash
-git clone https://github.com/subratoghosh/uncharted_shakti_1.git shaktiq
-cd shaktiq
-npm install
-```
-
-### 2. Configure Environment Variables
-Copy `.env.example` in `infra/` or relevant packages:
-```bash
-cp infra/.env.example apps/api/.env
-```
-
-Key environment configurations:
-```ini
-NODE_ENV=development
-PORT=4000
-MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/shaktiq?retryWrites=true&w=majority
-MONGODB_DB=shaktiq
-JWT_SECRET=super_secret_jwt_key_at_least_32_chars_long
-INTERNAL_API_KEY=super_secret_internal_key_at_least_32_chars_long
-GITHUB_WEBHOOK_SECRET=your_github_webhook_secret
-WEB_ORIGIN=http://localhost:3000
-N8N_WEBHOOK_URL=http://localhost:5678/webhook/shaktiq-analyze-run
-N8N_WEBHOOK_TOKEN=your_n8n_token
-OASDIFF_MODE=binary
-AI_EXPLANATIONS_ENABLED=false
-```
-
-### 3. Initialize MongoDB Schemas & Indexes
-Run the idempotent database migration script to set up validators and indexes:
-```bash
-npm run db:migrate -w apps/api
-```
-
-### 4. Run the Stack
-Run development services concurrently:
-```bash
-# Start backend API (Port 4000)
-npm run dev -w apps/api
-
-# Start Web Dashboard (Port 3000)
-npm run dev -w apps/web
-
-# Or launch containers via Docker Compose
-docker compose -f infra/docker-compose.yml up
-```
-
----
-
-## 🤖 AI Agent Skill & Plugin (Antigravity, Claude Code, Cursor, Windsurf)
-
-ShaktIQ can be installed directly into AI coding agents as an **Agent Skill, Plugin, and MCP Tool** (similar to `graphify` and `ponytail`). This allows agents to run deterministic API contract diffs **in-between code execution**, catching breaking changes before code is ever committed or deployed.
-
-### What It Is Called
-- **Antigravity / Agent Skill:** Defined by `skills/shaktiq/SKILL.md` and `.agents/skills/shaktiq/SKILL.md`. Injected into agent context via *Progressive Disclosure*.
-- **Agent Plugin:** Bundled via `plugin.json` and `plugin.yaml` with commands, tools, and hooks.
-- **Model Context Protocol (MCP) Server:** Standard JSON-RPC stdio tool provider (`shaktiq_analyze` and `shaktiq_git_diff`).
-
-### Quick Installation (1-Command Setup)
-
-Run the automated installer script:
-```bash
-./scripts/install-agent-skill.sh
-```
-
-This installs:
-1. `shaktiq` CLI globally into `~/.local/bin/shaktiq`.
-2. ShaktIQ Skill into Antigravity global customizations (`~/.gemini/config/skills/shaktiq/SKILL.md`).
-3. ShaktIQ Workspace Skill into `.agents/skills/shaktiq/SKILL.md` (auto-detected by repository agents).
-
-### How AI Agents Use It Between Code Execution
-
-When pair programming or editing backend controllers / OpenAPI schemas, agents can execute:
-
-```bash
-# 1. Compare working copy against git main branch (structured JSON for agents)
-shaktiq git-diff --spec openapi.yaml --base-ref main --json
-
-# 2. Compare working copy against git main branch (markdown for PR comments / chat)
-shaktiq git-diff --spec openapi.yaml --base-ref main --markdown
-
-# 3. Direct comparison between two spec files:
-shaktiq analyze --base ./base.yaml --head ./head.yaml --json
-
-# 4. Strict CI / pre-commit mode (exits with code 1 on breaking changes):
-shaktiq analyze --base ./base.yaml --head ./head.yaml --fail-on-breaking
-```
-
-### Model Context Protocol (MCP) Configuration
-
-Add ShaktIQ to your agent's `mcp_config.json` (Antigravity, Claude Desktop, Cursor, Windsurf):
-
-```json
-{
-  "mcpServers": {
-    "shaktiq": {
-      "command": "shaktiq-mcp"
-    }
-  }
-}
-```
-
-Exposed native tools:
-- `shaktiq_analyze({ base_spec, head_spec })`
-- `shaktiq_git_diff({ spec_path, base_ref })`
+- **Network Isolation:** Internal lifecycle routes (`/api/v1/internal/*`) require a 32+ character `INTERNAL_API_KEY`.
+- **AI Safety & Privacy:** Gemini receives strictly structured finding metadata (method, endpoint, changeType). Raw user proprietary code is never forwarded to external LLMs.
 
 ---
 
 ## 🧪 Testing & Quality Assurance
 
-ShaktIQ follows a rigorous testing pyramid:
+shaktIQ maintains high code quality with automated test suites:
 
 ```bash
 # Typecheck all workspaces
@@ -386,21 +522,27 @@ npm run lint
 # Run unit & integration test suite (Vitest)
 npm test
 
-# Run Playwright End-to-End tests
+# Run End-to-End browser tests (Playwright)
 npm run e2e
 ```
 
-### Test Suite Highlights
-- **Deterministic Analyzer Tests:** Tested against 10 versioned fixtures in `fixtures/openapi/` validating endpoint removal, method deletion, parameter mutations, and type changes.
-- **Race Condition & Idempotency Tests:** Verifies duplicate webhook delivery rejection under 20 concurrent requests.
-- **MongoDB Aggregation Validation:** Tests run comparison (`new` / `resolved` / `unresolved`) and endpoint hotspot rankings.
-- **Change Stream Reconnection:** Validates SSE emission and auto-recovery on connection drops.
+---
+
+## 👥 Team & Hackathon Ownership
+
+Built with ❤️ for the **MongoDB Student Hackathon**:
+
+| Member | Focus Area | Owned Codebases |
+|---|---|---|
+| **Subrato Ghosh** | Backend, Database, Security & Agent Skills | `apps/api`, `packages/shared`, `.agents/skills`, `docs/database.md`, `docs/security.md` |
+| **Lavanya** | Frontend, AI Release Dossier & UI/UX | `apps/web`, `docs/design_system.md` |
+| **Vicky** | Analyzer Engine, VS Code Extension & QA | `packages/analyzer`, `apps/vscode-ext`, `n8n/`, `fixtures/`, `docs/testing.md` |
 
 ---
 
 ## 📖 System Documentation
 
-Detailed architectural and engineering documentation is available in the [`docs/`](docs/) directory:
+Detailed technical guides are available in the [`docs/`](docs/) directory:
 - 📄 [Product Requirements Document (`docs/prd.md`)](docs/prd.md)
 - 🏛️ [System Architecture & Lifecycle (`docs/architecture.md`)](docs/architecture.md)
 - 💾 [MongoDB Schema, Indexes & Aggregations (`docs/database.md`)](docs/database.md)
@@ -414,4 +556,4 @@ Detailed architectural and engineering documentation is available in the [`docs/
 
 ## ⚖️ License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See [`LICENSE`](LICENSE) for more information.

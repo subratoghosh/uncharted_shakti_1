@@ -6,7 +6,7 @@ import { MarketingLayout } from '@/components/landing/MarketingLayout';
 import { FAQAccordion } from '@/components/landing/FAQAccordion';
 
 export const metadata: Metadata = {
-  title: 'Knowledge Base & FAQ | ShaktIQ - OpenAPI Release Intelligence',
+  title: 'Knowledge Base & FAQ | shaktIQ - OpenAPI Release Intelligence',
   description:
     'Frequently asked questions about deterministic AST diffing, blast radius scoring, Gemini AI remediation, and CI/CD pull request gate integration.',
 };

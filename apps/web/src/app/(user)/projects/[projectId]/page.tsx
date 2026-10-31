@@ -8,6 +8,7 @@ import { apiClient } from '../../../../lib/api-client';
 import { StatusBadge } from '../../../../components/shared/StatusBadge';
 import { ReleaseVerdictBanner } from '../../../../components/shared/ReleaseVerdictBanner';
 import { EndpointTag } from '../../../../components/shared/EndpointTag';
+import { AskAiAssistant } from '../../../../components/shared/AskAiAssistant';
 import { formatDate, formatShortSha } from '../../../../lib/format';
 import { DashboardSkeleton } from '../../../../components/common/Skeleton';
 import { Play, GitBranch, Flame, ArrowRight, GitCompare, Upload, X, History } from 'lucide-react';
@@ -454,6 +455,9 @@ export default function ProjectDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Natural Language AI Assistant */}
+      <AskAiAssistant projectId={projectId} projectName={project?.name} />
     </div>
   );
 }

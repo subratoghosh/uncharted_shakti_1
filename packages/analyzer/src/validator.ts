@@ -30,12 +30,24 @@ export function validateSpecContent(specText: string, label: 'base' | 'head'): v
   }
 
   // Reject specs containing remote $ref (http:// or https://)
-  // Check regex for $ref: "http..." or "$ref": "http..."
   const remoteRefPattern = /["']?\$ref["']?\s*:\s*["']https?:\/\//i;
   if (remoteRefPattern.test(specText)) {
     throw new AnalyzerError(
       'SPEC_INVALID',
       `${label} spec contains remote $ref which is prohibited for security reasons`,
+    );
+  }
+
+  // Reject specs that are not OpenAPI or Swagger specifications
+  if (
+    !specText.includes('openapi:') &&
+    !specText.includes('swagger:') &&
+    !specText.includes('"openapi"') &&
+    !specText.includes('"swagger"')
+  ) {
+    throw new AnalyzerError(
+      'SPEC_INVALID',
+      `${label} OpenAPI specification is invalid: missing openapi or swagger definition`,
     );
   }
 }

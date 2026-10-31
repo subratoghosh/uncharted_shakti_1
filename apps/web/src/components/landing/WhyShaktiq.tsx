@@ -7,13 +7,13 @@ export const WhyShaktiq: React.FC = () => {
       icon: GitBranch,
       title: 'AST Semantics vs Naive Text Diffing',
       description:
-        'Line-by-line diffs fail on reordered keys or comment changes. ShaktIQ parses specs into Abstract Syntax Trees, isolating true schema disruptions from harmless formatting.',
+        'Line-by-line diffs fail on reordered keys or comment changes. shaktIQ parses specs into Abstract Syntax Trees, isolating true schema disruptions from harmless formatting.',
     },
     {
       icon: ShieldCheck,
       title: 'Non-Bypassable CI/CD Release Gates',
       description:
-        'Zero broken clients in production. ShaktIQ evaluates your release policy, calculating an objective 0-100 score and halting pull requests with an explicit BLOCKED verdict.',
+        'Zero broken clients in production. shaktIQ evaluates your release policy, calculating an objective 0-100 score and halting pull requests with an explicit BLOCKED verdict.',
     },
     {
       icon: Zap,
@@ -25,7 +25,7 @@ export const WhyShaktiq: React.FC = () => {
       icon: Network,
       title: 'Blast Radius & Consumer Dependency Mapping',
       description:
-        'Understand the ripple effect before deploy. ShaktIQ matches modified schemas against registered consumer microservices, mobile apps, and third-party developers.',
+        'Understand the ripple effect before deploy. shaktIQ matches modified schemas against registered consumer microservices, mobile apps, and third-party developers.',
     },
   ];
 
@@ -34,7 +34,7 @@ export const WhyShaktiq: React.FC = () => {
       <div className="max-w-[1240px] mx-auto px-6">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="heading-font text-3xl sm:text-4xl font-extrabold text-green-dark mb-4">
-            Why platform teams choose ShaktIQ over static linters
+            Why platform teams choose <span>shakt<span className="text-[#52B143]">IQ</span></span> over static linters
           </h2>
           <p className="text-sm sm:text-base text-text-dim">
             Engineered with mathematical precision to prevent breaking downstream production contracts while accelerating engineering release velocity.

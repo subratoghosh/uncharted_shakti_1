@@ -19,6 +19,7 @@ import { projectRoutes } from './modules/projects/routes.js';
 import { runRoutes } from './modules/runs/routes.js';
 import { hub } from './modules/stream/hub.js';
 import { streamRoutes } from './modules/stream/routes.js';
+import { studioRoutes } from './modules/studio/routes.js';
 
 export const serverPlaceholder = 'apps/api bootstrap';
 
@@ -164,6 +165,7 @@ export async function buildServer(): Promise<FastifyInstance> {
       await api.register(adminRoutes);
       await api.register(cliRoutes);
       await api.register(streamRoutes);
+      await api.register(studioRoutes);
     },
     { prefix: API_PREFIX },
   );
@@ -178,7 +180,7 @@ export async function startServer(): Promise<void> {
 
     const app = await buildServer();
     await app.listen({ port: env.PORT, host: '0.0.0.0' });
-    logger.info(`⚡ ShaktIQ API server listening on http://localhost:${env.PORT}`);
+    logger.info(`⚡ shaktIQ API server listening on http://localhost:${env.PORT}`);
 
     // Graceful shutdown
     const shutdown = async () => {

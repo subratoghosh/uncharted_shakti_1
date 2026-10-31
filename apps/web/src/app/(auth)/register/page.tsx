@@ -21,6 +21,16 @@ export default function RegisterPage() {
     e.preventDefault();
     setError(null);
 
+    if (!name.trim()) {
+      setError('Please enter your full name');
+      return;
+    }
+
+    if (!email.trim() || !email.includes('@')) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -37,13 +47,31 @@ export default function RegisterPage() {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), password }),
       });
 
-      const data = await res.json();
+      let data: any = null;
+      const contentType = res.headers.get('content-type') || '';
+
+      if (contentType.includes('application/json')) {
+        try {
+          data = await res.json();
+        } catch {
+          throw new Error('Failed to parse server response as JSON');
+        }
+      } else {
+        const rawText = await res.text();
+        if (rawText.includes('<!DOCTYPE') || rawText.includes('<html') || rawText.includes('<body')) {
+          throw new Error(
+            `Server returned HTML error (${res.status} ${res.statusText || 'Error'}). Please verify server and database connectivity.`,
+          );
+        }
+        throw new Error(rawText || `Registration failed with status ${res.status}`);
+      }
 
       if (!res.ok) {
-        throw new Error(data.message || 'Registration failed');
+        const errorMsg = data?.error || data?.message || 'Registration failed. Please try again.';
+        throw new Error(errorMsg);
       }
 
       // Successful registration: Redirect to login with success query parameter
@@ -70,7 +98,7 @@ export default function RegisterPage() {
             Create an Account
           </h1>
           <p className="text-xs text-[#0C382E]/70">
-            Join ShaktIQ for autonomous OpenAPI compatibility verification
+            Join shaktIQ for autonomous OpenAPI compatibility verification
           </p>
         </div>
 
@@ -78,7 +106,7 @@ export default function RegisterPage() {
         {error && (
           <div className="p-3.5 text-xs bg-red-50 border border-red-300 text-red-900 rounded-2xl flex items-start gap-2.5 animate-fade-in shadow-xs">
             <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
-            <span className="font-medium">{error}</span>
+            <span className="font-medium break-words">{error}</span>
           </div>
         )}
 

@@ -37,13 +37,21 @@ export const authRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
     const now = new Date();
     const newUser = {
       _id: new ObjectId(),
-      email: body.email,
+      email: body.email.toLowerCase().trim(),
       passwordHash,
-      name: body.name,
+      name: body.name.trim(),
       role: 'user' as const,
       disabled: false,
+      authProvider: 'credentials',
+      emailVerified: false,
+      status: 'active',
+      preferences: {
+        theme: 'light',
+        emailNotifications: true,
+      },
       createdAt: now,
       updatedAt: now,
+      lastLoginAt: null,
     };
 
     await users.insertOne(newUser);

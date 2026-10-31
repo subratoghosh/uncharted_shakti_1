@@ -5,9 +5,9 @@ import { ShieldCheck, Lock, Database, ArrowRight } from 'lucide-react';
 import { MarketingLayout } from '@/components/landing/MarketingLayout';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | ShaktIQ - OpenAPI Release Intelligence',
+  title: 'Privacy Policy | shaktIQ - OpenAPI Release Intelligence',
   description:
-    'Learn how ShaktIQ protects your OpenAPI specifications, git repositories, and schema payload data with zero telemetry leakage and strict tenant isolation.',
+    'Learn how shaktIQ protects your OpenAPI specifications, git repositories, and schema payload data with zero telemetry leakage and strict tenant isolation.',
 };
 
 export const revalidate = 3600; // Cache static page for ultra-fast, zero-lag delivery
@@ -29,7 +29,7 @@ export default function PrivacyPolicyPage() {
               Privacy Policy
             </h1>
             <p className="text-sm sm:text-base text-green-dark/75 max-w-2xl mx-auto leading-relaxed">
-              ShaktIQ is engineered for mission-critical platform teams. We treat your OpenAPI specifications, API routes, and schema contracts with zero-trust architecture.
+              shaktIQ is engineered for mission-critical platform teams. We treat your OpenAPI specifications, API routes, and schema contracts with zero-trust architecture.
             </p>
             <p className="text-xs text-green-dark/60 font-mono">Last revised: {lastUpdated}</p>
           </div>
@@ -45,7 +45,7 @@ export default function PrivacyPolicyPage() {
                 <h2>Information We Process</h2>
               </div>
               <p className="text-sm leading-relaxed text-green-dark/80">
-                ShaktIQ collects and processes only the information required to execute deterministic OpenAPI breaking change detection, blast radius assessment, and release intelligence:
+                shaktIQ collects and processes only the information required to execute deterministic OpenAPI breaking change detection, blast radius assessment, and release intelligence:
               </p>
               <ul className="list-disc pl-5 text-sm space-y-1.5 text-green-dark/80">
                 <li>
@@ -102,7 +102,7 @@ export default function PrivacyPolicyPage() {
                 <h2>AI Processing & Gemini Intelligence</h2>
               </div>
               <p className="text-sm leading-relaxed text-green-dark/80">
-                When AI release dossiers are enabled, ShaktIQ sends isolated diff chunks to Google Gemini 3.8 Flash via the official Google Gen AI SDK to synthesize non-breaking shim recommendations:
+                When AI release dossiers are enabled, shaktIQ sends isolated diff chunks to Google Gemini 3.8 Flash via the official Google Gen AI SDK to synthesize non-breaking shim recommendations:
               </p>
               <ul className="list-disc pl-5 text-sm space-y-1.5 text-green-dark/80">
                 <li>Your API schemas are processed solely for the execution of your requested analysis run.</li>

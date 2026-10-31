@@ -13,3 +13,4 @@ export * from './schemas/finding.js';
 export * from './schemas/spec-snapshot.js';
 export * from './schemas/notification.js';
 export * from './schemas/internal.js';
+export * from './schemas/ai-query.js';

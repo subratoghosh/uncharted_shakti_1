@@ -36,7 +36,7 @@ const FEATURE_MODULES = [
       'Synthesizes production-grade backward-compatible schema shims, route deprecation wrappers, and copy-paste ready migration code in under 300ms.',
   },
   {
-    title: 'Why ShaktIQ Architecture',
+    title: 'Why shaktIQ Architecture',
     href: '/why-us',
     icon: ShieldCheck,
     tag: 'Enterprise Reliability',

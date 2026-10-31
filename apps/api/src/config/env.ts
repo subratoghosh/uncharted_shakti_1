@@ -1,11 +1,14 @@
-import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 import { z } from 'zod';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
+
+// Load root .env file, local fallback, and default cwd .env
+dotenv.config({ path: path.resolve(currentDir, '../../../../.env') });
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 dotenv.config();
-dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
@@ -27,6 +30,10 @@ const envSchema = z.object({
     .transform(val => val === 'true')
     .default('false'),
   GEMINI_API_KEY: z.string().optional(),
+  GITHUB_APP_ID: z.string().optional(),
+  GITHUB_APP_PRIVATE_KEY: z.string().optional(),
+  GITHUB_APP_SLUG: z.string().optional(),
+  GITHUB_TOKEN: z.string().optional(),
   UPSTASH_REDIS_REST_URL: z.string().optional(),
   UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
   REDIS_URL: z.string().optional(),

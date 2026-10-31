@@ -17,9 +17,9 @@ import {
 import { MarketingLayout } from '@/components/landing/MarketingLayout';
 
 export const metadata: Metadata = {
-  title: 'Workflow Engine | ShaktIQ - 4 Disciplined Steps to Zero Breaking Changes',
+  title: 'Workflow Engine | shaktIQ - 5 Disciplined Steps to Zero Breaking Changes',
   description:
-    'Discover ShaktIQ’s 4-step release intelligence lifecycle: from git push schema ingestion to blast radius calculation, Gemini AI remediation, and non-bypassable release gates.',
+    'Discover shaktIQ’s 5-step release intelligence lifecycle: from git push schema ingestion to AST semantic diffing, blast radius calculation, and Gemini AI remediation.',
 };
 
 export const revalidate = 3600; // Cache static page for ultra-fast, zero-lag delivery
@@ -30,32 +30,40 @@ const WORKFLOW_STEPS = [
     title: 'Automated Schema Ingestion',
     subtitle: 'GitHub Webhooks, GitLab CI, or Direct CLI Spec Upload',
     description:
-      'Whenever a developer creates a commit or opens a pull request modifying an OpenAPI specification file (.yaml or .json), ShaktIQ triggers instantaneously via webhook or pre-commit hook.',
+      'Whenever a developer creates a commit or opens a pull request modifying an OpenAPI specification file (.yaml or .json), shaktIQ triggers instantaneously via webhook or pre-commit hook.',
     badge: 'Step 1: Ingestion',
   },
   {
     step: '02',
-    title: 'Blast Radius & Consumer Matrix',
-    subtitle: 'Downstream dependency mapping and impact evaluation',
+    title: 'AST Semantic Diff Engine',
+    subtitle: 'Deep node-by-node Abstract Syntax Tree comparison',
     description:
-      'Modified endpoints are mapped against registered consumers. ShaktIQ determines if breaking changes touch core payment gateways, internal microservices, or public mobile SDKs.',
-    badge: 'Step 2: Impact Analysis',
+      'shaktIQ parses both the base branch and candidate branch specs into deep AST hierarchies, isolating semantic modifications (removed params, changed types, required payload fields) from benign formatting noise.',
+    badge: 'Step 2: Semantic Diff',
   },
   {
     step: '03',
-    title: 'Autonomous Gemini AI Remediation',
-    subtitle: 'Gemini 3.8 Flash synthesizes backward-compatible patches',
+    title: 'Blast Radius & Consumer Matrix',
+    subtitle: 'Downstream dependency mapping and impact evaluation',
     description:
-      'Rather than stopping at error alerts, ShaktIQ automatically generates non-breaking shims, deprecation headers with RFC 8594 sunset schedules, and sample migration route code.',
-    badge: 'Step 3: AI Synthesis',
+      'Modified endpoints are mapped against registered consumers. shaktIQ determines if breaking changes touch core payment gateways, internal microservices, or public mobile SDKs.',
+    badge: 'Step 3: Impact Analysis',
   },
   {
     step: '04',
+    title: 'Autonomous Gemini AI Remediation',
+    subtitle: 'Gemini 3.8 Flash synthesizes backward-compatible patches',
+    description:
+      'Rather than stopping at error alerts, shaktIQ automatically generates non-breaking shims, deprecation headers with RFC 8594 sunset schedules, and sample migration route code.',
+    badge: 'Step 4: AI Synthesis',
+  },
+  {
+    step: '05',
     title: 'Non-Bypassable Release Gate',
     subtitle: 'Cryptographic SAFE / REVIEW / BLOCKED verdict',
     description:
       'The pull request is tagged with an explainable 0-100 release score. If critical breaking changes remain unmitigated, CI status checks prevent merging until remediated.',
-    badge: 'Step 4: Release Gate',
+    badge: 'Step 5: Release Gate',
   },
 ];
 
@@ -114,7 +122,7 @@ export default function WorkflowPage() {
           <div className="max-w-[1240px] mx-auto px-6">
             <div className="text-center max-w-2xl mx-auto mb-14">
               <h2 className="heading-font text-3xl font-bold text-green-dark mb-3">
-                Why engineering teams ship 3x faster with ShaktIQ
+                Why engineering teams ship 3x faster with <span>shakt<span className="text-[#52B143]">IQ</span></span>
               </h2>
               <p className="text-text-dim text-sm sm:text-base">
                 Eliminating manual API review bureaucracy while preventing catastrophic downstream contract drift.

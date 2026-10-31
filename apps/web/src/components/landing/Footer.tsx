@@ -45,7 +45,7 @@ export const Footer: React.FC = () => {
                   className="group inline-flex items-center gap-1.5 text-text-hero-sub hover:text-butter-cream hover:translate-x-1.5 transition-all duration-200"
                 >
                   <span className="opacity-0 group-hover:opacity-100 transition-opacity text-butter-cream text-xs">→</span>
-                  <span>Why ShaktIQ (Security & Reliability)</span>
+                  <span>Why shaktIQ (Security & Reliability)</span>
                 </Link>
               </li>
               <li>
@@ -90,7 +90,7 @@ export const Footer: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-hero-sub/90">
-          <p>© {currentYear} ShaktIQ. Built with high-contrast Butter & Green design philosophy.</p>
+          <p>© {currentYear} shaktIQ. Built with high-contrast Butter & Green design philosophy.</p>
           <div className="flex flex-wrap items-center gap-4 sm:gap-6 font-medium">
             <Link
               href="/privacy"
