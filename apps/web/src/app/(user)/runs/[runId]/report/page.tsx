@@ -78,7 +78,7 @@ export default function ReleaseReportPage({
       {/* Header */}
       <div className="border-b border-[var(--border)] pb-6 space-y-2">
         <div className="flex items-center justify-between">
-          <Logo size="sm" href={`/runs/${runId}`} subtitle="RELEASE REPORT" />
+          <Logo size="sm" href={`/runs/${runId}`} />
           <span className="text-xs font-mono text-[var(--text-muted)]">
             Run: {shortSha(run.currentVersion)}
           </span>

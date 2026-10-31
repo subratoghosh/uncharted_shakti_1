@@ -40,7 +40,7 @@ export function AdminSidebar({ collapsed = false }: Props) {
     >
       {/* Logo + Admin label */}
       <div className="flex items-center px-3.5 h-14 border-b border-[var(--border)] shrink-0 overflow-hidden">
-        <Logo href="/admin/overview" collapsed={collapsed} subtitle="ADMIN" />
+        <Logo href="/admin/overview" collapsed={collapsed} />
       </div>
 
       {/* Nav */}
