@@ -20,8 +20,9 @@ export function KpiCard({ label, value, sub, className, href }: Props) {
   );
 
   const baseClass = cn(
-    'block bg-[var(--surface)] border border-[var(--border)] rounded-card p-5',
-    href && 'hover:bg-[var(--surface-2)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]',
+    'block bg-[var(--surface)] border border-[var(--border)] rounded-card p-5 transition-all duration-200',
+    'hover:border-[var(--text)]/40 hover:-translate-y-0.5 hover:shadow-md dark:hover:shadow-black/30',
+    href && 'hover:bg-[var(--surface-2)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--border)]',
     className,
   );
 

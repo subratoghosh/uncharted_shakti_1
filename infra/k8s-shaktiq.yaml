@@ -1,0 +1,129 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: shaktiq
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shaktiq-api
+  namespace: shaktiq
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shaktiq-api
+  template:
+    metadata:
+      labels:
+        app: shaktiq-api
+    spec:
+      containers:
+        - name: api
+          image: shaktiq-api:latest
+          ports:
+            - containerPort: 4000
+          envFrom:
+            - secretRef:
+                name: shaktiq-secrets
+            - configMapRef:
+                name: shaktiq-config
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shaktiq-api
+  namespace: shaktiq
+spec:
+  type: ClusterIP
+  ports:
+    - port: 4000
+      targetPort: 4000
+  selector:
+    app: shaktiq-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shaktiq-web
+  namespace: shaktiq
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shaktiq-web
+  template:
+    metadata:
+      labels:
+        app: shaktiq-web
+    spec:
+      containers:
+        - name: web
+          image: shaktiq-web:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: NEXT_PUBLIC_API_URL
+              value: "http://shaktiq-api:4000"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shaktiq-web
+  namespace: shaktiq
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app: shaktiq-web
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shaktiq-ingress
+  namespace: shaktiq
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-body-size: "6m"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: shaktiq-api
+                port:
+                  number: 4000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: shaktiq-web
+                port:
+                  number: 3000

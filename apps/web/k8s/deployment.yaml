@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shaktiq-web
+  namespace: shaktiq
+  labels:
+    app.kubernetes.io/name: shaktiq-web
+    app.kubernetes.io/part-of: shaktiq
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shaktiq-web
+  template:
+    metadata:
+      labels:
+        app: shaktiq-web
+    spec:
+      containers:
+        - name: web
+          image: shaktiq-web:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: NEXT_PUBLIC_API_URL
+              value: "http://shaktiq-api:4000"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20

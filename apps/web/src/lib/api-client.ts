@@ -37,6 +37,10 @@ import {
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
+// In-memory response cache for superfast responses and instant page loads
+const memoryCache = new Map<string, { res: ApiResponse<unknown>; timestamp: number }>();
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
 export class ApiError extends Error {
   constructor(
     public code: string,
@@ -57,29 +61,54 @@ async function request<T>(
   init: RequestInit = {},
   devFallback?: () => T,
 ): Promise<ApiResponse<T>> {
+  const isGet = !init.method || init.method.toUpperCase() === 'GET';
+
+  // Return instantly from memory cache if available and fresh
+  if (isGet) {
+    const cached = memoryCache.get(url);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      return cached.res as ApiResponse<T>;
+    }
+  }
+
+  // Fast abort in dev mode if local backend is not responding so devFallback activates instantly
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 600);
+
   try {
     const res = await fetch(url, {
       ...init,
       credentials: 'include',
+      signal: init.signal ?? controller.signal,
       headers: {
         'Content-Type': 'application/json',
         ...(init.headers ?? {}),
       },
     });
 
+    clearTimeout(timeoutId);
     const json = (await res.json()) as ApiResponse<T>;
 
     if (!json.ok) {
       throw new ApiError(json.error.code, json.error.message, json.error.details);
     }
 
+    if (isGet) {
+      memoryCache.set(url, { res: json, timestamp: Date.now() });
+    }
+
     return json;
   } catch (err) {
+    clearTimeout(timeoutId);
     if (err instanceof ApiError) throw err;
 
-    // In dev mode: if backend is unreachable, use mock data fallback
+    // In dev mode: if backend is unreachable, use mock data fallback instantly
     if (process.env.NODE_ENV === 'development' && devFallback) {
-      return { ok: true, data: devFallback() };
+      const mockResult: ApiResponse<T> = { ok: true, data: devFallback() };
+      if (isGet) {
+        memoryCache.set(url, { res: mockResult, timestamp: Date.now() });
+      }
+      return mockResult;
     }
 
     throw new ApiError(
