@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateMultiLayerDossier } from '../src/modules/ai/gemini-service.js';
+import { generateMultiLayerDossier, queryProjectAssistant } from '../src/modules/ai/gemini-service.js';
 
 describe('Gemini AI Multi-Layer Dossier Service', () => {
   it('generates deterministic fallback dossier when findings contain breaking changes', async () => {
@@ -56,4 +56,67 @@ describe('Gemini AI Multi-Layer Dossier Service', () => {
     expect(dossier.verdictLabel).toContain('SAFE FOR DEPLOYMENT');
     expect(dossier.blastRadius.mobileAppsRisk).toBe('LOW');
   });
+
+  describe('queryProjectAssistant', () => {
+    it('generates actionable answer with critical risk when breaking changes exist', async () => {
+      const result = await queryProjectAssistant({
+        projectName: 'Payment Gateway API',
+        question: 'Are there any breaking changes that could affect our mobile app?',
+        runsSummary: [
+          {
+            version: 'v2.1.0',
+            status: 'completed',
+            releaseStatus: 'blocked',
+            breakingCount: 1,
+            warningCount: 0,
+            createdAt: new Date().toISOString(),
+          },
+        ],
+        recentFindings: [
+          {
+            endpoint: '/v1/charges',
+            method: 'POST',
+            changeType: 'request_property_required_added',
+            severity: 'breaking',
+            description: 'New required field currencyCode added',
+            impact: 'Clients not sending currencyCode will receive 400 Bad Request',
+            recommendation: 'Make currencyCode optional with default USD',
+          },
+        ],
+        hotspots: [{ endpoint: '/v1/charges', count: 3 }],
+      });
+
+      expect(result).toBeDefined();
+      expect(result.answer).toBeTruthy();
+      expect(result.riskLevel).toBe('CRITICAL');
+      expect(result.relatedEndpoints).toContain('/v1/charges');
+      expect(result.suggestedFix).toBeDefined();
+      expect(result.generatedBy).toBeTruthy();
+    });
+
+    it('generates safe assessment when recent findings contain no breaking changes', async () => {
+      const result = await queryProjectAssistant({
+        projectName: 'Catalog API',
+        question: 'Is it safe to release to production?',
+        runsSummary: [
+          {
+            version: 'v1.4.0',
+            status: 'completed',
+            releaseStatus: 'safe',
+            breakingCount: 0,
+            warningCount: 0,
+            createdAt: new Date().toISOString(),
+          },
+        ],
+        recentFindings: [],
+        hotspots: [],
+      });
+
+      expect(result).toBeDefined();
+      expect(result.answer).toContain('backward-compatible');
+      expect(result.riskLevel).toBe('SAFE');
+      expect(result.relatedEndpoints).toHaveLength(0);
+    });
+  });
 });
+
