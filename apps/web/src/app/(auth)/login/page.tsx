@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { signIn, useSession, getSession } from 'next-auth/react';
-import { CheckCircle2, AlertTriangle, ArrowRight, ShieldCheck, Mail, KeyRound, ShieldAlert, UserCheck } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, ArrowRight, ShieldCheck, Mail, KeyRound } from 'lucide-react';
 import { ShaktiqBrand } from '../../../components/landing/ShaktiqBrand';
 import { api } from '@/lib/api';
 
@@ -16,9 +16,8 @@ function LoginForm() {
   const registered = searchParams.get('registered') === 'true';
   const urlError = searchParams.get('error');
 
-  const [selectedRole, setSelectedRole] = useState<'admin' | 'user'>('admin');
-  const [email, setEmail] = useState('admin@shaktiq.dev');
-  const [password, setPassword] = useState('admin1234!');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -44,18 +43,6 @@ function LoginForm() {
       setError('Administrator privileges required to access the Platform Admin Panel.');
     }
   }, [urlError]);
-
-  const selectRoleDemo = (role: 'admin' | 'user') => {
-    setSelectedRole(role);
-    setError(null);
-    if (role === 'admin') {
-      setEmail('admin@shaktiq.dev');
-      setPassword('admin1234!');
-    } else {
-      setEmail('developer@test.com');
-      setPassword('Password123!');
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,58 +109,11 @@ function LoginForm() {
           <span>Continuous Release Intelligence</span>
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-[#0C382E] font-slab">
-          Role-Based Console Login
+          Sign In to ShaktIQ
         </h1>
         <p className="text-xs text-[#0C382E]/70">
-          Sign in to access your designated workspace panel
+          Enter your credentials to access your workspace
         </p>
-      </div>
-
-      {/* Role Switcher Selector Tabs */}
-      <div className="p-1.5 bg-[#0C382E]/5 border border-[#0C382E]/10 rounded-2xl flex gap-1 relative z-10">
-        <button
-          type="button"
-          onClick={() => selectRoleDemo('admin')}
-          className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-            selectedRole === 'admin'
-              ? 'bg-[#0C382E] text-butter-cream shadow-xs font-bold'
-              : 'text-[#0C382E]/70 hover:bg-white/80'
-          }`}
-        >
-          <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
-          <span>Admin Panel</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => selectRoleDemo('user')}
-          className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-            selectedRole === 'user'
-              ? 'bg-[#0C382E] text-butter-cream shadow-xs font-bold'
-              : 'text-[#0C382E]/70 hover:bg-white/80'
-          }`}
-        >
-          <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
-          <span>User Panel</span>
-        </button>
-      </div>
-
-      {/* Destination banner info */}
-      <div className={`p-2.5 rounded-xl border text-[11px] flex items-center gap-2 ${
-        selectedRole === 'admin'
-          ? 'bg-amber-500/10 border-amber-500/30 text-amber-900'
-          : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-900'
-      }`}>
-        {selectedRole === 'admin' ? (
-          <>
-            <ShieldAlert className="w-4 h-4 text-amber-600 flex-shrink-0" />
-            <span>Redirects to <strong>Platform Admin Console</strong> (telemetry, all runs & users).</span>
-          </>
-        ) : (
-          <>
-            <UserCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-            <span>Redirects to <strong>User Workspace</strong> (Code Studio, projects & tokens).</span>
-          </>
-        )}
       </div>
 
       {/* Success Notification if redirected from registration */}
@@ -256,7 +196,7 @@ function LoginForm() {
           <input
             type="email"
             required
-            placeholder="admin@shaktiq.dev"
+            placeholder="name@company.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full h-11 px-3.5 text-sm bg-white border border-[#0C382E]/20 rounded-xl text-[#0C382E] placeholder:text-[#0C382E]/35 focus:outline-none focus:border-[#0C382E] focus:ring-2 focus:ring-[#0C382E]/15 transition-all font-mono shadow-xs"
@@ -283,7 +223,7 @@ function LoginForm() {
           disabled={loading}
           className="w-full h-11 mt-2 bg-[#0C382E] hover:bg-[#07241D] text-butter-cream text-sm font-bold rounded-2xl shadow-md hover:shadow-[0_8px_24px_rgba(12,56,46,0.25)] transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50 min-h-[44px]"
         >
-          <span>{loading ? 'Authenticating...' : `Sign In to ${selectedRole === 'admin' ? 'Admin Panel' : 'User Panel'}`}</span>
+          <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
           {!loading && <ArrowRight className="w-4 h-4" />}
         </button>
       </form>

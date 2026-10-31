@@ -56,7 +56,6 @@ import type {
   Hotspot,
   ApiToken,
   WebhookEvent,
-  AdminOverview,
   CompareResult,
   AnalyzerResult,
   AuthUser,
@@ -135,7 +134,7 @@ paths:
 
 export default function ShaktIQDashboard() {
   const { data: session } = useSession();
-  const [activeTab, setActiveTab] = useState<'overview' | 'studio' | 'runs' | 'compare' | 'memory' | 'dossier' | 'analyzer' | 'tokens' | 'admin'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'studio' | 'runs' | 'compare' | 'memory' | 'dossier' | 'analyzer' | 'tokens'>('overview');
   const [user, setUser] = useState<AuthUser | null>(null);
   const [sseConnected, setSseConnected] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -149,8 +148,6 @@ export default function ShaktIQDashboard() {
   const [selectedFinding, setSelectedFinding] = useState<Finding | null>(null);
   const [hotspots, setHotspots] = useState<Hotspot[]>([]);
   const [tokens, setTokens] = useState<ApiToken[]>([]);
-  const [adminOverview, setAdminOverview] = useState<AdminOverview | null>(null);
-  const [adminEvents, setAdminEvents] = useState<WebhookEvent[]>([]);
   const [aiDossier, setAiDossier] = useState<MultiLayerDossier | null>(null);
   const [loadingDossier, setLoadingDossier] = useState(false);
   const [copiedSnippetIndex, setCopiedSnippetIndex] = useState<number | null>(null);
@@ -209,7 +206,6 @@ export default function ShaktIQDashboard() {
     if (!user) return;
     loadProjects();
     loadTokens();
-    loadAdminData();
   }, [user]);
 
   async function loadProjects() {
@@ -228,19 +224,6 @@ export default function ShaktIQDashboard() {
     try {
       const data = await api.getTokens();
       setTokens(data);
-    } catch {
-      // ignore
-    }
-  }
-
-  async function loadAdminData() {
-    try {
-      const [overview, events] = await Promise.all([
-        api.getAdminOverview().catch(() => null),
-        api.getAdminEvents().catch(() => []),
-      ]);
-      setAdminOverview(overview);
-      setAdminEvents(events);
     } catch {
       // ignore
     }
@@ -562,24 +545,6 @@ export default function ShaktIQDashboard() {
               <span>API Tokens</span>
             </button>
 
-            {(user?.role === 'admin' || session?.user?.role === 'admin') && (
-              <>
-                <div className="pt-3 pb-1 px-3 text-[11px] uppercase tracking-wider text-text-muted font-medium flex items-center justify-between">
-                  <span>Platform Admin</span>
-                  <span className="text-[9px] bg-amber-500/20 text-amber-600 px-1 rounded font-bold font-mono">ADMIN</span>
-                </div>
-                <Link
-                  href="/admin/overview"
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-md transition-colors text-left text-amber-600 hover:bg-amber-500/10 font-medium"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Database className="w-4 h-4" />
-                    <span>Admin Panel Console</span>
-                  </div>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </Link>
-              </>
-            )}
           </nav>
         </div>
 
@@ -587,9 +552,9 @@ export default function ShaktIQDashboard() {
         <div className="p-3 border-t border-border bg-surface-2/50 text-xs">
           <div className="flex items-center justify-between">
             <div className="truncate">
-              <span className="font-medium truncate block">{user?.email || 'admin@shaktiq.dev'}</span>
+              <span className="font-medium truncate block">{user?.email || session?.user?.email || 'developer@shaktiq.dev'}</span>
               <span className="text-[10px] text-text-muted uppercase tracking-wider">
-                Role: {user?.role || 'admin'}
+                Role: {user?.role || session?.user?.role || 'developer'}
               </span>
             </div>
             <button
@@ -617,7 +582,6 @@ export default function ShaktIQDashboard() {
               {activeTab === 'memory' && 'Endpoint History & Hotspots'}
               {activeTab === 'analyzer' && 'Interactive OpenAPI Spec Analyzer'}
               {activeTab === 'tokens' && 'Personal Access Tokens'}
-              {activeTab === 'admin' && 'Platform Administration'}
             </h2>
             {selectedProjectId && (
               <span className="text-xs text-text-muted border border-border px-2 py-0.5 rounded bg-surface-2 font-mono">
@@ -1355,84 +1319,6 @@ export default function ShaktIQDashboard() {
                       <tr>
                         <td colSpan={5} className="py-8 text-center text-text-muted">
                           No API tokens generated yet.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* TAB: ADMIN CONSOLE */}
-          {activeTab === 'admin' && (
-            <div className="space-y-6">
-              <div className="border border-border bg-surface p-5 rounded-lg space-y-1">
-                <h3 className="font-semibold text-sm">Platform Admin Dashboard</h3>
-                <p className="text-xs text-text-muted">
-                  Monitor all projects, webhooks, duplicate event deliveries, and system audits.
-                </p>
-              </div>
-
-              {/* Admin Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="border border-border bg-surface p-4 rounded-lg">
-                  <div className="text-xs text-text-muted">Total Projects</div>
-                  <div className="text-xl font-bold mt-1">{adminOverview?.totalProjects ?? projects.length}</div>
-                </div>
-                <div className="border border-border bg-surface p-4 rounded-lg">
-                  <div className="text-xs text-text-muted">Total Runs Processed</div>
-                  <div className="text-xl font-bold mt-1">{adminOverview?.totalRuns ?? runs.length}</div>
-                </div>
-                <div className="border border-border bg-surface p-4 rounded-lg">
-                  <div className="text-xs text-text-muted">Total Webhook Events</div>
-                  <div className="text-xl font-bold mt-1">{adminEvents.length}</div>
-                </div>
-                <div className="border border-border bg-surface p-4 rounded-lg">
-                  <div className="text-xs text-text-muted">Duplicate Events Caught</div>
-                  <div className="text-xl font-bold mt-1 text-emerald-600">
-                    {adminEvents.reduce((acc, curr) => acc + (curr.duplicateCount || 0), 0)}
-                  </div>
-                </div>
-              </div>
-
-              {/* Webhook Events Log */}
-              <div className="border border-border bg-surface rounded-lg overflow-hidden">
-                <div className="p-4 border-b border-border font-semibold text-xs">
-                  Webhook Event Intake & Deduplication Log
-                </div>
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-surface-2 text-text-muted border-b border-border">
-                    <tr>
-                      <th className="py-2.5 px-4 font-medium">Delivery ID</th>
-                      <th className="py-2.5 px-4 font-medium">Event Type</th>
-                      <th className="py-2.5 px-4 font-medium">Duplicate Count</th>
-                      <th className="py-2.5 px-4 font-medium">Signature Status</th>
-                      <th className="py-2.5 px-4 font-medium">Received At</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {adminEvents.map((ev) => (
-                      <tr key={ev._id || ev.id} className="hover:bg-surface-2/40">
-                        <td className="py-2.5 px-4 font-mono">{ev.deliveryId || ev._id?.slice(0, 8)}</td>
-                        <td className="py-2.5 px-4 capitalize font-medium">{ev.type || 'push'}</td>
-                        <td className="py-2.5 px-4">
-                          <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                              (ev.duplicateCount || 0) > 0 ? 'badge-warning' : 'badge-ok'
-                            }`}
-                          >
-                            {ev.duplicateCount || 0}
-                          </span>
-                        </td>
-                        <td className="py-2.5 px-4 text-emerald-600 font-medium">Valid (HMAC Verified)</td>
-                        <td className="py-2.5 px-4 text-text-muted">{new Date(ev.createdAt).toLocaleString()}</td>
-                      </tr>
-                    ))}
-                    {adminEvents.length === 0 && (
-                      <tr>
-                        <td colSpan={5} className="py-6 text-center text-text-muted">
-                          No webhook events logged yet.
                         </td>
                       </tr>
                     )}
