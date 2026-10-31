@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -14,8 +14,12 @@ import {
   Users,
   Webhook,
   Workflow,
-  Lock,
   FileCode,
+  HelpCircle,
+  ChevronLeft,
+  ChevronRight,
+  Pin,
+  PinOff,
 } from 'lucide-react';
 import { ShaktiqLogoIcon } from '../shared/ShaktiqLogoIcon';
 
@@ -24,6 +28,7 @@ const userNav = [
   { name: 'Code Studio', href: '/dashboard', icon: FileCode },
   { name: 'Projects', href: '/projects', icon: FolderGit2 },
   { name: 'Access Tokens', href: '/tokens', icon: KeyRound },
+  { name: 'Knowledge FAQ', href: '/faq', icon: HelpCircle },
 ];
 
 const adminNav = [
@@ -33,6 +38,7 @@ const adminNav = [
   { name: 'Events & Webhooks', href: '/admin/events', icon: Webhook },
   { name: 'Workflow Health', href: '/admin/workflows', icon: Workflow },
   { name: 'User Management', href: '/admin/users', icon: Users },
+  { name: 'FAQ Management', href: '/admin/faqs', icon: HelpCircle },
 ];
 
 export function Sidebar() {
@@ -41,41 +47,71 @@ export function Sidebar() {
   const isAdmin = session?.user?.role === 'admin';
   const isCurrentAdminPath = pathname.startsWith('/admin');
 
+  // Hover to expand / Collapsible state to save window space
+  const [isHovered, setIsHovered] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
+
+  const isExpanded = isPinned || isHovered;
+
   return (
-    <aside className="hidden md:flex w-60 border-r border-border bg-surface flex-col h-screen sticky top-0 flex-shrink-0 select-none">
-      {/* Brand Header */}
-      <div className="h-14 border-b border-border flex items-center justify-between px-4">
+    <aside
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`hidden md:flex flex-col h-screen sticky top-0 flex-shrink-0 select-none z-40 bg-butter-panel border-r border-green-dark/12 transition-all duration-300 ease-in-out shadow-xs ${
+        isExpanded ? 'w-60' : 'w-16'
+      }`}
+    >
+      {/* Brand Header with Clickable Logo to Homepage */}
+      <div className="h-16 border-b border-green-dark/12 flex items-center justify-between px-3">
         <Link
-          href="/dashboard"
-          className="flex items-center gap-2.5 font-bold tracking-tight text-lg group"
+          href="/"
+          title="shaktIQ Homepage"
+          className="flex items-center gap-2.5 font-bold tracking-tight text-lg group overflow-hidden"
         >
-          <div className="w-7 h-7 rounded-lg bg-[#0A382C] flex items-center justify-center p-1 shadow-xs border border-emerald-500/20">
-            <ShaktiqLogoIcon className="w-5 h-5" theme="dark" />
+          <div className="w-9 h-9 rounded-xl bg-[#08261E] flex items-center justify-center p-1.5 shadow-xs border border-emerald-500/30 group-hover:border-emerald-400 transition-colors flex-shrink-0">
+            <ShaktiqLogoIcon className="w-6 h-6" theme="dark" />
           </div>
-          <span className="font-extrabold text-lg tracking-tight">
-            <span className="text-foreground">shakt</span>
-            <span className="text-[#52B143]">IQ</span>
-          </span>
+          {isExpanded && (
+            <span className="font-black text-xl tracking-tight text-green-dark transition-opacity duration-200">
+              <span>shakt</span>
+              <span className="text-[#16A34A]">IQ</span>
+            </span>
+          )}
         </Link>
-        {isCurrentAdminPath || isAdmin ? (
-          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 uppercase tracking-wider">
-            Admin
-          </span>
-        ) : (
-          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-surface-2 text-muted border border-border">
-            v1.0
-          </span>
+
+        {isExpanded && (
+          <div className="flex items-center gap-1">
+            {isAdmin ? (
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 uppercase tracking-wider">
+                Admin
+              </span>
+            ) : (
+              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-butter-warm text-green-dark border border-green-dark/15">
+                v1.0
+              </span>
+            )}
+            <button
+              onClick={() => setIsPinned(!isPinned)}
+              title={isPinned ? 'Unpin Sidebar (Hover to Reveal)' : 'Pin Sidebar Expanded'}
+              className="p-1 rounded-md text-text-muted hover:text-green-dark hover:bg-butter-warm transition-colors"
+            >
+              {isPinned ? <PinOff className="w-3.5 h-3.5" /> : <Pin className="w-3.5 h-3.5" />}
+            </button>
+          </div>
         )}
       </div>
 
       {/* Navigation Sections */}
-      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+      <div className="flex-1 overflow-y-auto px-2 py-4 space-y-6 overflow-x-hidden">
+        {/* Workspace Section (Visible to all users) */}
         <div>
-          <div className="text-[11px] font-semibold text-muted uppercase tracking-wider px-2 mb-2">
-            Workspace
-          </div>
+          {isExpanded && (
+            <div className="text-[11px] font-bold text-text-muted uppercase tracking-wider px-2.5 mb-2">
+              Workspace
+            </div>
+          )}
           <nav className="space-y-1">
-            {userNav.map(item => {
+            {userNav.map((item) => {
               const active =
                 pathname === item.href ||
                 (item.href !== '/dashboard' && pathname.startsWith(item.href));
@@ -84,65 +120,75 @@ export function Sidebar() {
                 <Link
                   key={item.name}
                   href={item.href}
+                  title={!isExpanded ? item.name : undefined}
                   prefetch={true}
-                  className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-sm text-sm transition-colors ${
+                  className={`flex items-center gap-3 px-2.5 py-2 rounded-xl text-sm transition-all ${
                     active
-                      ? 'bg-accent/10 text-accent font-medium'
-                      : 'text-text hover:bg-surface-2 hover:text-text'
-                  }`}
+                      ? 'bg-green-dark text-butter-cream font-bold shadow-xs'
+                      : 'text-green-dark hover:bg-butter-warm hover:text-green-dark font-medium'
+                  } ${!isExpanded ? 'justify-center px-0' : ''}`}
                 >
-                  <Icon className="w-4 h-4 opacity-80" />
-                  <span>{item.name}</span>
+                  <Icon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-butter-gold' : 'text-green-mid'}`} />
+                  {isExpanded && <span className="truncate">{item.name}</span>}
                 </Link>
               );
             })}
           </nav>
         </div>
 
-        <div>
-          <div className="flex items-center justify-between px-2 mb-2">
-            <span className="text-[11px] font-semibold text-muted uppercase tracking-wider">
-              Administration
-            </span>
-            <Shield className="w-3 h-3 text-muted" />
+        {/* Administration Section: ONLY VISIBLE IF ISADMIN IS TRUE */}
+        {isAdmin && (
+          <div className="pt-2 border-t border-green-dark/10">
+            {isExpanded && (
+              <div className="flex items-center justify-between px-2.5 mb-2">
+                <span className="text-[11px] font-bold text-green-dark uppercase tracking-wider">
+                  Administration
+                </span>
+                <Shield className="w-3.5 h-3.5 text-emerald-600" />
+              </div>
+            )}
+            <nav className="space-y-1">
+              {adminNav.map((item) => {
+                const active = pathname === item.href;
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    title={!isExpanded ? item.name : undefined}
+                    prefetch={true}
+                    className={`flex items-center gap-3 px-2.5 py-2 rounded-xl text-sm transition-all ${
+                      active
+                        ? 'bg-green-mid text-butter-cream font-bold shadow-xs'
+                        : 'text-green-dark hover:bg-butter-warm hover:text-green-dark font-medium'
+                    } ${!isExpanded ? 'justify-center px-0' : ''}`}
+                  >
+                    <Icon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-butter-gold' : 'text-green-mid'}`} />
+                    {isExpanded && <span className="truncate">{item.name}</span>}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
-          <nav className="space-y-1">
-            {adminNav.map(item => {
-              const active = pathname === item.href;
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.name}
-                  href={isAdmin ? item.href : '/dashboard?error=AdminRequired'}
-                  prefetch={true}
-                  className={`flex items-center justify-between px-2.5 py-1.5 rounded-sm text-sm transition-colors ${
-                    active
-                      ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 font-medium'
-                      : 'text-text hover:bg-surface-2 hover:text-text'
-                  } ${!isAdmin ? 'opacity-60 cursor-not-allowed' : ''}`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Icon className="w-4 h-4 opacity-80" />
-                    <span>{item.name}</span>
-                  </div>
-                  {!isAdmin && <Lock className="w-3 h-3 text-muted" />}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
+        )}
       </div>
 
       {/* Footer Info */}
-      <div className="p-3 border-t border-border text-xs text-muted flex items-center justify-between">
-        <div>
-          <div>Track 3: Developer Tools</div>
-          <div className="text-[10px] opacity-75">MongoDB Hackathon</div>
-        </div>
-        {session?.user && (
-          <span className="text-[10px] uppercase font-mono px-1 rounded bg-surface-2 border border-border">
-            {session.user.role}
-          </span>
+      <div className={`p-3 border-t border-green-dark/12 text-xs text-text-muted flex items-center justify-between ${!isExpanded ? 'justify-center p-2' : ''}`}>
+        {isExpanded ? (
+          <>
+            <div>
+              <div className="font-semibold text-green-dark">shaktIQ Platform</div>
+              <div className="text-[10px] text-text-muted">MongoDB 7.0 WiredTiger</div>
+            </div>
+            {session?.user && (
+              <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-butter-warm border border-green-dark/15 text-green-dark font-bold">
+                {session.user.role}
+              </span>
+            )}
+          </>
+        ) : (
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="System Online" />
         )}
       </div>
     </aside>

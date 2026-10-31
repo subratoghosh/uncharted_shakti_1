@@ -13,7 +13,6 @@ import {
   Copy,
   Check,
   RotateCcw,
-  Sparkles,
   GitCommit,
   History,
   Wrench,
@@ -920,27 +919,27 @@ export default function DashboardPage() {
 
             {/* Split Grid when Drawer is Open vs Full Width Editor */}
             <div className="grid grid-cols-1 gap-4 items-start">
-              {/* THE CODE EDITOR */}
-              <div className="bg-[#061D17] rounded-xl border border-green-dark/30 shadow-md overflow-hidden">
-                <div className="bg-[#0C382E] px-4 py-2 border-b border-green-mid/40 flex items-center justify-between text-xs text-butter-cream">
+              {/* THE CODE EDITOR: Simple White / Butter Background */}
+              <div className="bg-white rounded-xl border border-border shadow-xs overflow-hidden">
+                <div className="bg-butter-panel px-4 py-2.5 border-b border-border flex items-center justify-between text-xs text-green-dark">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                    <span className="font-mono font-bold text-butter-gold">{loadedFileName || 'spec.yaml'}</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                    <span className="font-mono font-bold text-green-dark">{loadedFileName || 'spec.yaml'}</span>
                   </div>
-                  <span className="text-[11px] text-green-sage">
-                    {selectedText ? `${selectedLineRange} selected` : 'Select code to audit specific lines'}
+                  <span className="text-[11px] text-text-muted">
+                    {selectedText ? `${selectedLineRange} selected` : 'Select code with mouse to audit specific lines'}
                   </span>
                 </div>
 
-                <div className="p-3">
+                <div className="p-3 bg-white">
                   <textarea
                     ref={textareaRef}
                     value={codeContent}
                     onChange={(e) => setCodeContent(e.target.value)}
                     onSelect={handleSelectCode}
-                    rows={20}
+                    rows={22}
                     spellCheck={false}
-                    className="w-full bg-transparent text-butter-cream font-mono text-xs leading-5 p-2 focus:outline-none resize-y selection:bg-green-mid/70"
+                    className="w-full bg-[#FFFDF7] text-green-dark font-mono text-xs leading-6 p-3.5 focus:outline-none resize-y selection:bg-butter-gold/60 border border-border/50 rounded-lg shadow-inner"
                   />
                 </div>
               </div>
@@ -1074,7 +1073,7 @@ export default function DashboardPage() {
                                 Copy Code
                               </button>
                             </div>
-                            <pre className="p-3 rounded-lg bg-[#061D17] text-butter-cream text-xs font-mono overflow-x-auto max-h-56 leading-5 border border-green-dark/30">
+                            <pre className="p-3 rounded-lg bg-[#FFFDF7] text-green-dark text-xs font-mono overflow-x-auto max-h-56 leading-5 border border-border shadow-xs">
                               {fixResult.diff}
                             </pre>
                           </div>
@@ -1114,24 +1113,24 @@ export default function DashboardPage() {
                         </div>
                       ) : commitMsgResult ? (
                         <div className="space-y-3">
-                          <div className="p-3.5 rounded-lg bg-[#061D17] border border-green-dark/30 space-y-2">
+                          <div className="p-3.5 rounded-lg bg-[#FFFDF7] border border-border space-y-2 shadow-xs">
                             <div className="flex items-center justify-between">
-                              <span className="text-[10px] font-bold text-butter-gold uppercase tracking-wider">
+                              <span className="text-[10px] font-bold text-green-dark uppercase tracking-wider">
                                 Conventional Commit
                               </span>
                               <button
                                 onClick={() => handleCopy(commitMsgResult.conventionalMessage, 'commit-msg')}
-                                className="text-xs text-butter-cream hover:underline flex items-center gap-1"
+                                className="text-xs text-green-mid font-semibold hover:underline flex items-center gap-1"
                               >
-                                {copiedKey === 'commit-msg' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                                {copiedKey === 'commit-msg' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                                 Copy
                               </button>
                             </div>
-                            <p className="text-xs font-mono text-butter-cream font-semibold">
+                            <p className="text-xs font-mono text-green-dark font-bold">
                               {commitMsgResult.title}
                             </p>
                             {commitMsgResult.body && (
-                              <p className="text-xs font-mono text-butter-cream/80 whitespace-pre-wrap">
+                              <p className="text-xs font-mono text-text-muted whitespace-pre-wrap leading-relaxed">
                                 {commitMsgResult.body}
                               </p>
                             )}

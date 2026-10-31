@@ -63,10 +63,9 @@ function LoginForm() {
         return;
       }
 
-      // Successful sign in
+      // Successful sign in: directly navigate to commit session cookies without freezing
       const callback = searchParams.get('callbackUrl') || '/dashboard';
-      router.push(callback);
-      router.refresh();
+      window.location.href = callback;
     } catch (err: unknown) {
       setError((err as Error).message || 'Failed to sign in. Please verify credentials.');
       setLoading(false);

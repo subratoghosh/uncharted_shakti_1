@@ -19,7 +19,7 @@ export function getMethodColor(method: string): string {
   const m = method.toUpperCase();
   switch (m) {
     case 'GET':
-      return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30';
+      return 'bg-emerald-500/15 text-emerald-800 border-emerald-500/30';
     case 'POST':
       return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30';
     case 'PUT':

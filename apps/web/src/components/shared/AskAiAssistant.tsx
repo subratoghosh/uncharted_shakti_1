@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  Sparkles,
   Send,
   X,
   AlertTriangle,
@@ -141,10 +140,10 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-slate-950 font-semibold text-sm rounded-full shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/20"
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 bg-[#0C382E] text-butter-cream font-semibold text-sm rounded-full shadow-lg hover:bg-[#164E3E] hover:scale-105 active:scale-95 transition-all duration-200 border border-emerald-500/30"
         >
-          <Sparkles className="w-4 h-4 text-slate-950 animate-pulse" />
-          <span>Ask <strong>shakt<span className="text-emerald-950">IQ</span></strong> AI</span>
+          <Bot className="w-4 h-4 text-butter-gold" />
+          <span>Ask <strong>shakt<span className="text-emerald-400">IQ</span></strong> Architect</span>
         </button>
       )}
 
@@ -154,13 +153,13 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-white/[0.02]">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-emerald-400" />
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+                <Bot className="w-4 h-4 text-emerald-400" />
               </div>
               <div>
                 <h3 className="font-semibold text-sm text-white flex items-center gap-2">
                   <span>
-                    shakt<span className="text-[#52B143]">IQ</span> AI Architect
+                    shakt<span className="text-[#52B143]">IQ</span> Architect
                   </span>
                   <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
                     <span className="relative flex h-1.5 w-1.5">
@@ -262,20 +261,20 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
 
                   {/* Code Snippet Fix Box */}
                   {m.data?.suggestedFix && (
-                    <div className="mt-3 bg-slate-950/90 border border-white/15 rounded-lg overflow-hidden">
-                      <div className="flex items-center justify-between px-3 py-1.5 bg-white/5 border-b border-white/10 text-xs text-slate-400 font-mono">
+                    <div className="mt-3 bg-[#FFFDF7] border border-border rounded-lg overflow-hidden text-green-dark">
+                      <div className="flex items-center justify-between px-3 py-1.5 bg-butter-muted/40 border-b border-border text-xs text-muted font-mono">
                         <span className="flex items-center gap-1.5">
-                          <Terminal className="w-3.5 h-3.5 text-cyan-400" />
+                          <Terminal className="w-3.5 h-3.5 text-accent" />
                           Backward-Compatible Patch
                         </span>
                         <button
                           onClick={() => copySnippet(m.data!.suggestedFix!, idx)}
-                          className="flex items-center gap-1 text-slate-400 hover:text-white transition-colors"
+                          className="flex items-center gap-1 text-muted hover:text-green-dark transition-colors"
                         >
                           {copiedIndex === idx ? (
                             <>
-                              <Check className="w-3.5 h-3.5 text-emerald-400" />
-                              <span className="text-emerald-400 text-[11px]">Copied</span>
+                              <Check className="w-3.5 h-3.5 text-emerald-600" />
+                              <span className="text-emerald-600 text-[11px]">Copied</span>
                             </>
                           ) : (
                             <>
@@ -285,7 +284,7 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
                           )}
                         </button>
                       </div>
-                      <pre className="p-3 text-xs font-mono text-cyan-300 overflow-x-auto">
+                      <pre className="p-3 text-xs font-mono text-green-dark overflow-x-auto">
                         <code>{m.data.suggestedFix}</code>
                       </pre>
                     </div>
