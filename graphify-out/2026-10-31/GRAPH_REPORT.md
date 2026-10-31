@@ -1,7 +1,7 @@
 # Graph Report - ShaktIQ  (2026-10-31)
 
 ## Corpus Check
-- 177 files · ~73,567 words
+- 177 files · ~72,857 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 10 file(s) not represented in the graph (top: (none) 5, .example 3, .css 1)
 

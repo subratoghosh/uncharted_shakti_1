@@ -1,7 +1,7 @@
 # Graph Report - ShaktIQ  (2026-10-31)
 
 ## Corpus Check
-- 177 files · ~72,857 words
+- 177 files · ~72,761 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 10 file(s) not represented in the graph (top: (none) 5, .example 3, .css 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5e450514`
+- Built from commit: `9cad3e3b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
