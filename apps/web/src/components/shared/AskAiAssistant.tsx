@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Sparkles,
   Send,
@@ -43,9 +43,10 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   // Close drawer on Escape key press for accessibility
-  React.useEffect(() => {
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
         setIsOpen(false);
@@ -65,6 +66,13 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
       timestamp: new Date(),
     },
   ]);
+
+  // Auto-scroll to bottom when messages update
+  useEffect(() => {
+    if (isOpen) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isOpen, isLoading]);
 
   const presetQuestions = [
     'Will this release break our mobile apps or consumers?',
@@ -152,7 +160,11 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
               <div>
                 <h3 className="font-semibold text-sm text-white flex items-center gap-2">
                   ShaktIQ AI Architect
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+                  <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                    </span>
                     Gemini 3.8
                   </span>
                 </h3>
@@ -314,6 +326,7 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
                 <span>Google Gemini 3.8 Flash is analyzing your API topology...</span>
               </div>
             )}
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Input Box */}
