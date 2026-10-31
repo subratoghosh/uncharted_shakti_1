@@ -115,7 +115,20 @@ export const authOptions: NextAuthOptions = {
         const users = db.collection('users');
         const normalizedEmail = user.email.toLowerCase().trim();
 
-        const existing = await users.findOne({ email: normalizedEmail });
+        // Sync with alternative database name (shaktiIQ / shaktiq) to guarantee data visibility across Atlas views
+        const altDbName = db.databaseName === 'shaktiIQ' ? 'shaktiq' : 'shaktiIQ';
+        let altUsers: any = null;
+        try {
+          const altDb = await getDb(altDbName);
+          altUsers = altDb.collection('users');
+        } catch {
+          // Alt db sync is non-blocking
+        }
+
+        let existing = await users.findOne({ email: normalizedEmail });
+        if (!existing && altUsers) {
+          existing = await altUsers.findOne({ email: normalizedEmail });
+        }
 
         if (existing) {
           // If the user was suspended by admin or in the DB, reject login
@@ -127,22 +140,24 @@ export const authOptions: NextAuthOptions = {
           user.role = existing.role || 'user';
           user.disabled = !!existing.disabled;
 
-          // Update profile information
-          await users.updateOne(
-            { _id: existing._id },
-            {
-              $set: {
-                name: user.name || existing.name,
-                image: user.image || existing.image,
-                lastLoginAt: new Date(),
-                updatedAt: new Date(),
-              },
+          const updatePayload = {
+            $set: {
+              name: user.name || existing.name,
+              image: user.image || existing.image,
+              lastLoginAt: new Date(),
+              updatedAt: new Date(),
             },
-          );
+          };
+
+          // Update profile information in primary and alt database
+          await users.updateOne({ _id: existing._id }, updatePayload);
+          if (altUsers) {
+            await altUsers.updateOne({ email: normalizedEmail }, updatePayload, { upsert: true }).catch(() => {});
+          }
         } else {
           // New OAuth user registration
           const now = new Date();
-          const insertResult = await users.insertOne({
+          const newDoc = {
             _id: new ObjectId(),
             email: normalizedEmail,
             name: user.name || normalizedEmail.split('@')[0],
@@ -154,7 +169,12 @@ export const authOptions: NextAuthOptions = {
             lastLoginAt: now,
             authProvider: account.provider,
             providerAccountId: account.providerAccountId,
-          });
+          };
+
+          const insertResult = await users.insertOne(newDoc);
+          if (altUsers) {
+            await altUsers.replaceOne({ email: normalizedEmail }, newDoc, { upsert: true }).catch(() => {});
+          }
 
           user.id = insertResult.insertedId.toHexString();
           user.role = 'user';

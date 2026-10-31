@@ -1,11 +1,33 @@
 import dns from 'node:dns';
 import { MongoClient, Db } from 'mongodb';
 
-// Custom DNS server override is ONLY useful for local Windows development.
+// Custom DNS server override is ONLY useful for local Windows development where router DNS fails.
 // NEVER run setServers on Vercel / AWS Lambda where external port 53 is blocked by cloud firewalls.
 if (process.platform === 'win32' && !process.env.VERCEL && !process.env.AWS_REGION) {
   try {
     dns.setServers(['8.8.8.8', '1.1.1.1']);
+    // @ts-ignore
+    if (!global._dnsLookupPatched) {
+      // @ts-ignore
+      global._dnsLookupPatched = true;
+      const origLookup = dns.lookup;
+      // @ts-ignore
+      dns.lookup = function (hostname: string, options: any, callback: any) {
+        if (typeof options === 'function') {
+          callback = options;
+          options = {};
+        }
+        dns.resolve4(hostname, (err, addrs) => {
+          if (!err && addrs && addrs.length > 0) {
+            if (options && options.all) {
+              return callback(null, addrs.map((a: string) => ({ address: a, family: 4 })));
+            }
+            return callback(null, addrs[0], 4);
+          }
+          origLookup(hostname, options, callback);
+        });
+      };
+    }
   } catch {
     // Ignore in environments where setServers is restricted
   }
@@ -70,15 +92,10 @@ function getClientPromise(): Promise<MongoClient> {
   return global._mongoClientPromise;
 }
 
-const clientPromise: Promise<MongoClient> = getClientPromise();
-export default clientPromise;
+export default getClientPromise;
 
-export async function getDb(): Promise<Db> {
-  try {
-    const client = await getClientPromise();
-    return client.db(dbName);
-  } catch (err) {
-    global._mongoClientPromise = undefined;
-    throw err;
-  }
+export async function getDb(name?: string): Promise<Db> {
+  const client = await getClientPromise();
+  const targetDbName = (name || dbName).replace(/[\r\n\t]/g, '').trim();
+  return client.db(targetDbName);
 }

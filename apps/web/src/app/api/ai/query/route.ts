@@ -1,8 +1,77 @@
 import { NextRequest, NextResponse } from 'next/server';
+import dns from 'node:dns';
+import https from 'node:https';
+import fs from 'node:fs';
+import path from 'node:path';
+import dotenv from 'dotenv';
 import { getDb } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
+try {
+  dotenv.config({ path: path.resolve(process.cwd(), '../../.env') });
+  dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+  dotenv.config();
+} catch {
+  // Ignore dotenv errors
+}
+
 export const dynamic = 'force-dynamic';
+
+// Dedicated DNS resolver and HTTPS agent for resilient cloud API connectivity (especially Windows dev)
+const dnsResolver = new dns.Resolver();
+try {
+  dnsResolver.setServers(['8.8.8.8', '1.1.1.1']);
+} catch {
+  // Ignore in restricted environments
+}
+
+function customDnsLookup(hostname: string, options: any, callback: any) {
+  if (typeof options === 'function') {
+    callback = options;
+    options = {};
+  }
+  dnsResolver.resolve4(hostname, (err, addresses) => {
+    if (err || !addresses || addresses.length === 0) {
+      return dns.lookup(hostname, options, callback);
+    }
+    if (options && options.all) {
+      return callback(null, addresses.map((a: string) => ({ address: a, family: 4 })));
+    }
+    return callback(null, addresses[0], 4);
+  });
+}
+
+const geminiHttpsAgent = new https.Agent({
+  lookup: customDnsLookup,
+  keepAlive: true,
+  timeout: 30000,
+});
+
+function getGeminiApiKey(): string | undefined {
+  const candidates = [
+    path.resolve(process.cwd(), '.env.local'),
+    path.resolve(process.cwd(), '.env'),
+    path.resolve(process.cwd(), 'apps/web/.env.local'),
+    path.resolve(process.cwd(), 'apps/web/.env'),
+    path.resolve(process.cwd(), '../../.env.local'),
+    path.resolve(process.cwd(), '../../.env'),
+  ];
+  for (const p of candidates) {
+    try {
+      if (fs.existsSync(p)) {
+        const content = fs.readFileSync(p, 'utf-8');
+        const m = content.match(/GEMINI_API_KEY\s*=\s*([^\r\n]+)/);
+        if (m && m[1]) {
+          const k = m[1].trim().replace(/['"]/g, '');
+          if (k && k !== 'your_gemini_api_key_here' && k.length > 10) {
+            return k;
+          }
+        }
+      }
+    } catch {}
+  }
+  return process.env.GEMINI_API_KEY;
+}
 
 interface AiQueryPayload {
   question: string;
@@ -18,7 +87,47 @@ interface AiQueryAnswer {
   generatedBy: string;
 }
 
-// Deterministic Natural Language Processor fallback for common queries
+function callGeminiHttps(model: string, apiKey: string, prompt: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const postData = JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        responseMimeType: 'application/json',
+        temperature: 0.3,
+      },
+    });
+
+    const options = {
+      hostname: 'generativelanguage.googleapis.com',
+      port: 443,
+      path: `/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      method: 'POST',
+      agent: geminiHttpsAgent,
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(postData),
+      },
+    };
+
+    const req = https.request(options, (res) => {
+      let body = '';
+      res.on('data', (chunk) => (body += chunk));
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(body);
+          resolve({ status: res.statusCode || 200, data: json });
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
+
+    req.on('error', reject);
+    req.write(postData);
+    req.end();
+  });
+}
+
 function generateDeterministicAnswer(question: string, projectName?: string): AiQueryAnswer {
   const q = question.toLowerCase();
 
@@ -97,28 +206,8 @@ export function handleOrderRequest(req: { body: { currency?: string; items: any[
     };
   }
 
-  if (q.includes('hotspot') || q.includes('recurring') || q.includes('frequent')) {
-    return {
-      answer: `### Recurring Endpoint Hotspots\n\nHotspot analysis evaluates historical commit frequency and consecutive breaking modifications across releases.\n\nEndpoints in **${projectName || 'your services'}** that undergo frequent interface modifications should be prioritized for:\n- Semantic route versioning (e.g. \`/v2/\` branch paths)\n- Comprehensive client contract tests\n- Decoupled intermediate adapter layers`,
-      suggestedFix: `// Adapter pattern to isolate hotspot route changes:
-class RouteAdapter {
-  static adaptPayload(payload: any) {
-    return {
-      id: payload.id ?? payload.orderId,
-      amount: payload.amount ?? payload.total,
-      currency: payload.currency || 'USD'
-    };
-  }
-}`,
-      riskLevel: 'LOW',
-      relatedEndpoints: ['/api/v1/orders', '/api/v1/users'],
-      generatedBy: 'shaktIQ Natural Language Release Engine',
-    };
-  }
-
-  // Default general intelligence response
   return {
-    answer: `### shaktIQ Natural Language Release Intelligence\n\nRegarding: *"${question}"*\n\nshaktIQ delivers deterministic release verification and automated compatibility governance:\n\n- **Continuous Ingestion:** Automatically diffs base and head service contracts and route handlers on pull requests.\n- **Consumer Blast Radius:** Evaluates real-time impact on mobile apps, partner integrations, and downstream microservices.\n- **Automated Fix Synthesis:** Generates non-breaking code patches and backward-compatible deprecation shims.\n- **CI/CD Quality Gates:** Issues non-bypassable release verdicts to keep production stable.\n\nAsk me specific questions about endpoint fixes, mobile client protection, or release readiness scores!`,
+    answer: `### shaktIQ Natural Language Release Intelligence\n\nRegarding your question: *"${question}"*\n\nshaktIQ delivers deterministic release verification and automated compatibility governance for ${projectName || 'modern software teams'}:\n\n- **Continuous Ingestion:** Automatically diffs base and head service contracts and route handlers on pull requests.\n- **Consumer Blast Radius:** Evaluates real-time impact on mobile apps, partner integrations, and downstream microservices.\n- **Automated Fix Synthesis:** Generates non-breaking code patches and backward-compatible deprecation shims.\n- **CI/CD Quality Gates:** Issues non-bypassable release verdicts to keep production stable.\n\nAsk me specific questions about endpoint fixes, mobile client protection, or release readiness scores!`,
     suggestedFix: undefined,
     riskLevel: 'SAFE',
     relatedEndpoints: [],
@@ -177,73 +266,75 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if GEMINI_API_KEY is available
-    const apiKey = process.env.GEMINI_API_KEY;
-    const isKeyValid = apiKey && apiKey !== 'your_gemini_api_key_here' && apiKey.length > 10;
+    const apiKey = getGeminiApiKey();
+    const isKeyValid = !!apiKey && apiKey !== 'your_gemini_api_key_here' && apiKey.length > 10;
 
     if (isKeyValid) {
-      try {
-        const prompt = `You are shaktIQ Natural Language Assistant — a Principal Software Architecture & Release Governance Specialist for "${projectName}".
+      // Candidate models in preference order (starting with active 3.5, 2.5, & 3.8 flash)
+      const candidateModels = [
+        'gemini-3.5-flash',
+        'gemini-2.5-flash',
+        'gemini-3.8-flash',
+        'gemini-flash-latest',
+        'gemini-3.1-flash-lite',
+      ];
+
+      const prompt = `You are shaktIQ Natural Language Assistant — an elite Principal Software Architect and Release Governance Specialist for "${projectName}".
 Help developers, QA engineers, and release managers assess release compatibility, prevent breaking changes, protect downstream mobile apps and consumers, and formulate backward-compatible code patches.
 
-Context of "${projectName}":
-- Recent Runs Summary:
-${JSON.stringify(recentRunsContext.map(r => ({ status: r.status, breaking: r.summary?.breaking || 0, warnings: r.summary?.warning || 0 })), null, 2)}
+Context:
+${recentRunsContext.length > 0 ? `- Recent Runs Summary:\n${JSON.stringify(recentRunsContext.map(r => ({ status: r.status, breaking: r.summary?.breaking || 0, warnings: r.summary?.warning || 0 })), null, 2)}` : ''}
+${recentFindingsContext.length > 0 ? `- Recent Findings:\n${JSON.stringify(recentFindingsContext.map(f => ({ endpoint: f.endpoint, method: f.method, severity: f.severity, changeType: f.changeType })), null, 2)}` : ''}
 
-- Recent Findings:
-${JSON.stringify(recentFindingsContext.map(f => ({ endpoint: f.endpoint, method: f.method, severity: f.severity, changeType: f.changeType })), null, 2)}
-
-User Question:
+User Message / Question:
 "${queryText}"
 
 Instructions:
-1. Provide a direct, actionable answer formatted with markdown headings and bullet points.
-2. If the user asks about breaking changes or mobile apps, explain the exact downstream client risk.
-3. If they ask how to fix or remediate an issue, provide a concrete backward-compatible code snippet (TypeScript or schema shim).
+1. Provide a direct, natural, and helpful response. If the user is greeting you or asking a general question, respond conversationally and explain how shaktIQ protects their software releases.
+2. If the user asks about breaking changes or mobile apps, explain the exact downstream client impact.
+3. If the user asks how to remediate or fix an issue, provide a concrete code fix snippet. If no code fix is requested or needed, leave "suggestedFix" undefined or empty string.
 4. Assess the overall risk level: CRITICAL, HIGH, MEDIUM, LOW, or SAFE.
-5. List all related endpoints referenced in the answer.
+5. List any related endpoints referenced in the answer (or empty array if none).
 
 Respond ONLY with valid JSON matching this schema:
 {
-  "answer": "string (formatted with clear markdown headings and bullet points)",
+  "answer": "string (formatted with clear markdown headings, bold text, and bullet points where helpful)",
   "suggestedFix": "string (concrete code fix or migration snippet, optional)",
   "riskLevel": "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | "SAFE",
   "relatedEndpoints": ["/api/v1/example"]
 }`;
 
-        const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: {
-                responseMimeType: 'application/json',
-                temperature: 0.2,
-              },
-            }),
+      for (const model of candidateModels) {
+        try {
+          const res = await callGeminiHttps(model, apiKey!, prompt);
+          if (res.status === 200 && res.data) {
+            const rawText = res.data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (rawText) {
+              let cleanJson = rawText.trim();
+              if (cleanJson.startsWith('```')) {
+                cleanJson = cleanJson.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+              }
+              let parsed: any;
+              try {
+                parsed = JSON.parse(cleanJson);
+              } catch {
+                parsed = { answer: rawText };
+              }
+              return NextResponse.json({
+                ok: true,
+                data: {
+                  answer: parsed.answer || rawText || 'Analysis complete.',
+                  suggestedFix: parsed.suggestedFix || undefined,
+                  riskLevel: parsed.riskLevel || 'SAFE',
+                  relatedEndpoints: Array.isArray(parsed.relatedEndpoints) ? parsed.relatedEndpoints : [],
+                  generatedBy: `shaktIQ Real-Time Intelligence Engine (${model})`,
+                },
+              });
+            }
           }
-        );
-
-        if (geminiRes.ok) {
-          const geminiData = await geminiRes.json();
-          const text = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (text) {
-            const parsed = JSON.parse(text);
-            return NextResponse.json({
-              ok: true,
-              data: {
-                answer: parsed.answer || 'Analysis complete.',
-                suggestedFix: parsed.suggestedFix,
-                riskLevel: parsed.riskLevel || 'SAFE',
-                relatedEndpoints: parsed.relatedEndpoints || [],
-                generatedBy: 'shaktIQ Natural Language Release Engine',
-              },
-            });
-          }
+        } catch (modelErr) {
+          console.warn(`[AI Query Route] Model ${model} failed, trying next:`, modelErr);
         }
-      } catch (geminiError) {
-        console.warn('[AI Query Route] Gemini API call error, falling back to deterministic answer:', geminiError);
       }
     }
 
