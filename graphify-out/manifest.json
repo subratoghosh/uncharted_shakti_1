@@ -1229,6 +1229,12 @@
     "ast_hash": "edd81fdec75be4509caf1cad6c6d11eb",
     "semantic_hash": ""
   },
+  "render.yaml": {
+    "mtime": 1793440678.4409168,
+    "seen": 1793440715.797164,
+    "ast_hash": "3352345a21847f9e8a4f2eeb89dcdfc2",
+    "semantic_hash": ""
+  },
   "package-lock.json": {
     "mtime": 1793432521.7744105,
     "seen": 1793437823.028382,
