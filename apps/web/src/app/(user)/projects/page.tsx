@@ -171,7 +171,6 @@ export default function ProjectsPage() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Orders Service"
                   value={name}
                   onChange={e => setName(e.target.value)}
                   className="w-full h-9 px-3 text-sm bg-surface-2 border border-border rounded-sm focus:outline-none focus:border-accent"
@@ -183,7 +182,6 @@ export default function ProjectsPage() {
                 <input
                   type="url"
                   required
-                  placeholder="https://github.com/acme/orders"
                   value={repositoryUrl}
                   onChange={e => setRepositoryUrl(e.target.value)}
                   className="w-full h-9 px-3 text-sm bg-surface-2 border border-border rounded-sm focus:outline-none focus:border-accent"

@@ -203,7 +203,6 @@ export default function RunDetailPage() {
               <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-muted" />
               <input
                 type="text"
-                placeholder="Search endpoints..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 className="h-8 pl-8 pr-3 text-xs bg-surface-2 border border-border rounded-sm focus:outline-none focus:border-accent w-48"

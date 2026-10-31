@@ -172,7 +172,6 @@ export default function RegisterPage() {
             <input
               type="text"
               required
-              placeholder="Ada Lovelace"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full h-10 px-3.5 text-sm bg-white border border-[#0C382E]/20 rounded-xl text-[#0C382E] placeholder:text-[#0C382E]/35 focus:outline-none focus:border-[#0C382E] focus:ring-2 focus:ring-[#0C382E]/15 transition-all shadow-xs"
@@ -187,7 +186,6 @@ export default function RegisterPage() {
             <input
               type="email"
               required
-              placeholder="ada@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full h-10 px-3.5 text-sm bg-white border border-[#0C382E]/20 rounded-xl text-[#0C382E] placeholder:text-[#0C382E]/35 focus:outline-none focus:border-[#0C382E] focus:ring-2 focus:ring-[#0C382E]/15 transition-all font-mono shadow-xs"
@@ -202,7 +200,6 @@ export default function RegisterPage() {
             <input
               type="password"
               required
-              placeholder="••••••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full h-10 px-3.5 text-sm bg-white border border-[#0C382E]/20 rounded-xl text-[#0C382E] placeholder:text-[#0C382E]/35 focus:outline-none focus:border-[#0C382E] focus:ring-2 focus:ring-[#0C382E]/15 transition-all font-mono shadow-xs"
@@ -217,7 +214,6 @@ export default function RegisterPage() {
             <input
               type="password"
               required
-              placeholder="••••••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full h-10 px-3.5 text-sm bg-white border border-[#0C382E]/20 rounded-xl text-[#0C382E] placeholder:text-[#0C382E]/35 focus:outline-none focus:border-[#0C382E] focus:ring-2 focus:ring-[#0C382E]/15 transition-all font-mono shadow-xs"

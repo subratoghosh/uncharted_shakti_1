@@ -470,7 +470,6 @@ export function CodeIntelligenceStudio({
             <Search className="w-3.5 h-3.5 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Filter routes (/orders, POST)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-surface-2 border border-border text-xs focus:outline-none focus:ring-1 focus:ring-accent placeholder:text-muted/60"
@@ -1167,7 +1166,6 @@ export function CodeIntelligenceStudio({
                     type="url"
                     value={githubRepoUrl}
                     onChange={(e) => setGithubRepoUrl(e.target.value)}
-                    placeholder="https://github.com/organization/repo"
                     className="w-full px-3 py-2 rounded-xl bg-surface-2 border border-border text-xs focus:ring-1 focus:ring-accent"
                   />
                 </div>
@@ -1178,7 +1176,6 @@ export function CodeIntelligenceStudio({
                     type="text"
                     value={githubBranch}
                     onChange={(e) => setGithubBranch(e.target.value)}
-                    placeholder="main"
                     className="w-full px-3 py-2 rounded-xl bg-surface-2 border border-border text-xs focus:ring-1 focus:ring-accent"
                   />
                 </div>
@@ -1229,7 +1226,6 @@ export function CodeIntelligenceStudio({
                   rows={8}
                   value={uploadText}
                   onChange={(e) => setUploadText(e.target.value)}
-                  placeholder="Paste OpenAPI YAML/JSON or Fastify/Express controller code..."
                   className="w-full p-3 rounded-xl bg-surface-2 border border-border text-xs font-mono focus:ring-1 focus:ring-accent"
                 />
               </div>
