@@ -33,6 +33,7 @@ export const MarketingMobileNav: React.FC = () => {
             <Link
               key={tab.href}
               href={tab.href}
+              prefetch={true}
               className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all duration-150 min-h-[44px] ${
                 isActive
                   ? 'bg-butter-cream text-green-dark font-bold shadow-xs scale-105'

@@ -78,6 +78,7 @@ export function Sidebar() {
                 <Link
                   key={item.name}
                   href={item.href}
+                  prefetch={true}
                   className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-sm text-sm transition-colors ${
                     active
                       ? 'bg-accent/10 text-accent font-medium'
@@ -107,6 +108,7 @@ export function Sidebar() {
                 <Link
                   key={item.name}
                   href={isAdmin ? item.href : '/dashboard?error=AdminRequired'}
+                  prefetch={true}
                   className={`flex items-center justify-between px-2.5 py-1.5 rounded-sm text-sm transition-colors ${
                     active
                       ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 font-medium'

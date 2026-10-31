@@ -20,6 +20,8 @@ export const metadata: Metadata = {
     'Deep downstream consumer dependency mapping, explainable release scoring, and non-bypassable CI contract governance for modern API platforms.',
 };
 
+export const revalidate = 3600; // Cache static page for ultra-fast, zero-lag delivery
+
 export default function IntelligencePage() {
   const pillars = [
     {

@@ -6,6 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../../../lib/api-client';
 import { FolderGit2, Plus, GitBranch, X } from 'lucide-react';
 import { formatDate } from '../../../lib/format';
+import { Skeleton } from '../../../components/common/Skeleton';
 
 type Project = {
   id: string;
@@ -78,7 +79,24 @@ export default function ProjectsPage() {
 
       {/* Projects Grid */}
       {isLoading ? (
-        <div className="p-12 text-center text-sm text-muted">Loading projects...</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="p-5 bg-surface border border-border rounded-lg space-y-4">
+              <div className="flex items-start justify-between">
+                <div className="space-y-1.5 w-2/3">
+                  <Skeleton className="h-5 w-44" rounded="md" />
+                  <Skeleton className="h-3 w-32" rounded="sm" />
+                </div>
+                <Skeleton className="h-5 w-16" rounded="sm" />
+              </div>
+              <div className="flex items-center gap-4 pt-3 border-t border-border">
+                <Skeleton className="h-4 w-20" rounded="sm" />
+                <Skeleton className="h-4 w-28" rounded="sm" />
+                <Skeleton className="h-4 w-24 ml-auto" rounded="sm" />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : projects.length === 0 ? (
         <div className="p-12 text-center border border-dashed border-border rounded-lg space-y-3">
           <FolderGit2 className="w-8 h-8 text-muted mx-auto opacity-50" />

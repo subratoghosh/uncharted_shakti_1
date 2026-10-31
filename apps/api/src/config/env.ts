@@ -23,6 +23,9 @@ const envSchema = z.object({
     .transform(val => val === 'true')
     .default('false'),
   GEMINI_API_KEY: z.string().optional(),
+  UPSTASH_REDIS_REST_URL: z.string().optional(),
+  UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
+  REDIS_URL: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

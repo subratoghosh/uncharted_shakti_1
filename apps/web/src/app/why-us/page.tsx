@@ -23,6 +23,8 @@ export const metadata: Metadata = {
     'Learn how ShaktIQ prevents breaking downstream API consumers, eliminates false alarms with deterministic AST diffing, and automates non-breaking patches with Gemini AI.',
 };
 
+export const revalidate = 3600; // Cache static page for ultra-fast, zero-lag delivery
+
 export default function WhyUsPage() {
   const securityFeatures = [
     {

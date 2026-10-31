@@ -14,11 +14,15 @@ import { sha256 } from '../../lib/hash.js';
 import { logger } from '../../lib/logger.js';
 import { sendSuccess } from '../../lib/response.js';
 import { authenticate, verifyProjectOwnership } from '../../plugins/auth.js';
+import { analyzeRateLimiter, cacheGet, cacheSet, rateLimitGuard } from '../../lib/redis.js';
 import { createComparePipeline } from './pipelines.js';
 
 export const runRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
   // POST /projects/:projectId/runs (Manual run)
-  app.post(ROUTES.RUNS.CREATE_MANUAL, { preHandler: [authenticate] }, async (request, reply) => {
+  app.post(
+    ROUTES.RUNS.CREATE_MANUAL,
+    { preHandler: [authenticate, rateLimitGuard(analyzeRateLimiter)] },
+    async (request, reply) => {
     const user = request.user!;
     const { projectId } = request.params as { projectId: string };
     const body = createManualRunRequestSchema.parse(request.body);
@@ -232,6 +236,12 @@ export const runRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
       throw new AppError('NOT_FOUND', 'Run not found');
     }
 
+    const cacheKey = `run:doc:${runId}`;
+    const cached = await cacheGet<any>(cacheKey);
+    if (cached) {
+      return sendSuccess(reply, cached);
+    }
+
     const { runs } = getCollections();
     const run = await runs.findOne({ _id: new ObjectId(runId) });
     if (!run) {
@@ -240,7 +250,7 @@ export const runRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
 
     await verifyProjectOwnership(run.projectId.toHexString(), user);
 
-    return sendSuccess(reply, {
+    const payload = {
       id: run._id.toHexString(),
       projectId: run.projectId.toHexString(),
       eventId: run.eventId,
@@ -259,7 +269,13 @@ export const runRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
       errorMessage: run.errorMessage,
       aiStatus: run.aiStatus,
       aiSummary: run.aiSummary,
-    });
+    };
+
+    if (run.status === 'completed' || run.status === 'failed') {
+      await cacheSet(cacheKey, payload, 600);
+    }
+
+    return sendSuccess(reply, payload);
   });
 
   // GET /runs/:runId/findings

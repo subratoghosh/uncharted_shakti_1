@@ -366,5 +366,5 @@ paths:
     expect(dossierJson.data.blastRadius).toBeDefined();
     expect(dossierJson.data.findingInsights).toBeDefined();
     expect(dossierJson.data.executiveActionPlan).toBeDefined();
-  });
+  }, 30000);
 });

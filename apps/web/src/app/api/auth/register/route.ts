@@ -2,9 +2,28 @@ import { NextResponse } from 'next/server';
 import argon2 from 'argon2';
 import { ObjectId } from 'mongodb';
 import { getDb } from '../../../../lib/mongodb';
+import { checkRateLimit } from '../../../../lib/ratelimit';
 
 export async function POST(request: Request) {
   try {
+    const forwardedFor = request.headers.get('x-forwarded-for') || '127.0.0.1';
+    const clientIp = forwardedFor.split(',')[0].trim();
+
+    // Rate limit: 10 register attempts per minute per IP via Upstash Redis / memory fallback
+    const rl = await checkRateLimit(clientIp, 10, 60, 'rl:register');
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: 'Too many registration attempts. Please wait a minute and try again.' },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': '60',
+            'X-RateLimit-Remaining': '0',
+          },
+        },
+      );
+    }
+
     const body = await request.json();
     const { name, email, password } = body;
 

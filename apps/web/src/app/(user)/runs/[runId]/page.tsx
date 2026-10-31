@@ -11,6 +11,7 @@ import { ReleaseVerdictBanner } from '../../../../components/shared/ReleaseVerdi
 import { EndpointTag } from '../../../../components/shared/EndpointTag';
 import { formatDate, formatShortSha } from '../../../../lib/format';
 import { ArrowLeft, FileText, GitBranch, History, Bot, X, Search, Filter } from 'lucide-react';
+import { RunDetailSkeleton } from '../../../../components/common/Skeleton';
 
 type Finding = {
   id: string;
@@ -113,7 +114,7 @@ export default function RunDetailPage() {
   });
 
   if (loadingRun) {
-    return <div className="p-12 text-center text-sm text-muted">Loading run details...</div>;
+    return <RunDetailSkeleton />;
   }
 
   if (!run) {

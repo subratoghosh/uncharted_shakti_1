@@ -22,6 +22,8 @@ export const metadata: Metadata = {
     'Discover ShaktIQ’s 4-step release intelligence lifecycle: from git push schema ingestion to blast radius calculation, Gemini AI remediation, and non-bypassable release gates.',
 };
 
+export const revalidate = 3600; // Cache static page for ultra-fast, zero-lag delivery
+
 const WORKFLOW_STEPS = [
   {
     step: '01',

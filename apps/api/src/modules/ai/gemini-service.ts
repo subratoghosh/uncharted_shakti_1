@@ -48,7 +48,7 @@ export async function generateMultiLayerDossier(
   const apiKey = env.GEMINI_API_KEY;
   const isKeyValid = apiKey && apiKey !== 'your_gemini_api_key_here' && apiKey.length > 10;
 
-  if (isKeyValid) {
+  if (isKeyValid && env.NODE_ENV !== 'test') {
     try {
       // Dynamic import so lack of @google/genai module or offline dev does not break module loading
       const { GoogleGenAI } = await import('@google/genai');

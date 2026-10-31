@@ -243,3 +243,54 @@ body {
   color: var(--text-muted);
   border: 1px solid rgba(107, 107, 115, 0.25);
 }
+
+/* ==============================================================================
+   Smooth Animated Skeleton Shimmer Engine (Fast & Zero-Jank)
+   ============================================================================== */
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes skeletonShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(12, 56, 46, 0.05) 0%,
+    rgba(12, 56, 46, 0.13) 50%,
+    rgba(12, 56, 46, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.8s ease-in-out infinite, skeletonPulse 2.4s ease-in-out infinite;
+}
+
+.skeleton-shimmer-dark {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 240, 179, 0.18) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.8s ease-in-out infinite, skeletonPulse 2.4s ease-in-out infinite;
+}
+
+.skeleton-card {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(12, 56, 46, 0.08);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 4px 16px rgba(12, 56, 46, 0.04);
+}
+

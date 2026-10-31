@@ -9,6 +9,7 @@ import { StatusBadge } from '../../../../components/shared/StatusBadge';
 import { ReleaseVerdictBanner } from '../../../../components/shared/ReleaseVerdictBanner';
 import { EndpointTag } from '../../../../components/shared/EndpointTag';
 import { formatDate, formatShortSha } from '../../../../lib/format';
+import { DashboardSkeleton } from '../../../../components/common/Skeleton';
 import { Play, GitBranch, Flame, ArrowRight, GitCompare, Upload, X, History } from 'lucide-react';
 
 type Project = {
@@ -118,6 +119,10 @@ export default function ProjectDetailPage() {
   const latestRun = runs[0];
   const totalBreaking = runs.reduce((acc, r) => acc + (r.summary?.breaking || 0), 0);
   const totalWarnings = runs.reduce((acc, r) => acc + (r.summary?.warning || 0), 0);
+
+  if (!project && loadingRuns) {
+    return <DashboardSkeleton />;
+  }
 
   return (
     <div className="space-y-6">
