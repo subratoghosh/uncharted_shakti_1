@@ -132,3 +132,25 @@ Add to your `mcp_config.json` (or Antigravity / Claude Desktop / Cursor MCP sett
 Exposed MCP Tools:
 - `shaktiq_analyze({ base_spec: string, head_spec: string })`
 - `shaktiq_git_diff({ spec_path: string, base_ref?: string })`
+
+---
+
+## 5. Natural Language AI Assistant (Powered by Gemini 3.8 Flash)
+
+ShaktIQ provides interactive, conversational API architecture intelligence via Google Gemini 3.8 Flash:
+
+- **Web Dashboard:** Interactive **Ask ShaktIQ AI** slide-over drawer on project and run detail pages (`/projects/:id` and `/runs/:id`).
+- **REST API Endpoint:** `POST /api/v1/projects/:projectId/ai/query`
+  - **Body:** `{ "question": "Are there breaking changes affecting our iOS or Android clients?" }`
+  - **Response:**
+    ```json
+    {
+      "answer": "string (formatted markdown analysis)",
+      "suggestedFix": "string (backward-compatible code snippet)",
+      "riskLevel": "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | "SAFE",
+      "relatedEndpoints": ["/v1/orders"],
+      "generatedBy": "Google Gemini 3.8 Flash (Project Architecture Intelligence)"
+    }
+    ```
+- **Fallback Guarantee:** Deterministic analysis engine executes automatically if `GEMINI_API_KEY` is unavailable, ensuring 100% operational uptime.
+
