@@ -16,10 +16,10 @@ import {
 export const userValidator: Document = {
   $jsonSchema: {
     bsonType: 'object',
-    required: ['email', 'passwordHash', 'name', 'role', 'disabled', 'createdAt', 'updatedAt'],
+    required: ['email', 'name', 'role', 'disabled', 'createdAt', 'updatedAt'],
     properties: {
       email: { bsonType: 'string' },
-      passwordHash: { bsonType: 'string' },
+      passwordHash: { bsonType: ['string', 'null'] },
       name: { bsonType: 'string' },
       role: { enum: [...ROLES] },
       disabled: { bsonType: 'bool' },
