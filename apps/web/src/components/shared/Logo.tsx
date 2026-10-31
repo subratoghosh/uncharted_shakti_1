@@ -40,6 +40,8 @@ export function Logo({
       <img
         src="/shaktiq-dark.png"
         alt="ShaktIQ Logo"
+        loading="eager"
+        decoding="async"
         style={{
           maxHeight: `${h}px`,
           maxWidth: collapsed ? '32px' : `${maxW}px`,
@@ -52,6 +54,8 @@ export function Logo({
       <img
         src="/shaktiq-light.png"
         alt="ShaktIQ Logo"
+        loading="eager"
+        decoding="async"
         style={{
           maxHeight: `${h}px`,
           maxWidth: collapsed ? '32px' : `${maxW}px`,

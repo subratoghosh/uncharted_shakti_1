@@ -26,41 +26,56 @@ export function ParallaxCard({
   badge,
 }: Props) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [transform, setTransform] = useState('perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)');
-  const [isHovered, setIsHovered] = useState(false);
+  const rafRef = useRef<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
+    const card = cardRef.current;
+    const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const rotateX = ((y - centerY) / centerY) * -7;
-    const rotateY = ((x - centerX) / centerX) * 7;
+    const rotateX = ((y - centerY) / centerY) * -6;
+    const rotateY = ((x - centerX) / centerX) * 6;
 
-    setTransform(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      if (card) {
+        card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.015, 1.015, 1.015)`;
+      }
+    });
+  }, []);
+
+  const handleMouseEnter = useCallback(() => {
+    if (!cardRef.current) return;
+    cardRef.current.style.transition = 'transform 0.1s cubic-bezier(0.2, 0, 0, 1)';
   }, []);
 
   const handleMouseLeave = useCallback(() => {
-    setIsHovered(false);
-    setTransform('perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)');
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (!cardRef.current) return;
+    cardRef.current.style.transition = 'transform 0.4s cubic-bezier(0.2, 0, 0, 1)';
+    cardRef.current.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
   }, []);
 
   return (
     <>
-      {/* 3D Tilt Parallax Card */}
+      {/* 3D Tilt Parallax Card with 120fps hardware acceleration */}
       <div
         ref={cardRef}
         onMouseMove={handleMouseMove}
-        onMouseEnter={() => setIsHovered(true)}
+        onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={() => setIsOpen(true)}
-        style={{ transform, transition: isHovered ? 'transform 0.08s ease-out' : 'transform 0.4s ease-out' }}
+        style={{
+          transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
+          willChange: 'transform',
+        }}
         className={cn(
-          'group relative cursor-pointer select-none rounded-card border border-[var(--border)] bg-[var(--surface)] p-5 transition-shadow duration-300',
+          'group relative cursor-pointer select-none rounded-card border border-[var(--border)] bg-[var(--surface)] p-5 transition-shadow duration-300 transform-gpu',
           'hover:border-[var(--text)]/40 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/40',
           className,
         )}

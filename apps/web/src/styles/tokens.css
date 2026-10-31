@@ -13,11 +13,15 @@
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   overflow-x: hidden;
   max-width: 100vw;
+  text-rendering: optimizeLegibility;
 }
 
 /* ---- Light theme (default) ---- */
