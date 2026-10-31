@@ -23,6 +23,8 @@ import {
   Cpu,
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { api } from '@/lib/api';
 import { ShaktiqLogoIcon } from '@/components/shared/ShaktiqLogoIcon';
 import { Skeleton } from '@/components/common/Skeleton';
@@ -132,6 +134,7 @@ paths:
 `;
 
 export default function ShaktIQDashboard() {
+  const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState<'overview' | 'studio' | 'runs' | 'compare' | 'memory' | 'dossier' | 'analyzer' | 'tokens' | 'admin'>('overview');
   const [user, setUser] = useState<AuthUser | null>(null);
   const [sseConnected, setSseConnected] = useState(false);
@@ -188,17 +191,18 @@ export default function ShaktIQDashboard() {
         const me = await api.getMe();
         setUser(me);
       } catch {
-        // Auto-login with default admin credentials for smooth demo
-        try {
-          const res = await api.login({ email: 'admin@shaktiq.dev', password: 'admin1234!' });
-          setUser(res.user);
-        } catch {
-          setErrorMsg('Backend offline or authentication failed. Make sure the API server is running on port 4000.');
+        if (session?.user) {
+          setUser({
+            id: session.user.id || 'usr_current',
+            email: session.user.email || 'developer@test.com',
+            name: session.user.name || session.user.email?.split('@')[0] || 'User',
+            role: (session.user.role as 'user' | 'admin') || 'user',
+          });
         }
       }
     }
     init();
-  }, []);
+  }, [session]);
 
   // Load projects & tokens when user is available
   useEffect(() => {
@@ -558,18 +562,24 @@ export default function ShaktIQDashboard() {
               <span>API Tokens</span>
             </button>
 
-            <div className="pt-3 pb-1 px-3 text-[11px] uppercase tracking-wider text-text-muted font-medium">
-              Platform Admin
-            </div>
-            <button
-              onClick={() => setActiveTab('admin')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-left ${
-                activeTab === 'admin' ? 'bg-accent/10 text-accent font-medium' : 'text-text-muted hover:text-text hover:bg-surface-2'
-              }`}
-            >
-              <Database className="w-4 h-4" />
-              <span>Admin Console</span>
-            </button>
+            {(user?.role === 'admin' || session?.user?.role === 'admin') && (
+              <>
+                <div className="pt-3 pb-1 px-3 text-[11px] uppercase tracking-wider text-text-muted font-medium flex items-center justify-between">
+                  <span>Platform Admin</span>
+                  <span className="text-[9px] bg-amber-500/20 text-amber-600 px-1 rounded font-bold font-mono">ADMIN</span>
+                </div>
+                <Link
+                  href="/admin/overview"
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-md transition-colors text-left text-amber-600 hover:bg-amber-500/10 font-medium"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Database className="w-4 h-4" />
+                    <span>Admin Panel Console</span>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </Link>
+              </>
+            )}
           </nav>
         </div>
 
