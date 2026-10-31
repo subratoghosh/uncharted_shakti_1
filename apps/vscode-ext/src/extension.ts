@@ -124,7 +124,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     const config = vscode.workspace.getConfiguration('shaktiq');
-    const apiUrl = config.get<string>('apiUrl', 'http://localhost:4000/api/v1');
+    const apiUrl = config.get<string>('apiUrl', 'https://uncharted-shakti-1.onrender.com/api/v1');
 
     try {
       const res = await fetch(`${apiUrl}/auth/me`, {
@@ -160,7 +160,7 @@ export function activate(context: vscode.ExtensionContext) {
     const config = vscode.workspace.getConfiguration('shaktiq');
     const specRelativePath = config.get<string>('specPath', 'openapi.yaml');
     const baseRef = config.get<string>('baseRef', 'HEAD');
-    const apiUrl = config.get<string>('apiUrl', 'http://localhost:4000/api/v1');
+    const apiUrl = config.get<string>('apiUrl', 'https://uncharted-shakti-1.onrender.com/api/v1');
 
     const specUri = vscode.Uri.file(path.join(workspaceRoot, specRelativePath));
 
@@ -303,7 +303,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     const config = vscode.workspace.getConfiguration('shaktiq');
-    const webUrl = config.get<string>('webUrl', 'http://localhost:3000');
+    const webUrl = config.get<string>('webUrl', 'https://shaktiq.vercel.app');
     const targetUri = vscode.Uri.parse(`${webUrl}/runs/${lastRunId}`);
     await vscode.env.openExternal(targetUri);
   });

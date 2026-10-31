@@ -4,14 +4,25 @@
   "description": "Deterministic OpenAPI Breaking Change Detection & Release Impact Intelligence in VS Code",
   "version": "0.1.0",
   "publisher": "shaktiq",
+  "icon": "resources/icon.png",
+  "license": "MIT",
+  "homepage": "https://shaktiq.vercel.app",
   "repository": {
     "type": "git",
     "url": "https://github.com/subratoghosh/uncharted_shakti_1.git"
   },
-  "files": [
-    "dist",
-    "resources",
-    "README.md"
+  "bugs": {
+    "url": "https://github.com/subratoghosh/uncharted_shakti_1/issues"
+  },
+  "qna": "https://github.com/subratoghosh/uncharted_shakti_1/issues",
+  "keywords": [
+    "openapi",
+    "swagger",
+    "api",
+    "breaking-changes",
+    "diff",
+    "linter",
+    "governance"
   ],
   "engines": {
     "vscode": "^1.85.0"
@@ -63,12 +74,12 @@
       "properties": {
         "shaktiq.apiUrl": {
           "type": "string",
-          "default": "http://localhost:4000/api/v1",
+          "default": "https://uncharted-shakti-1.onrender.com/api/v1",
           "description": "ShaktIQ API base URL"
         },
         "shaktiq.webUrl": {
           "type": "string",
-          "default": "http://localhost:3000",
+          "default": "https://shaktiq.vercel.app",
           "description": "ShaktIQ Web Dashboard URL"
         },
         "shaktiq.specPath": {

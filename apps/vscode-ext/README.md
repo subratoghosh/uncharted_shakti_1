@@ -1,23 +1,69 @@
-# ShaktIQ – OpenAPI Breaking Change Detection for VS Code
+# ShaktIQ – OpenAPI Breaking Change Detection & Release Intelligence for VS Code
 
-Deterministic OpenAPI breaking-change detection and release impact intelligence directly inside your editor.
+[![Version](https://img.shields.io/badge/version-0.1.0-emerald.svg)](https://shaktiq.vercel.app)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Web Dashboard](https://img.shields.io/badge/Dashboard-shaktiq.vercel.app-teal.svg)](https://shaktiq.vercel.app)
 
-## Features
+Deterministic OpenAPI contract diffing, breaking change detection, and release safety intelligence directly in Visual Studio Code. Catch breaking changes before committing, pushing, or breaking downstream consumers.
 
-- **Local Git Comparison**: Compare your working OpenAPI specification against any git reference (`HEAD`, `main`, etc.) or the ShaktIQ remote snapshot.
-- **Inline Diagnostics**: Automatically flags breaking changes with red/yellow squiggly lines on affected schema fields and paths.
-- **Dedicated Findings Tree View**: Browse detected API changes grouped by severity (`breaking`, `warning`, `info`) with quick jump-to-definition.
-- **Dashboard Deep-Linking**: One-click opening of full run history, impact analysis, and changelog on the ShaktIQ web dashboard.
+---
 
-## Commands
+## ⚡ Key Features
 
-- `ShaktIQ: Sign in with token`: Authenticate using a Personal Access Token (PAT).
-- `ShaktIQ: Analyze API changes`: Run instant local analysis against the base spec.
-- `ShaktIQ: Open last run in dashboard`: Launch the full web dashboard for the current run.
+- **Local Git Diffing**: Compare your working OpenAPI specification (`openapi.yaml` or `swagger.json`) directly against any Git reference (`HEAD`, `main`, etc.) before committing.
+- **Inline Editor Diagnostics**: Visual squiggly lines highlight breaking changes (Red), warnings (Yellow), and non-breaking additions (Blue) directly on affected paths, methods, and schema properties.
+- **Dedicated Activity Bar Tree View**: Browse detected API findings organized by severity (`breaking`, `warning`, `info`) with one-click jump-to-definition.
+- **Deep-Link to Cloud Dashboard**: One click opens the comprehensive **AI Release Dossier**, Blast Radius analysis, and stakeholder release notes on the [ShaktIQ Web Dashboard](https://shaktiq.vercel.app).
+- **Secure PAT Authentication**: Authenticate seamlessly with your personal access token, safely encrypted in the VS Code Secrets Store.
 
-## Configuration
+---
 
-- `shaktiq.apiUrl`: Base API URL (default: `http://localhost:4000/api/v1`).
-- `shaktiq.webUrl`: Web dashboard URL (default: `http://localhost:3000`).
-- `shaktiq.specPath`: Relative path to OpenAPI spec file (default: `openapi.yaml`).
-- `shaktiq.baseRef`: Default Git reference to compare against (default: `HEAD`).
+## 🚀 Quick Start Guide
+
+### 1. Authenticate with ShaktIQ
+1. Log in to your ShaktIQ Web Dashboard: [https://shaktiq.vercel.app](https://shaktiq.vercel.app).
+2. Navigate to **Tokens** (`/tokens`) and generate a new **Personal Access Token (PAT)**.
+3. In VS Code, open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run:
+   ```text
+   ShaktIQ: Sign in with token
+   ```
+4. Paste your token (`sq_...`).
+
+### 2. Analyze Your OpenAPI Specification
+Open any project workspace containing an OpenAPI specification and run:
+```text
+ShaktIQ: Analyze API changes
+```
+ShaktIQ will compare your current file against `HEAD` and populate:
+- Visual squiggles on lines where breaking changes were introduced.
+- The **ShaktIQ** sidebar panel with an interactive findings list.
+- An alert prompt to view the full analysis on your web dashboard.
+
+---
+
+## 🛠 Commands Reference
+
+| Command | Action |
+|:---|:---|
+| `ShaktIQ: Sign in with token` | Authenticate using your Personal Access Token. |
+| `ShaktIQ: Analyze API changes` | Perform in-flight contract diffing against your base Git reference. |
+| `ShaktIQ: Open last run in dashboard` | Open the active run detail page on [https://shaktiq.vercel.app](https://shaktiq.vercel.app). |
+
+---
+
+## ⚙️ Configuration Settings
+
+Open your VS Code Settings (`Ctrl+,` / `Cmd+,`) and search for **ShaktIQ**:
+
+| Setting | Default | Description |
+|:---|:---|:---|
+| `shaktiq.apiUrl` | `https://uncharted-shakti-1.onrender.com/api/v1` | Backend API base URL where specs are analyzed. |
+| `shaktiq.webUrl` | `https://shaktiq.vercel.app` | URL of the ShaktIQ Web Dashboard. |
+| `shaktiq.specPath` | `openapi.yaml` | Relative path to your OpenAPI specification file. |
+| `shaktiq.baseRef` | `HEAD` | Git reference (branch or commit) to compare against. |
+
+---
+
+## 📄 License
+
+MIT © [ShaktIQ](https://shaktiq.vercel.app)
