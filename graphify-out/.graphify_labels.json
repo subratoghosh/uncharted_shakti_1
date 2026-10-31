@@ -1,5 +1,4 @@
 {
-  "2": "API Diff Analyzer Core",
   "4": "Infra Docker Services",
   "5": "ESLint Linter Configuration",
   "6": "Package Dependencies (Group 6)",
@@ -12,7 +11,6 @@
   "14": "API Diff Analyzer Core",
   "16": "Auth & Token Models",
   "17": "API Diff Analyzer Core",
-  "19": "System Subsystem 19",
   "20": "VS Code Extension",
   "21": "Run Execution & Verdicts",
   "23": "TypeScript Compiler Config",
@@ -25,8 +23,6 @@
   "34": "VS Code Extension",
   "35": "TypeScript Compiler Config",
   "36": "Package Dependencies (Group 36)",
-  "38": "System Subsystem 38",
-  "39": "Auth & Token Models",
   "41": "System Subsystem 41",
   "42": "System Subsystem 42",
   "43": "Run Execution & Verdicts",
