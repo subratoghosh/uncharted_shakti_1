@@ -14,8 +14,10 @@ if (process.platform === 'win32' && !process.env.VERCEL && !process.env.AWS_REGI
 const ATLAS_DIRECT_URI =
   'mongodb://shaktiq_admin:admin2026@ac-oept6kq-shard-00-00.dyzf282.mongodb.net:27017,ac-oept6kq-shard-00-01.dyzf282.mongodb.net:27017,ac-oept6kq-shard-00-02.dyzf282.mongodb.net:27017/shaktiIQ?ssl=true&replicaSet=atlas-jlnvw8-shard-0&authSource=admin&retryWrites=true&w=majority';
 
-const uri = process.env.MONGODB_URI || ATLAS_DIRECT_URI;
-const dbName = process.env.MONGODB_DB || process.env.MONGODB_DB_NAME || 'shaktiIQ';
+const rawUri = process.env.MONGODB_URI || ATLAS_DIRECT_URI;
+const uri = rawUri.replace(/[\r\n\t]/g, '').trim();
+const rawDbName = process.env.MONGODB_DB || process.env.MONGODB_DB_NAME || 'shaktiIQ';
+const dbName = rawDbName.replace(/[\r\n\t]/g, '').trim();
 
 declare global {
   // eslint-disable-next-line no-var
