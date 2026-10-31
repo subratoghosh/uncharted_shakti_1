@@ -7,6 +7,7 @@ import { ErrorState } from '@/components/shared/ErrorState';
 import { SkeletonRows } from '@/components/shared/SkeletonRow';
 import { formatDate } from '@/lib/format';
 import type { User } from '@shaktiq/shared';
+import { MOCK_USER, MOCK_ADMIN } from '@/mocks/mock-data';
 
 export default function AdminUsersPage() {
   const queryClient = useQueryClient();
@@ -14,6 +15,7 @@ export default function AdminUsersPage() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['admin-users'],
     queryFn: () => apiClient.admin.users(),
+    initialData: { ok: true, data: [MOCK_USER, MOCK_ADMIN] },
   });
 
   const toggleMutation = useMutation({

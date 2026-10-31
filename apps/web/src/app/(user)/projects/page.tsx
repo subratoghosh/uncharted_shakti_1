@@ -10,6 +10,7 @@ import { SkeletonCard } from '@/components/shared/SkeletonRow';
 import { formatDate } from '@/lib/format';
 import { Plus, GitBranch, FileCode } from 'lucide-react';
 import type { Project } from '@shaktiq/shared';
+import { MOCK_PROJECT } from '@/mocks/mock-data';
 
 export default function ProjectsPage() {
   const queryClient = useQueryClient();
@@ -23,6 +24,7 @@ export default function ProjectsPage() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['projects'],
     queryFn: () => apiClient.projects.list(),
+    initialData: { ok: true, data: [MOCK_PROJECT] },
   });
 
   const createMutation = useMutation({

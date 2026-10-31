@@ -13,6 +13,7 @@ import { formatDate, shortSha, escapeText } from '@/lib/format';
 import { Printer, ArrowLeft } from 'lucide-react';
 import type { Finding } from '@shaktiq/shared';
 import type { RunReport } from '@/lib/types';
+import { MOCK_RUN_COMPLETED, MOCK_PROJECT, MOCK_FINDINGS } from '@/mocks/mock-data';
 
 export default function ReleaseReportPage({
   params,
@@ -25,6 +26,7 @@ export default function ReleaseReportPage({
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['report', runId],
     queryFn: () => apiClient.runs.report(runId),
+    initialData: { ok: true, data: { run: { ...MOCK_RUN_COMPLETED, id: runId }, project: MOCK_PROJECT, summary: MOCK_RUN_COMPLETED.summary!, findings: MOCK_FINDINGS, releaseStatus: MOCK_RUN_COMPLETED.summary!.releaseStatus } },
   });
 
   const report: RunReport | null = data?.ok ? data.data : null;

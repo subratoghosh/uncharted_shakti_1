@@ -13,6 +13,7 @@ import { SkeletonRows } from '@/components/shared/SkeletonRow';
 import { formatDate, shortSha } from '@/lib/format';
 import { RefreshCw } from 'lucide-react';
 import type { Run } from '@shaktiq/shared';
+import { MOCK_RUN_COMPLETED } from '@/mocks/mock-data';
 
 export default function AdminRunsPage() {
   const router = useRouter();

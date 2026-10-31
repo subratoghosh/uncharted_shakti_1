@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import type { Finding, Run, SseMessage } from '@shaktiq/shared';
 import type { EndpointMemoryEntry } from '@/lib/types';
+import { MOCK_RUN_COMPLETED, MOCK_FINDINGS } from '@/mocks/mock-data';
 
 export default function RunDetailPage({
   params,
@@ -44,6 +45,7 @@ export default function RunDetailPage({
   const { data: runRes, isLoading: runLoading, error: runError, refetch: refetchRun } = useQuery({
     queryKey: ['run', runId],
     queryFn: () => apiClient.runs.get(runId),
+    initialData: { ok: true, data: { ...MOCK_RUN_COMPLETED, id: runId } },
   });
 
   const run: Run | null = runRes?.ok ? runRes.data : null;

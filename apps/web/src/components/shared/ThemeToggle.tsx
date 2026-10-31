@@ -1,56 +1,46 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
-import { Sun, Moon, Monitor } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function ThemeToggle({ className }: { className?: string }) {
-  const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const toggleTheme = () => {
+    const isDark =
+      resolvedTheme === 'dark' ||
+      (typeof document !== 'undefined' &&
+        document.documentElement.classList.contains('dark'));
+    const nextTheme = isDark ? 'light' : 'dark';
 
-  const cycle = () => {
-    if (theme === 'light') setTheme('dark');
-    else if (theme === 'dark') setTheme('system');
-    else setTheme('light');
+    setTheme(nextTheme);
+
+    if (typeof document !== 'undefined') {
+      if (nextTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
   };
-
-  // During SSR and before mount, render consistent static markup to prevent hydration mismatch
-  if (!mounted) {
-    return (
-      <button
-        aria-label="Switch theme"
-        title="Switch theme"
-        suppressHydrationWarning
-        className={cn(
-          'flex h-9 w-9 items-center justify-center rounded text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors',
-          className,
-        )}
-      >
-        <Sun className="h-4 w-4" aria-hidden />
-      </button>
-    );
-  }
-
-  const Icon = theme === 'light' ? Sun : theme === 'dark' ? Moon : Monitor;
-  const label = `Switch theme (currently ${theme ?? 'system'})`;
 
   return (
     <button
-      onClick={cycle}
-      aria-label={label}
-      title={label}
-      suppressHydrationWarning
+      type="button"
+      onClick={toggleTheme}
+      aria-label="Toggle light/dark theme"
+      title="Toggle light/dark theme"
       className={cn(
-        'flex h-9 w-9 items-center justify-center rounded text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors',
+        'relative flex h-9 w-9 items-center justify-center rounded text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--accent)]',
         className,
       )}
     >
-      <Icon className="h-4 w-4" aria-hidden />
+      {/* Sun icon is visible in dark mode to switch to light */}
+      <Sun className="h-4 w-4 hidden dark:block text-amber-400" aria-hidden />
+      {/* Moon icon is visible in light mode to switch to dark */}
+      <Moon className="h-4 w-4 block dark:hidden text-[var(--text)]" aria-hidden />
     </button>
   );
 }
+

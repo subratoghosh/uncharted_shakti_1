@@ -11,6 +11,7 @@ import { SkeletonRows } from '@/components/shared/SkeletonRow';
 import { Pagination } from '@/components/shared/Pagination';
 import { formatDate } from '@/lib/format';
 import type { Project } from '@shaktiq/shared';
+import { MOCK_PROJECT } from '@/mocks/mock-data';
 
 const LIMIT = 20;
 
@@ -20,6 +21,7 @@ export default function AdminProjectsPage() {
   const { data: res, isLoading, error, refetch } = useQuery({
     queryKey: ['admin', 'projects', page],
     queryFn: () => apiClient.admin.projects({ page, limit: LIMIT }),
+    initialData: { ok: true, data: [MOCK_PROJECT] },
   });
 
   const projects: Project[] = res?.ok ? res.data : [];

@@ -9,6 +9,7 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import { ErrorState } from '@/components/shared/ErrorState';
 import { SkeletonCard } from '@/components/shared/SkeletonRow';
 import { formatRelative } from '@/lib/format';
+import { MOCK_OVERVIEW, MOCK_WORKFLOW_HEALTH } from '@/mocks/mock-data';
 
 export default function AdminOverviewPage() {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'runs' | 'events'>('all');
@@ -21,6 +22,7 @@ export default function AdminOverviewPage() {
   } = useQuery({
     queryKey: ['admin', 'overview'],
     queryFn: () => apiClient.admin.overview(),
+    initialData: { ok: true, data: MOCK_OVERVIEW },
   });
 
   const {
@@ -31,6 +33,7 @@ export default function AdminOverviewPage() {
   } = useQuery({
     queryKey: ['admin', 'workflowsHealth'],
     queryFn: () => apiClient.admin.workflowsHealth(),
+    initialData: { ok: true, data: MOCK_WORKFLOW_HEALTH },
   });
 
   const overview = overviewRes?.ok ? overviewRes.data : null;

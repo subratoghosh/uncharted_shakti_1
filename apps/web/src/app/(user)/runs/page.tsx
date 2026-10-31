@@ -12,6 +12,7 @@ import { ErrorState } from '@/components/shared/ErrorState';
 import { SkeletonRows } from '@/components/shared/SkeletonRow';
 import { formatDate, shortSha } from '@/lib/format';
 import type { Project, Run } from '@shaktiq/shared';
+import { MOCK_PROJECT, MOCK_RUN_COMPLETED } from '@/mocks/mock-data';
 
 export default function RunsPage() {
   const router = useRouter();

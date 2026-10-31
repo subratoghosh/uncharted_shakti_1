@@ -97,9 +97,8 @@ async function request<T>(
     }
   }
 
-  // If backend is known to be offline and fallback is provided, return 0ms mock data immediately
-  if (!backendOnline && devFallback) {
-    void checkBackend();
+  // If no live backend URL is provided or we are in development, serve mock data instantly in 0ms
+  if (!process.env.NEXT_PUBLIC_API_URL && devFallback) {
     const mockResult: ApiResponse<T> = { ok: true, data: devFallback() };
     if (isGet) {
       memoryCache.set(url, { res: mockResult, timestamp: Date.now() });
@@ -192,7 +191,7 @@ async function postForm<T>(
   devFallback?: () => T,
 ): Promise<ApiResponse<T>> {
   const url = endpoint(path);
-  if (!backendOnline && devFallback) {
+  if (!process.env.NEXT_PUBLIC_API_URL && devFallback) {
     return { ok: true, data: devFallback() };
   }
   try {

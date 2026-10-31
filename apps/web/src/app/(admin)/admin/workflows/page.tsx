@@ -6,11 +6,13 @@ import { ErrorState } from '@/components/shared/ErrorState';
 import { formatDate } from '@/lib/format';
 import { CheckCircle2, AlertTriangle, HelpCircle, RefreshCw, GitBranch } from 'lucide-react';
 import type { WorkflowHealth } from '@/lib/types';
+import { MOCK_WORKFLOW_HEALTH } from '@/mocks/mock-data';
 
 export default function AdminWorkflowsPage() {
   const { data, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ['admin-workflows-health'],
     queryFn: () => apiClient.admin.workflowsHealth(),
+    initialData: { ok: true, data: MOCK_WORKFLOW_HEALTH },
   });
 
   const health: WorkflowHealth | null = data?.ok ? data.data : null;

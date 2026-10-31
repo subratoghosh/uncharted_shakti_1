@@ -16,6 +16,7 @@ import { formatDate, shortSha } from '@/lib/format';
 import { Play, GitCompare, Flame, ArrowRight } from 'lucide-react';
 import type { Project, Run } from '@shaktiq/shared';
 import type { HotspotEndpoint } from '@/lib/types';
+import { MOCK_PROJECT, MOCK_RUN_COMPLETED, MOCK_HOTSPOTS } from '@/mocks/mock-data';
 
 export default function ProjectOverviewPage({
   params,
@@ -29,6 +30,7 @@ export default function ProjectOverviewPage({
   const { data: projectRes, isLoading: projectLoading, error: projectError } = useQuery({
     queryKey: ['project', projectId],
     queryFn: () => apiClient.projects.get(projectId),
+    initialData: { ok: true, data: { ...MOCK_PROJECT, id: projectId } },
   });
 
   const { data: runsRes, isLoading: runsLoading } = useQuery({
@@ -39,6 +41,7 @@ export default function ProjectOverviewPage({
   const { data: hotspotsRes, isLoading: hotspotsLoading } = useQuery({
     queryKey: ['hotspots', projectId],
     queryFn: () => apiClient.memory.hotspots(projectId),
+    initialData: { ok: true, data: MOCK_HOTSPOTS },
   });
 
   const project: Project | null = projectRes?.ok ? projectRes.data : null;
