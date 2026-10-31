@@ -1,7 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
@@ -18,17 +16,6 @@ export function Logo({
   size = 'md',
   className,
 }: Props) {
-  const [mounted, setMounted] = useState(false);
-  const { resolvedTheme } = useTheme();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Before hydration, default to light logo; once mounted, use resolvedTheme
-  const isDark = mounted && resolvedTheme === 'dark';
-  const logoSrc = isDark ? '/logo-dark.png' : '/logo-light.png';
-
   const dimensions = {
     sm: { h: 28, maxW: 84 },
     md: { h: 36, maxW: 120 },
@@ -41,8 +28,6 @@ export function Logo({
     <div
       className={cn(
         'relative inline-flex items-center justify-center shrink-0 rounded transition-colors overflow-hidden select-none',
-        // Background matches chosen light or dark mode
-        'bg-white dark:bg-[#1D1C1A]',
         collapsed ? 'w-8 h-8 p-0.5' : 'px-1 py-0.5',
         className,
       )}
@@ -51,8 +36,9 @@ export function Logo({
         maxWidth: collapsed ? '32px' : `${maxW}px`,
       }}
     >
+      {/* Dark theme logo — shown automatically when .dark class is on html/body */}
       <img
-        src={logoSrc}
+        src="/logo-dark.png"
         alt="ShaktIQ Logo"
         style={{
           maxHeight: `${h - 4}px`,
@@ -60,7 +46,19 @@ export function Logo({
           width: 'auto',
           height: 'auto',
         }}
-        className="block object-contain pointer-events-none select-none"
+        className="hidden dark:block object-contain pointer-events-none select-none rounded"
+      />
+      {/* Light theme logo — shown automatically in light mode */}
+      <img
+        src="/logo-light.png"
+        alt="ShaktIQ Logo"
+        style={{
+          maxHeight: `${h - 4}px`,
+          maxWidth: collapsed ? '28px' : `${maxW - 8}px`,
+          width: 'auto',
+          height: 'auto',
+        }}
+        className="block dark:hidden object-contain pointer-events-none select-none rounded"
       />
     </div>
   );
@@ -79,3 +77,4 @@ export function Logo({
 
   return logoElement;
 }
+

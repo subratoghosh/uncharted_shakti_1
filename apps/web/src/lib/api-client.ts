@@ -41,6 +41,32 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 const memoryCache = new Map<string, { res: ApiResponse<unknown>; timestamp: number }>();
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
+// Backend connectivity status: defaults to false so initial mock loads are 0ms instant
+let backendOnline = false;
+let lastHealthCheck = 0;
+const HEALTH_CHECK_INTERVAL_MS = 30_000;
+
+async function checkBackend(): Promise<boolean> {
+  const now = Date.now();
+  if (now - lastHealthCheck < HEALTH_CHECK_INTERVAL_MS) {
+    return backendOnline;
+  }
+  lastHealthCheck = now;
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 200);
+    const res = await fetch(`${BASE_URL}${API_PREFIX}${ROUTES.HEALTH}`, {
+      signal: ctrl.signal,
+      cache: 'no-store',
+    });
+    clearTimeout(timer);
+    backendOnline = res.ok;
+  } catch {
+    backendOnline = false;
+  }
+  return backendOnline;
+}
+
 export class ApiError extends Error {
   constructor(
     public code: string,
@@ -71,9 +97,19 @@ async function request<T>(
     }
   }
 
-  // Fast abort in dev mode if local backend is not responding so devFallback activates instantly
+  // If backend is known to be offline and fallback is provided, return 0ms mock data immediately
+  if (!backendOnline && devFallback) {
+    void checkBackend();
+    const mockResult: ApiResponse<T> = { ok: true, data: devFallback() };
+    if (isGet) {
+      memoryCache.set(url, { res: mockResult, timestamp: Date.now() });
+    }
+    return mockResult;
+  }
+
+  // Fast abort if backend does not respond within 300ms
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 600);
+  const timeoutId = setTimeout(() => controller.abort(), 300);
 
   try {
     const res = await fetch(url, {
@@ -87,6 +123,7 @@ async function request<T>(
     });
 
     clearTimeout(timeoutId);
+    backendOnline = true;
     const json = (await res.json()) as ApiResponse<T>;
 
     if (!json.ok) {
@@ -100,10 +137,11 @@ async function request<T>(
     return json;
   } catch (err) {
     clearTimeout(timeoutId);
+    backendOnline = false;
     if (err instanceof ApiError) throw err;
 
-    // In dev mode: if backend is unreachable, use mock data fallback instantly
-    if (process.env.NODE_ENV === 'development' && devFallback) {
+    // Fast fallback to mock data when network fails or backend is unreachable
+    if (devFallback) {
       const mockResult: ApiResponse<T> = { ok: true, data: devFallback() };
       if (isGet) {
         memoryCache.set(url, { res: mockResult, timestamp: Date.now() });
@@ -154,6 +192,9 @@ async function postForm<T>(
   devFallback?: () => T,
 ): Promise<ApiResponse<T>> {
   const url = endpoint(path);
+  if (!backendOnline && devFallback) {
+    return { ok: true, data: devFallback() };
+  }
   try {
     const res = await fetch(url, {
       method: 'POST',
@@ -167,7 +208,7 @@ async function postForm<T>(
     return json;
   } catch (err) {
     if (err instanceof ApiError) throw err;
-    if (process.env.NODE_ENV === 'development' && devFallback) {
+    if (devFallback) {
       return { ok: true, data: devFallback() };
     }
     throw new ApiError('NETWORK_ERROR', 'Network request failed');

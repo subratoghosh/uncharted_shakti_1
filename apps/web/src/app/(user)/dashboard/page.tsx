@@ -9,11 +9,13 @@ import { SkeletonCard } from '@/components/shared/SkeletonRow';
 import { ErrorState } from '@/components/shared/ErrorState';
 import { FolderGit2, Play, Activity, Layers, ArrowRight } from 'lucide-react';
 import type { Project } from '@shaktiq/shared';
+import { MOCK_PROJECT } from '@/mocks/mock-data';
 
 function useProjects() {
   return useQuery({
     queryKey: ['projects'],
     queryFn: () => apiClient.projects.list(),
+    initialData: { ok: true, data: [MOCK_PROJECT] },
   });
 }
 
@@ -27,6 +29,7 @@ function useAllRunCounts(projects: Project[]) {
       return results.flatMap((r) => (r.ok ? r.data : [])).length;
     },
     enabled: projects.length > 0,
+    initialData: 1,
   });
 }
 
