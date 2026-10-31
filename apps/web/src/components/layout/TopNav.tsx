@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { LogOut, Shield, User, ExternalLink, ShieldAlert, Bot } from 'lucide-react';
+import { LogOut, Shield, User, ExternalLink, ShieldAlert } from 'lucide-react';
 import { ShaktiqLogoIcon } from '../shared/ShaktiqLogoIcon';
 
 export function TopNav() {
@@ -69,16 +69,6 @@ export function TopNav() {
             )}
           </div>
         )}
-
-        {/* Natural Language AI Assistant Quick Trigger */}
-        <button
-          onClick={() => window.dispatchEvent(new CustomEvent('open-ai-assistant'))}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-[#14533F] text-butter-cream hover:bg-[#1A6B52] border border-[#52B143]/40 transition-all shadow-xs"
-          title="Open Natural Language AI Assistant"
-        >
-          <Bot className="w-3.5 h-3.5 text-[#52B143]" />
-          <span className="hidden sm:inline">AI Assistant</span>
-        </button>
 
         {/* User Profile Pill */}
         {session?.user && (

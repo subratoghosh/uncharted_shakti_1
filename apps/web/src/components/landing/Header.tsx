@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { Menu, X, ArrowRight, Terminal, Bot, LogIn, UserCheck } from 'lucide-react';
+import { Menu, X, ArrowRight, Terminal, LogIn } from 'lucide-react';
 import { ShaktiqBrand } from './ShaktiqBrand';
 
 const NAV_ITEMS = [
@@ -73,15 +73,6 @@ export const Header: React.FC = () => {
 
           {/* CTA & Mobile Toggle */}
           <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              onClick={() => window.dispatchEvent(new CustomEvent('open-ai-assistant'))}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-full bg-white/10 text-butter-cream font-bold text-xs border border-white/20 hover:bg-white/20 hover:border-[#52B143]/50 transition-all shrink-0 cursor-pointer"
-              title="Open Natural Language AI Assistant"
-            >
-              <Bot className="w-3.5 h-3.5 text-[#52B143]" />
-              <span>AI Assistant</span>
-            </button>
-
             {isLoggedIn ? (
               <Link
                 href={consoleHref}
@@ -132,17 +123,6 @@ export const Header: React.FC = () => {
               </Link>
             ))}
             <div className="pt-2 border-t border-green-mid/60 mt-1 flex flex-col gap-2">
-              <button
-                onClick={() => {
-                  setIsMobileOpen(false);
-                  window.dispatchEvent(new CustomEvent('open-ai-assistant'));
-                }}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-white/10 text-butter-cream font-bold text-xs border border-white/20 hover:bg-white/20 transition-colors"
-              >
-                <Bot className="w-4 h-4 text-[#52B143]" />
-                <span>Open Natural Language AI Assistant</span>
-              </button>
-
               {isLoggedIn ? (
                 <Link
                   href={consoleHref}
