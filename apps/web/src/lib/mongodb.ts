@@ -17,8 +17,11 @@ if (process.platform === 'win32' && !process.env.VERCEL && !process.env.AWS_REGI
           callback = options;
           options = {};
         }
+        if (!hostname || typeof hostname !== 'string' || /^[\d.]+$/.test(hostname) || hostname.includes(':') || hostname === 'localhost') {
+          return origLookup(hostname, options, callback);
+        }
         dns.resolve4(hostname, (err, addrs) => {
-          if (!err && addrs && addrs.length > 0) {
+          if (!err && Array.isArray(addrs) && addrs.length > 0) {
             if (options && options.all) {
               return callback(null, addrs.map((a: string) => ({ address: a, family: 4 })));
             }
