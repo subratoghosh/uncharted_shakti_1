@@ -1,7 +1,7 @@
 import { MongoClient, Db } from 'mongodb';
 
 const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/shaktiq';
-const dbName = process.env.MONGODB_DB_NAME || 'shaktiq';
+const dbName = process.env.MONGODB_DB_NAME || process.env.MONGODB_DB || 'shaktiIQ';
 
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
