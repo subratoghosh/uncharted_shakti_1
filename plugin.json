@@ -1,0 +1,8 @@
+{
+  "name": "shaktiq",
+  "version": "1.0.0",
+  "description": "Deterministic OpenAPI breaking change detection, release intelligence, and AI agent verification skill.",
+  "author": "Vicky (ShaktIQ Team)",
+  "skills": ["skills/shaktiq"]
+}
+

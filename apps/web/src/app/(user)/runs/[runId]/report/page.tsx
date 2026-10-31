@@ -10,7 +10,8 @@ import { EndpointTag } from '@/components/shared/EndpointTag';
 import { ErrorState } from '@/components/shared/ErrorState';
 import { formatDate, shortSha, escapeText } from '@/lib/format';
 import { Printer, ArrowLeft } from 'lucide-react';
-import type { RunReport, Finding } from '@shaktiq/shared';
+import type { Finding } from '@shaktiq/shared';
+import type { RunReport } from '@/lib/types';
 
 export default function ReleaseReportPage({
   params,
@@ -49,9 +50,9 @@ export default function ReleaseReportPage({
 
   const { run, project, summary, findings, releaseStatus } = report;
 
-  const breaking = findings.filter((f) => f.severity === 'breaking');
-  const warnings = findings.filter((f) => f.severity === 'warning');
-  const info = findings.filter((f) => f.severity === 'info');
+  const breaking = findings.filter((f: Finding) => f.severity === 'breaking');
+  const warnings = findings.filter((f: Finding) => f.severity === 'warning');
+  const info = findings.filter((f: Finding) => f.severity === 'info');
 
   return (
     <div className="max-w-3xl mx-auto py-6 space-y-8">

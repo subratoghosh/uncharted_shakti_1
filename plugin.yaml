@@ -1,0 +1,12 @@
+name: shaktiq
+version: 1.0.0
+description: Deterministic OpenAPI contract diffing, release safety verdicts, and backward compatibility intelligence for AI coding agents.
+author: Vicky (ShaktIQ Team)
+provides_commands:
+  - shaktiq
+provides_skills:
+  - shaktiq
+provides_tools:
+  - shaktiq_analyze
+  - shaktiq_git_diff
+

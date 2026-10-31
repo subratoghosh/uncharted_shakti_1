@@ -1,25 +1,27 @@
 // lib/api-client.ts
-// Typed fetch wrapper — uses ROUTES from @shaktiq/shared.
+// Typed fetch wrapper — uses ROUTES and API_PREFIX from @shaktiq/shared.
 // No secrets here. Cookies sent automatically (credentials: 'include').
 // Never call MongoDB, n8n or GitHub from here.
 
-import { ROUTES } from '@shaktiq/shared';
+import { ROUTES, API_PREFIX } from '@shaktiq/shared';
 import type {
   ApiResponse,
   ApiToken,
-  ApiTokenCreated,
-  AdminOverview,
   Event,
   Finding,
+  Project,
+  Run,
+  User,
+} from '@shaktiq/shared';
+import type {
+  ApiTokenCreated,
+  AdminOverview,
   FindingWithDiff,
   HotspotEndpoint,
   EndpointMemoryEntry,
-  Project,
-  Run,
   RunReport,
-  User,
   WorkflowHealth,
-} from '@shaktiq/shared';
+} from './types';
 import {
   MOCK_USER,
   MOCK_ADMIN,
@@ -33,25 +35,28 @@ import {
   MOCK_WORKFLOW_HEALTH,
 } from '../mocks/mock-data';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
-class ApiError extends Error {
+export class ApiError extends Error {
   constructor(
     public code: string,
     message: string,
-    public details?: { path: string; message: string }[],
+    public details?: { path?: string; message: string }[],
   ) {
     super(message);
     this.name = 'ApiError';
   }
 }
 
+function endpoint(path: string): string {
+  return `${BASE_URL}${API_PREFIX}${path}`;
+}
+
 async function request<T>(
-  path: string,
+  url: string,
   init: RequestInit = {},
   devFallback?: () => T,
 ): Promise<ApiResponse<T>> {
-  const url = `${API_URL}${path}`;
   try {
     const res = await fetch(url, {
       ...init,
@@ -85,12 +90,12 @@ async function request<T>(
 }
 
 function get<T>(path: string, devFallback?: () => T) {
-  return request<T>(path, { method: 'GET' }, devFallback);
+  return request<T>(endpoint(path), { method: 'GET' }, devFallback);
 }
 
 function post<T>(path: string, body?: unknown, devFallback?: () => T) {
   return request<T>(
-    path,
+    endpoint(path),
     {
       method: 'POST',
       body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -101,7 +106,7 @@ function post<T>(path: string, body?: unknown, devFallback?: () => T) {
 
 function patch<T>(path: string, body?: unknown, devFallback?: () => T) {
   return request<T>(
-    path,
+    endpoint(path),
     {
       method: 'PATCH',
       body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -111,7 +116,7 @@ function patch<T>(path: string, body?: unknown, devFallback?: () => T) {
 }
 
 function del<T>(path: string, devFallback?: () => T) {
-  return request<T>(path, { method: 'DELETE' }, devFallback);
+  return request<T>(endpoint(path), { method: 'DELETE' }, devFallback);
 }
 
 async function postForm<T>(
@@ -119,7 +124,7 @@ async function postForm<T>(
   formData: FormData,
   devFallback?: () => T,
 ): Promise<ApiResponse<T>> {
-  const url = `${API_URL}${path}`;
+  const url = endpoint(path);
   try {
     const res = await fetch(url, {
       method: 'POST',
@@ -149,20 +154,20 @@ type AuthData = { user: User };
 export const apiClient = {
   auth: {
     register: (body: RegisterBody) =>
-      post<AuthData>(ROUTES.AUTH_REGISTER, body, () => ({ user: MOCK_USER })),
+      post<AuthData>(ROUTES.AUTH.REGISTER, body, () => ({ user: MOCK_USER })),
     login: (body: LoginBody) =>
-      post<AuthData>(ROUTES.AUTH_LOGIN, body, () => ({
+      post<AuthData>(ROUTES.AUTH.LOGIN, body, () => ({
         user: body.email.includes('admin') ? MOCK_ADMIN : MOCK_USER,
       })),
-    logout: () => post<Record<string, never>>(ROUTES.AUTH_LOGOUT, undefined, () => ({})),
-    me: () => get<User>(ROUTES.AUTH_ME, () => MOCK_USER),
+    logout: () => post<Record<string, never>>(ROUTES.AUTH.LOGOUT, undefined, () => ({})),
+    me: () => get<User>(ROUTES.AUTH.ME, () => MOCK_USER),
   },
 
   // ---- Tokens ----
   tokens: {
-    list: () => get<ApiToken[]>(ROUTES.TOKENS, () => MOCK_TOKENS),
+    list: () => get<ApiToken[]>(ROUTES.TOKENS.LIST, () => MOCK_TOKENS),
     create: (name: string) =>
-      post<ApiTokenCreated>(ROUTES.TOKENS, { name }, () => ({
+      post<ApiTokenCreated>(ROUTES.TOKENS.CREATE, { name }, () => ({
         id: `tok-${Date.now()}`,
         userId: 'user-1',
         name,
@@ -172,19 +177,20 @@ export const apiClient = {
         createdAt: new Date().toISOString(),
         rawToken: `sq_${Math.random().toString(36).substring(2)}${Math.random().toString(36).substring(2)}`,
       })),
-    revoke: (tokenId: string) => del<Record<string, never>>(ROUTES.TOKEN(tokenId), () => ({})),
+    revoke: (tokenId: string) =>
+      del<Record<string, never>>(ROUTES.TOKENS.REVOKE.replace(':tokenId', tokenId), () => ({})),
   },
 
   // ---- Projects ----
   projects: {
-    list: () => get<Project[]>(ROUTES.PROJECTS, () => [MOCK_PROJECT]),
+    list: () => get<Project[]>(ROUTES.PROJECTS.LIST, () => [MOCK_PROJECT]),
     create: (body: {
       name: string;
       repositoryUrl: string;
       defaultBranch: string;
       specPath: string;
     }) =>
-      post<Project>(ROUTES.PROJECTS, body, () => ({
+      post<Project>(ROUTES.PROJECTS.CREATE, body, () => ({
         id: `proj-${Date.now()}`,
         ownerUserId: 'user-1',
         name: body.name,
@@ -198,17 +204,21 @@ export const apiClient = {
         updatedAt: new Date().toISOString(),
       })),
     get: (projectId: string) =>
-      get<Project>(ROUTES.PROJECT(projectId), () => ({ ...MOCK_PROJECT, id: projectId })),
+      get<Project>(ROUTES.PROJECTS.GET.replace(':projectId', projectId), () => ({
+        ...MOCK_PROJECT,
+        id: projectId,
+      })),
     update: (
       projectId: string,
       body: Partial<{ name: string; defaultBranch: string; specPath: string }>,
     ) =>
-      patch<Project>(ROUTES.PROJECT(projectId), body, () => ({
+      patch<Project>(ROUTES.PROJECTS.UPDATE.replace(':projectId', projectId), body, () => ({
         ...MOCK_PROJECT,
         ...body,
         id: projectId,
       })),
-    delete: (projectId: string) => del<Record<string, never>>(ROUTES.PROJECT(projectId), () => ({})),
+    delete: (projectId: string) =>
+      del<Record<string, never>>(ROUTES.PROJECTS.DELETE.replace(':projectId', projectId), () => ({})),
   },
 
   // ---- Runs ----
@@ -221,20 +231,25 @@ export const apiClient = {
       if (params?.page) qs.set('page', String(params.page));
       if (params?.limit) qs.set('limit', String(params.limit));
       const q = qs.toString();
-      return get<Run[]>(
-        `${ROUTES.PROJECT_RUNS(projectId)}${q ? `?${q}` : ''}`,
-        () => [MOCK_RUN_COMPLETED],
-      );
+      const base = ROUTES.RUNS.LIST_BY_PROJECT.replace(':projectId', projectId);
+      return get<Run[]>(`${base}${q ? `?${q}` : ''}`, () => [MOCK_RUN_COMPLETED]);
     },
     manualRun: (projectId: string, formData: FormData) =>
-      postForm<Run>(ROUTES.PROJECT_RUNS(projectId), formData, () => ({
-        ...MOCK_RUN_COMPLETED,
-        id: `run-${Date.now()}`,
-        projectId,
-        status: 'queued',
-      })),
+      postForm<Run>(
+        ROUTES.RUNS.CREATE_MANUAL.replace(':projectId', projectId),
+        formData,
+        () => ({
+          ...MOCK_RUN_COMPLETED,
+          id: `run-${Date.now()}`,
+          projectId,
+          status: 'queued',
+        }),
+      ),
     get: (runId: string) =>
-      get<Run>(ROUTES.RUN(runId), () => ({ ...MOCK_RUN_COMPLETED, id: runId })),
+      get<Run>(ROUTES.RUNS.GET.replace(':runId', runId), () => ({
+        ...MOCK_RUN_COMPLETED,
+        id: runId,
+      })),
     findings: (
       runId: string,
       params?: { severity?: string; method?: string; q?: string },
@@ -244,72 +259,79 @@ export const apiClient = {
       if (params?.method) qs.set('method', params.method);
       if (params?.q) qs.set('q', params.q);
       const q = qs.toString();
-      return get<Finding[]>(
-        `${ROUTES.RUN_FINDINGS(runId)}${q ? `?${q}` : ''}`,
-        () => {
-          let list = [...MOCK_FINDINGS];
-          if (params?.severity) list = list.filter((f) => f.severity === params.severity);
-          if (params?.method) list = list.filter((f) => f.method === params.method);
-          if (params?.q) {
-            const lower = params.q.toLowerCase();
-            list = list.filter(
-              (f) =>
-                f.endpoint.toLowerCase().includes(lower) ||
-                f.description.toLowerCase().includes(lower),
-            );
-          }
-          return list;
-        },
-      );
+      const base = ROUTES.RUNS.FINDINGS.replace(':runId', runId);
+      return get<Finding[]>(`${base}${q ? `?${q}` : ''}`, () => {
+        let list = [...MOCK_FINDINGS];
+        if (params?.severity) list = list.filter((f) => f.severity === params.severity);
+        if (params?.method) list = list.filter((f) => f.method === params.method);
+        if (params?.q) {
+          const lower = params.q.toLowerCase();
+          list = list.filter(
+            (f) =>
+              f.endpoint.toLowerCase().includes(lower) ||
+              f.description.toLowerCase().includes(lower),
+          );
+        }
+        return list;
+      });
     },
     report: (runId: string) =>
-      get<RunReport>(ROUTES.RUN_REPORT(runId), () => ({
+      get<RunReport>(ROUTES.RUNS.REPORT.replace(':runId', runId), () => ({
         run: { ...MOCK_RUN_COMPLETED, id: runId },
         project: MOCK_PROJECT,
         summary: MOCK_RUN_COMPLETED.summary!,
         findings: MOCK_FINDINGS,
         releaseStatus: MOCK_RUN_COMPLETED.summary!.releaseStatus,
       })),
-    compare: (projectId: string, base: string, head: string) =>
-      get<FindingWithDiff[]>(
-        `${ROUTES.PROJECT_COMPARE(projectId)}?base=${base}&head=${head}`,
+    compare: (projectId: string, base: string, head: string) => {
+      const path = ROUTES.RUNS.COMPARE.replace(':projectId', projectId);
+      return get<FindingWithDiff[]>(
+        `${path}?base=${base}&head=${head}`,
         () =>
           MOCK_FINDINGS.map((f, i) => ({
             ...f,
             diffStatus: i === 0 ? ('new' as const) : ('unresolved' as const),
           })),
-      ),
+      );
+    },
   },
 
   // ---- Memory ----
   memory: {
     hotspots: (projectId: string) =>
-      get<HotspotEndpoint[]>(ROUTES.PROJECT_HOTSPOTS(projectId), () => MOCK_HOTSPOTS),
-    endpoint: (projectId: string, method: string, path: string) =>
-      get<EndpointMemoryEntry[]>(
-        `${ROUTES.PROJECT_ENDPOINT_MEMORY(projectId)}?method=${method}&path=${encodeURIComponent(path)}`,
+      get<HotspotEndpoint[]>(
+        ROUTES.MEMORY.HOTSPOTS.replace(':projectId', projectId),
+        () => MOCK_HOTSPOTS,
+      ),
+    endpoint: (projectId: string, method: string, pathParam: string) => {
+      const path = ROUTES.MEMORY.ENDPOINT.replace(':projectId', projectId);
+      return get<EndpointMemoryEntry[]>(
+        `${path}?method=${method}&path=${encodeURIComponent(pathParam)}`,
         () => [
           {
             id: 'mem-1',
             runId: 'run-0',
             severity: 'breaking',
             changeType: 'ENDPOINT_REMOVED',
-            description: `${method} ${path} was removed in v0.9`,
+            description: `${method} ${pathParam} was removed in v0.9`,
             createdAt: new Date(Date.now() - 172800000).toISOString(),
           },
         ],
-      ),
+      );
+    },
   },
 
   // ---- Admin ----
   admin: {
-    overview: () => get<AdminOverview>(ROUTES.ADMIN_OVERVIEW, () => MOCK_OVERVIEW),
+    overview: () => get<AdminOverview>(ROUTES.ADMIN.OVERVIEW, () => MOCK_OVERVIEW),
     projects: (params?: { page?: number; limit?: number }) => {
       const qs = new URLSearchParams();
       if (params?.page) qs.set('page', String(params.page));
       if (params?.limit) qs.set('limit', String(params.limit));
       const q = qs.toString();
-      return get<Project[]>(`${ROUTES.ADMIN_PROJECTS}${q ? `?${q}` : ''}`, () => [MOCK_PROJECT]);
+      return get<Project[]>(`${ROUTES.ADMIN.PROJECTS}${q ? `?${q}` : ''}`, () => [
+        MOCK_PROJECT,
+      ]);
     },
     runs: (params?: { page?: number; limit?: number; status?: string }) => {
       const qs = new URLSearchParams();
@@ -317,27 +339,31 @@ export const apiClient = {
       if (params?.limit) qs.set('limit', String(params.limit));
       if (params?.status) qs.set('status', params.status);
       const q = qs.toString();
-      return get<Run[]>(`${ROUTES.ADMIN_RUNS}${q ? `?${q}` : ''}`, () => [MOCK_RUN_COMPLETED]);
+      return get<Run[]>(`${ROUTES.ADMIN.RUNS}${q ? `?${q}` : ''}`, () => [
+        MOCK_RUN_COMPLETED,
+      ]);
     },
     events: (params?: { page?: number; limit?: number }) => {
       const qs = new URLSearchParams();
       if (params?.page) qs.set('page', String(params.page));
       if (params?.limit) qs.set('limit', String(params.limit));
       const q = qs.toString();
-      return get<Event[]>(`${ROUTES.ADMIN_EVENTS}${q ? `?${q}` : ''}`, () => MOCK_EVENTS);
+      return get<Event[]>(`${ROUTES.ADMIN.EVENTS}${q ? `?${q}` : ''}`, () => MOCK_EVENTS);
     },
     workflowsHealth: () =>
-      get<WorkflowHealth>(ROUTES.ADMIN_WORKFLOWS_HEALTH, () => MOCK_WORKFLOW_HEALTH),
-    users: () => get<User[]>(ROUTES.ADMIN_USERS, () => [MOCK_USER, MOCK_ADMIN]),
+      get<WorkflowHealth>(ROUTES.ADMIN.WORKFLOWS_HEALTH, () => MOCK_WORKFLOW_HEALTH),
+    users: () => get<User[]>(ROUTES.ADMIN.USERS, () => [MOCK_USER, MOCK_ADMIN]),
     updateUser: (userId: string, body: { disabled: boolean }) =>
-      patch<User>(ROUTES.ADMIN_USER(userId), body, () => ({ ...MOCK_USER, id: userId, ...body })),
+      patch<User>(ROUTES.ADMIN.USER_UPDATE.replace(':userId', userId), body, () => ({
+        ...MOCK_USER,
+        id: userId,
+        ...body,
+      })),
     retryRun: (runId: string) =>
-      post<Run>(ROUTES.ADMIN_RUN_RETRY(runId), undefined, () => ({
+      post<Run>(ROUTES.ADMIN.RUN_RETRY.replace(':runId', runId), undefined, () => ({
         ...MOCK_RUN_COMPLETED,
         id: runId,
         status: 'queued',
       })),
   },
 };
-
-export { ApiError };

@@ -32,14 +32,12 @@ ShaktIQ answers this deterministically before changes hit production, tracks pro
 ## 🌟 Key Features
 
 - 🎯 **Deterministic Breaking Change Detection:** Powered by `oasdiff` via `@shaktiq/analyzer`. Evaluates ~300 rules against OpenAPI 3.0/3.1 specs with zero hallucination.
-- 🛡️ **Three Surfaces, One Unified Pipeline:**
-  - **GitHub Pre-Release Gate:** Webhook triggers on `push` / `pull_request`, classifies risk, and posts automated compatibility comments.
-  - **VS Code Extension:** Developers compare their local working spec against `git HEAD` in real-time with diagnostics in the Problems panel.
-  - **User & Admin Web Dashboard:** Interactive Next.js console with run comparisons, endpoint hotspot tracking, and an admin audit trail.
-- 🧠 **Project Memory & Endpoint Hotspots:** Identifies chronic risk areas by aggregating breaking changes across releases (`distinctRuns >= 2`).
-- ⚡ **Real-Time Live Updates:** MongoDB Change Streams push real-time status transitions (`queued` → `running` → `completed`) over Server-Sent Events (SSE).
-- 🔒 **Zero-Duplicate Idempotent Webhook Intake:** Guaranteed single execution under webhook delivery retries and races via MongoDB unique indexes and atomic updates.
-- 🤖 **Optional Isolated AI Explanations:** Claude API (orchestrated via n8n) translates technical diffs into plain-language consumer impact and migration guides without compromising security.
+- 🤖 **Google Gemini 3.8 Flash AI Intelligence:** Synthesizes AST code fix snippets, blast radius risk assessments for mobile/web/microservice clients, and comprehensive Release Dossiers.
+- 💬 **Natural Language Project Assistant:** Ask ShaktIQ AI questions in plain English (*"Will this release break our mobile app?"*, *"How do I fix the parameter mismatch on POST /orders?"*) with instant answers grounded in MongoDB release memory.
+- 🛡️ **Three Developer Gateways:**
+  - **Gateway 1: GitHub Pre-Release Gate:** Webhook triggers on `push` / `pull_request`, classifies risk, and posts automated compatibility comments.
+  - **Gateway 2: VS Code Extension:** Developers compare their local working spec against `git HEAD` in real-time with diagnostics in the Problems panel.
+  - **Gateway 3: Coding Agent Skill & Web Console:** Interactive Next.js console with run comparisons, endpoint hotspot tracking, and an AI chat assistant.
 
 ---
 
@@ -228,6 +226,65 @@ npm run dev -w apps/web
 # Or launch containers via Docker Compose
 docker compose -f infra/docker-compose.yml up
 ```
+
+---
+
+## 🤖 AI Agent Skill & Plugin (Antigravity, Claude Code, Cursor, Windsurf)
+
+ShaktIQ can be installed directly into AI coding agents as an **Agent Skill, Plugin, and MCP Tool** (similar to `graphify` and `ponytail`). This allows agents to run deterministic API contract diffs **in-between code execution**, catching breaking changes before code is ever committed or deployed.
+
+### What It Is Called
+- **Antigravity / Agent Skill:** Defined by `skills/shaktiq/SKILL.md` and `.agents/skills/shaktiq/SKILL.md`. Injected into agent context via *Progressive Disclosure*.
+- **Agent Plugin:** Bundled via `plugin.json` and `plugin.yaml` with commands, tools, and hooks.
+- **Model Context Protocol (MCP) Server:** Standard JSON-RPC stdio tool provider (`shaktiq_analyze` and `shaktiq_git_diff`).
+
+### Quick Installation (1-Command Setup)
+
+Run the automated installer script:
+```bash
+./scripts/install-agent-skill.sh
+```
+
+This installs:
+1. `shaktiq` CLI globally into `~/.local/bin/shaktiq`.
+2. ShaktIQ Skill into Antigravity global customizations (`~/.gemini/config/skills/shaktiq/SKILL.md`).
+3. ShaktIQ Workspace Skill into `.agents/skills/shaktiq/SKILL.md` (auto-detected by repository agents).
+
+### How AI Agents Use It Between Code Execution
+
+When pair programming or editing backend controllers / OpenAPI schemas, agents can execute:
+
+```bash
+# 1. Compare working copy against git main branch (structured JSON for agents)
+shaktiq git-diff --spec openapi.yaml --base-ref main --json
+
+# 2. Compare working copy against git main branch (markdown for PR comments / chat)
+shaktiq git-diff --spec openapi.yaml --base-ref main --markdown
+
+# 3. Direct comparison between two spec files:
+shaktiq analyze --base ./base.yaml --head ./head.yaml --json
+
+# 4. Strict CI / pre-commit mode (exits with code 1 on breaking changes):
+shaktiq analyze --base ./base.yaml --head ./head.yaml --fail-on-breaking
+```
+
+### Model Context Protocol (MCP) Configuration
+
+Add ShaktIQ to your agent's `mcp_config.json` (Antigravity, Claude Desktop, Cursor, Windsurf):
+
+```json
+{
+  "mcpServers": {
+    "shaktiq": {
+      "command": "shaktiq-mcp"
+    }
+  }
+}
+```
+
+Exposed native tools:
+- `shaktiq_analyze({ base_spec, head_spec })`
+- `shaktiq_git_diff({ spec_path, base_ref })`
 
 ---
 

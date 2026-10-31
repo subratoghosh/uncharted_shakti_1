@@ -1,50 +1,63 @@
-// packages/shared/src/routes.ts
-// Route constants matching architecture.md §8. Suibrato owns this file.
-
-const BASE = '/api/v1';
+export const API_PREFIX = '/api/v1' as const;
 
 export const ROUTES = {
-  // Auth
-  AUTH_REGISTER: `${BASE}/auth/register`,
-  AUTH_LOGIN: `${BASE}/auth/login`,
-  AUTH_LOGOUT: `${BASE}/auth/logout`,
-  AUTH_ME: `${BASE}/auth/me`,
-  TOKENS: `${BASE}/tokens`,
-  TOKEN: (tokenId: string) => `${BASE}/tokens/${tokenId}`,
-
-  // Projects
-  PROJECTS: `${BASE}/projects`,
-  PROJECT: (projectId: string) => `${BASE}/projects/${projectId}`,
-
-  // Runs
-  PROJECT_RUNS: (projectId: string) => `${BASE}/projects/${projectId}/runs`,
-  RUN: (runId: string) => `${BASE}/runs/${runId}`,
-  RUN_FINDINGS: (runId: string) => `${BASE}/runs/${runId}/findings`,
-  RUN_REPORT: (runId: string) => `${BASE}/runs/${runId}/report`,
-  PROJECT_COMPARE: (projectId: string) => `${BASE}/projects/${projectId}/compare`,
-
-  // Memory
-  PROJECT_HOTSPOTS: (projectId: string) => `${BASE}/projects/${projectId}/memory/hotspots`,
-  PROJECT_ENDPOINT_MEMORY: (projectId: string) =>
-    `${BASE}/projects/${projectId}/memory/endpoint`,
-
-  // Webhook
-  WEBHOOKS_GITHUB: `${BASE}/webhooks/github`,
-
-  // Stream
-  STREAM: `${BASE}/stream`,
-
-  // Admin
-  ADMIN_OVERVIEW: `${BASE}/admin/overview`,
-  ADMIN_PROJECTS: `${BASE}/admin/projects`,
-  ADMIN_RUNS: `${BASE}/admin/runs`,
-  ADMIN_EVENTS: `${BASE}/admin/events`,
-  ADMIN_WORKFLOWS_HEALTH: `${BASE}/admin/workflows/health`,
-  ADMIN_USERS: `${BASE}/admin/users`,
-  ADMIN_USER: (userId: string) => `${BASE}/admin/users/${userId}`,
-  ADMIN_RUN_RETRY: (runId: string) => `${BASE}/admin/runs/${runId}/retry`,
-
-  // Health
-  HEALTH: `${BASE}/health`,
+  HEALTH: '/health',
+  AUTH: {
+    REGISTER: '/auth/register',
+    LOGIN: '/auth/login',
+    LOGOUT: '/auth/logout',
+    ME: '/auth/me',
+  },
+  TOKENS: {
+    LIST: '/tokens',
+    CREATE: '/tokens',
+    REVOKE: '/tokens/:tokenId',
+  },
+  PROJECTS: {
+    LIST: '/projects',
+    CREATE: '/projects',
+    GET: '/projects/:projectId',
+    UPDATE: '/projects/:projectId',
+    DELETE: '/projects/:projectId',
+    AI_QUERY: '/projects/:projectId/ai/query',
+  },
+  RUNS: {
+    CREATE_MANUAL: '/projects/:projectId/runs',
+    LIST_BY_PROJECT: '/projects/:projectId/runs',
+    GET: '/runs/:runId',
+    FINDINGS: '/runs/:runId/findings',
+    REPORT: '/runs/:runId/report',
+    COMPARE: '/projects/:projectId/compare',
+    AI_QUERY: '/runs/:runId/ai/query',
+  },
+  MEMORY: {
+    HOTSPOTS: '/projects/:projectId/memory/hotspots',
+    ENDPOINT: '/projects/:projectId/memory/endpoint',
+  },
+  WEBHOOKS: {
+    GITHUB: '/webhooks/github',
+  },
+  CLI: {
+    ANALYZE: '/cli/analyze',
+  },
+  STREAM: {
+    SUBSCRIBE: '/stream',
+  },
+  ADMIN: {
+    OVERVIEW: '/admin/overview',
+    PROJECTS: '/admin/projects',
+    RUNS: '/admin/runs',
+    EVENTS: '/admin/events',
+    WORKFLOWS_HEALTH: '/admin/workflows/health',
+    RUN_RETRY: '/admin/runs/:runId/retry',
+    USERS: '/admin/users',
+    USER_UPDATE: '/admin/users/:userId',
+  },
+  INTERNAL: {
+    RUN_START: '/internal/runs/:runId/start',
+    RUN_ANALYZE: '/internal/runs/:runId/analyze',
+    RUN_EXPLANATIONS: '/internal/runs/:runId/explanations',
+    RUN_NOTIFICATIONS: '/internal/runs/:runId/notifications',
+    RUN_FAIL: '/internal/runs/:runId/fail',
+  },
 } as const;
-

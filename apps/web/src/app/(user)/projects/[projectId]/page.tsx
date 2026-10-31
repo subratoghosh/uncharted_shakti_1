@@ -14,7 +14,8 @@ import { ErrorState } from '@/components/shared/ErrorState';
 import { SkeletonCard, SkeletonRows } from '@/components/shared/SkeletonRow';
 import { formatDate, shortSha } from '@/lib/format';
 import { Play, GitCompare, Flame, ArrowRight } from 'lucide-react';
-import type { Project, Run, HotspotEndpoint } from '@shaktiq/shared';
+import type { Project, Run } from '@shaktiq/shared';
+import type { HotspotEndpoint } from '@/lib/types';
 
 export default function ProjectOverviewPage({
   params,

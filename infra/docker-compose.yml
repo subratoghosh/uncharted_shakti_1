@@ -1,0 +1,71 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.api
+    container_name: shaktiq-api
+    restart: unless-stopped
+    ports:
+      - '4000:4000'
+    environment:
+      - NODE_ENV=development
+      - PORT=4000
+      - MONGODB_URI=${MONGODB_URI}
+      - MONGODB_DB=${MONGODB_DB:-shaktiq}
+      - JWT_SECRET=${JWT_SECRET}
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
+      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
+      - WEB_ORIGIN=${WEB_ORIGIN:-http://localhost:3000}
+      - N8N_WEBHOOK_URL=http://n8n:5678/webhook/shaktiq-analyze-run
+      - N8N_WEBHOOK_TOKEN=${N8N_WEBHOOK_TOKEN}
+      - OASDIFF_MODE=binary
+      - MAX_SPEC_BYTES=5242880
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - AI_EXPLANATIONS_ENABLED=${AI_EXPLANATIONS_ENABLED:-false}
+    networks:
+      - shaktiq-network
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: shaktiq-n8n
+    restart: unless-stopped
+    ports:
+      - '5678:5678'
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER:-admin}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD:-AdminN8nPassword123!}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=168
+      - EXECUTIONS_DATA_PRUNE_MAX_COUNT=50000
+      - SHAKTIQ_API_URL=http://api:4000
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
+      - N8N_DEFAULT_BINARY_DATA_MODE=default
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - shaktiq-network
+
+  web:
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile
+    container_name: shaktiq-web
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
+    depends_on:
+      - api
+    networks:
+      - shaktiq-network
+
+networks:
+  shaktiq-network:
+    driver: bridge
+
+volumes:
+  n8n_data:

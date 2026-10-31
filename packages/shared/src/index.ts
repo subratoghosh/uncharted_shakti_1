@@ -1,9 +1,16 @@
-// packages/shared/src/index.ts
-// Stub — Suibrato owns this file. Frontend reads ROUTES, types, enums from here.
-// Do not edit. Request changes from the backend agent.
-
-export * from './enums';
-export * from './routes';
-export * from './types';
-export * from './errors';
-
+export * from './enums.js';
+export * from './errors.js';
+export * from './routes.js';
+export * from './sse.js';
+export * from './schemas/common.js';
+export * from './schemas/envelope.js';
+export * from './schemas/user.js';
+export * from './schemas/api-token.js';
+export * from './schemas/project.js';
+export * from './schemas/event.js';
+export * from './schemas/run.js';
+export * from './schemas/finding.js';
+export * from './schemas/spec-snapshot.js';
+export * from './schemas/notification.js';
+export * from './schemas/internal.js';
+export * from './schemas/ai-query.js';

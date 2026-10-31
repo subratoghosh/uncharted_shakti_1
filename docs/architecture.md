@@ -179,3 +179,49 @@ sequenceDiagram
 - **SSE** over WebSocket: one-way updates, simpler, works with cookies.
 - **n8n** as orchestrator only: demonstrates automation without moving core logic into low-code.
 - **One pipeline, three entry points**: avoids divergent behavior.
+
+---
+
+## 10. Multi-Layer AI Release Intelligence Pipeline
+
+ShaktIQ pairs deterministic OASDiff breaking-change detection with a multi-layer Google Gemini intelligence engine. Rather than outputting raw diffs, it synthesizes an executive release dossier across 4 distinct layers:
+
+```mermaid
+flowchart TD
+    subgraph L0["Deterministic Engine"]
+        Diff[OASDiff Engine] --> Findings[Granular Breaking Findings]
+        Findings --> Hotspots[Endpoint Hotspot Matrix]
+    end
+
+    subgraph L1["Layer 1: Executive Verdict"]
+        Findings --> Score["Release Score (0-100)"]
+        Score --> Verdict{"Verdict Gate"}
+        Verdict -->|Score < 40| Blocked["BLOCKED: Critical Breaks"]
+        Verdict -->|40-69| Conditional["APPROVED: Sign-off Required"]
+        Verdict -->|>= 70| Safe["SAFE FOR DEPLOYMENT"]
+    end
+
+    subgraph L2["Layer 2: Blast Radius"]
+        Findings --> Mobile["Mobile Apps Vulnerability"]
+        Findings --> Web["Web Frontend Impact"]
+        Findings --> Services["Backend Microservices Cascade"]
+        Findings --> Partners["Third-Party Webhook Breakage"]
+    end
+
+    subgraph L3["Layer 3: Code Remediation"]
+        Findings --> Patches["Backward-Compatible Code Snippets"]
+        Patches --> Mitigation["Transition Migration Strategies"]
+    end
+
+    subgraph L4["Layer 4: Stakeholders"]
+        Findings --> TL["Tech Lead Directives"]
+        Findings --> QA["QA Test Plan Guidance"]
+        Findings --> PO["Product Owner Risk Summary"]
+    end
+```
+
+### Key Design Pillars:
+1. **Zero Hallucination Grounding**: The AI model is strictly bounded by the deterministic findings list produced by OASDiff.
+2. **Deterministic Fallback**: If `GEMINI_API_KEY` is absent or the cloud provider experiences an outage, ShaktIQ uses a zero-latency heuristic intelligence engine so CI/CD pipelines never block unexpectedly.
+3. **Persisted Dossiers**: Synthesized dossiers are stored in MongoDB under `aiReleaseDossier` on the run document, preventing redundant LLM invocations and ensuring reproducibility.
+

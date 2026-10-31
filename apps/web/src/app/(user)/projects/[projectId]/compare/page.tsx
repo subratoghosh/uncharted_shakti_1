@@ -13,7 +13,8 @@ import { ErrorState } from '@/components/shared/ErrorState';
 import { SkeletonRows } from '@/components/shared/SkeletonRow';
 import { formatDate, shortSha, escapeText } from '@/lib/format';
 import { GitCompare, ArrowRight } from 'lucide-react';
-import type { Project, Run, FindingWithDiff, DiffStatus } from '@shaktiq/shared';
+import type { Project, Run, DiffStatus } from '@shaktiq/shared';
+import type { FindingWithDiff } from '@/lib/types';
 
 export default function ComparePage({
   params,

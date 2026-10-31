@@ -23,7 +23,8 @@ import {
   AlertOctagon,
   Search,
 } from 'lucide-react';
-import type { Finding, Run, EndpointMemoryEntry, SseMessage } from '@shaktiq/shared';
+import type { Finding, Run, SseMessage } from '@shaktiq/shared';
+import type { EndpointMemoryEntry } from '@/lib/types';
 
 export default function RunDetailPage({
   params,
@@ -53,7 +54,7 @@ export default function RunDetailPage({
     projectId,
     enabled: !!projectId && (run?.status === 'queued' || run?.status === 'running'),
     onMessage: (msg: SseMessage) => {
-      if (msg.type === 'run.updated' && msg.data.id === runId) {
+      if (msg.type === 'run.updated' && (msg.data as { id?: string })?.id === runId) {
         void queryClient.invalidateQueries({ queryKey: ['run', runId] });
         void queryClient.invalidateQueries({ queryKey: ['findings', runId] });
       }

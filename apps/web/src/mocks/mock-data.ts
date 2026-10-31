@@ -3,13 +3,15 @@ import type {
   Project,
   Run,
   Finding,
-  FindingWithDiff,
   Event,
   ApiToken,
+} from '@shaktiq/shared';
+import type {
+  FindingWithDiff,
   HotspotEndpoint,
   AdminOverview,
   WorkflowHealth,
-} from '@shaktiq/shared';
+} from '../lib/types';
 
 export const MOCK_USER: User = {
   id: 'user-1',
@@ -107,7 +109,7 @@ export const MOCK_FINDINGS: Finding[] = [
     method: 'POST',
     changeType: 'REQUIRED_REQUEST_FIELD_ADDED',
     severity: 'warning',
-    ruleId: null,
+    ruleId: 'RULE-REQ-FIELD',
     description: 'Required field "currency" added to POST /orders request body',
     impact: 'Clients not sending "currency" will receive a 422 Unprocessable Entity error.',
     recommendation: 'Add "currency" to your request body or make it optional with a default value.',

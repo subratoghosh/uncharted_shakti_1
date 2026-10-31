@@ -5,7 +5,7 @@ import { apiClient } from '@/lib/api-client';
 import { ErrorState } from '@/components/shared/ErrorState';
 import { formatDate } from '@/lib/format';
 import { CheckCircle2, AlertTriangle, HelpCircle, RefreshCw, GitBranch } from 'lucide-react';
-import type { WorkflowHealth } from '@shaktiq/shared';
+import type { WorkflowHealth } from '@/lib/types';
 
 export default function AdminWorkflowsPage() {
   const { data, isLoading, error, refetch, isFetching } = useQuery({

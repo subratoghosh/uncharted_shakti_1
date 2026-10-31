@@ -1,0 +1,78 @@
+{
+  "name": "shaktiq-error-handler",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "e0a1b2c3-0001-4000-8000-000000000001",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const execution = $json.execution;\nconst lastNode = execution?.lastNodeExecuted;\nconst errorMessage = execution?.error?.message || 'Workflow execution failed';\n\n// Attempt to retrieve runId from execution data context\nlet runId = 'unknown';\ntry {\n  const data = execution?.data?.resultData?.runData;\n  for (const nodeName in data) {\n    const nodeRuns = data[nodeName];\n    if (Array.isArray(nodeRuns) && nodeRuns.length > 0) {\n      const firstRun = nodeRuns[0];\n      const json = firstRun?.data?.main?.[0]?.[0]?.json;\n      if (json?.body?.runId) {\n        runId = json.body.runId;\n        break;\n      }\n      if (json?.data?.runId) {\n        runId = json.data.runId;\n        break;\n      }\n    }\n  }\n} catch (e) {}\n\nreturn {\n  runId,\n  errorCode: 'WORKFLOW_FAILED',\n  errorMessage: `[Node: ${lastNode}] ${errorMessage}`,\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "e0a1b2c3-0001-4000-8000-000000000002",
+      "name": "Extract Error Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://api:4000') + '/api/v1/internal/runs/' + $json.runId + '/fail' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-shaktiq-internal-key",
+              "value": "={{ $env.INTERNAL_API_KEY }}"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"errorCode\": \"WORKFLOW_FAILED\",\n  \"errorMessage\": {{ JSON.stringify($json.errorMessage) }}\n}",
+        "options": {}
+      },
+      "id": "e0a1b2c3-0001-4000-8000-000000000003",
+      "name": "HTTP Report Failure",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Error Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Error Context": {
+      "main": [
+        [
+          {
+            "node": "HTTP Report Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

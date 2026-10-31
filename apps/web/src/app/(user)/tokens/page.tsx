@@ -8,7 +8,8 @@ import { ErrorState } from '@/components/shared/ErrorState';
 import { SkeletonRows } from '@/components/shared/SkeletonRow';
 import { formatDate } from '@/lib/format';
 import { Key, Plus, Trash2, Copy, Check, AlertTriangle } from 'lucide-react';
-import type { ApiToken, ApiTokenCreated } from '@shaktiq/shared';
+import type { ApiToken } from '@shaktiq/shared';
+import type { ApiTokenCreated } from '@/lib/types';
 
 export default function TokensPage() {
   const queryClient = useQueryClient();

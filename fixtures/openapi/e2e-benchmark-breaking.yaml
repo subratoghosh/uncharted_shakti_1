@@ -1,0 +1,50 @@
+openapi: 3.0.3
+info:
+  title: Checkout & Payment Service
+  version: 2.0.0
+  description: E2E benchmark breaking specification for ShaktIQ intelligence testing
+paths:
+  /checkout:
+    post:
+      summary: Initiate checkout session
+      operationId: initiateCheckout
+      parameters:
+        - name: X-Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - cartId
+                - currency
+                - billingAddress
+              properties:
+                cartId:
+                  type: integer
+                currency:
+                  type: string
+                  example: USD
+                discountCode:
+                  type: string
+                billingAddress:
+                  type: string
+      responses:
+        '201':
+          description: Checkout session created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessionId:
+                    type: string
+                  checkoutUrl:
+                    type: string
+                  expiresAt:
+                    type: string
