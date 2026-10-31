@@ -9,6 +9,7 @@ import { StatusBadge } from '../../../../components/shared/StatusBadge';
 import { SeverityBadge } from '../../../../components/shared/SeverityBadge';
 import { ReleaseVerdictBanner } from '../../../../components/shared/ReleaseVerdictBanner';
 import { EndpointTag } from '../../../../components/shared/EndpointTag';
+import { AskAiAssistant } from '../../../../components/shared/AskAiAssistant';
 import { formatDate, formatShortSha } from '../../../../lib/format';
 import { ArrowLeft, FileText, GitBranch, History, Bot, X, Search, Filter } from 'lucide-react';
 
@@ -371,6 +372,14 @@ export default function RunDetailPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Natural Language AI Assistant */}
+      {run?.projectId && (
+        <AskAiAssistant
+          projectId={run.projectId}
+          projectName={run.currentVersion ? `Run ${formatShortSha(run.currentVersion)}` : 'Run Analysis'}
+        />
       )}
     </div>
   );
