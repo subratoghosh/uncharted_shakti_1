@@ -2,9 +2,30 @@ import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import GithubProvider from 'next-auth/providers/github';
-import argon2 from 'argon2';
 import { ObjectId } from 'mongodb';
 import { getDb } from './mongodb';
+import { verifyPassword, hashPassword } from './password';
+
+// Ensure NEXTAUTH_URL is defined with https:// protocol in Vercel / production environments
+if (!process.env.NEXTAUTH_URL) {
+  if (process.env.VERCEL_URL) {
+    process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
+  } else if (process.env.NODE_ENV === 'production') {
+    process.env.NEXTAUTH_URL = 'https://shaktiq.vercel.app';
+  } else {
+    process.env.NEXTAUTH_URL = 'http://localhost:3000';
+  }
+}
+
+const googleClientId =
+  process.env.GOOGLE_CLIENT_ID ||
+  '139814236478-rm3tfc4u6ns0lmj7n9p2m0vp3hiigiun.apps.googleusercontent.com';
+const googleClientSecret =
+  process.env.GOOGLE_CLIENT_SECRET || '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';
+
+const githubClientId = process.env.GITHUB_CLIENT_ID || 'Ov23liOg6gAdXEQ0zqtU';
+const githubClientSecret =
+  process.env.GITHUB_CLIENT_SECRET || '1e2e1e3f492b77eae2f213e69f09e8bbd3412aca';
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -14,6 +35,7 @@ export const authOptions: NextAuthOptions = {
   secret:
     process.env.NEXTAUTH_SECRET ||
     'shaktiq-nextauth-super-secret-production-and-development-key-32-chars-long!',
+  useSecureCookies: process.env.NODE_ENV === 'production' || !!process.env.VERCEL,
   pages: {
     signIn: '/login',
     error: '/login',
@@ -49,9 +71,18 @@ export const authOptions: NextAuthOptions = {
           throw new Error('This account was created with OAuth. Please sign in with Google or GitHub.');
         }
 
-        const isValid = await argon2.verify(user.passwordHash, credentials.password);
+        const isValid = await verifyPassword(user.passwordHash, credentials.password);
         if (!isValid) {
           throw new Error('Invalid email or password');
+        }
+
+        // Seamlessly migrate legacy hashes to pure scrypt on successful login
+        if (typeof user.passwordHash === 'string' && user.passwordHash.startsWith('$argon2')) {
+          hashPassword(credentials.password)
+            .then((newHash) => {
+              users.updateOne({ _id: user._id }, { $set: { passwordHash: newHash } }).catch(() => {});
+            })
+            .catch(() => {});
         }
 
         await users.updateOne({ _id: user._id }, { $set: { lastLoginAt: new Date(), updatedAt: new Date() } });
@@ -64,36 +95,16 @@ export const authOptions: NextAuthOptions = {
         };
       },
     }),
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-      ? [
-          GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            allowDangerousEmailAccountLinking: true,
-          }),
-        ]
-      : [
-          // Fallback placeholder provider so UI components render consistently
-          GoogleProvider({
-            clientId: 'google-client-id-placeholder',
-            clientSecret: 'google-client-secret-placeholder',
-          }),
-        ]),
-    ...(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET
-      ? [
-          GithubProvider({
-            clientId: process.env.GITHUB_CLIENT_ID,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET,
-            allowDangerousEmailAccountLinking: true,
-          }),
-        ]
-      : [
-          // Fallback placeholder provider so UI components render consistently
-          GithubProvider({
-            clientId: 'github-client-id-placeholder',
-            clientSecret: 'github-client-secret-placeholder',
-          }),
-        ]),
+    GoogleProvider({
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
+      allowDangerousEmailAccountLinking: true,
+    }),
+    GithubProvider({
+      clientId: githubClientId,
+      clientSecret: githubClientSecret,
+      allowDangerousEmailAccountLinking: true,
+    }),
   ],
   callbacks: {
     async signIn({ user, account }) {
@@ -190,4 +201,3 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
-

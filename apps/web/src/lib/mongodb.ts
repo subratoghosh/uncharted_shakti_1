@@ -1,29 +1,33 @@
 import dns from 'node:dns';
 import { MongoClient, Db } from 'mongodb';
 
-try {
-  dns.setServers(['8.8.8.8', '1.1.1.1']);
-} catch {
-  // Ignore in environments where setServers is restricted
+// Custom DNS server override is ONLY useful for local Windows development.
+// NEVER run setServers on Vercel / AWS Lambda where external port 53 is blocked by cloud firewalls.
+if (process.platform === 'win32' && !process.env.VERCEL && !process.env.AWS_REGION) {
+  try {
+    dns.setServers(['8.8.8.8', '1.1.1.1']);
+  } catch {
+    // Ignore in environments where setServers is restricted
+  }
 }
 
 const ATLAS_DIRECT_URI =
   'mongodb://shaktiq_admin:admin2026@ac-oept6kq-shard-00-00.dyzf282.mongodb.net:27017,ac-oept6kq-shard-00-01.dyzf282.mongodb.net:27017,ac-oept6kq-shard-00-02.dyzf282.mongodb.net:27017/shaktiIQ?ssl=true&replicaSet=atlas-jlnvw8-shard-0&authSource=admin&retryWrites=true&w=majority';
 
-const uri = process.env.MONGODB_URI || ATLAS_DIRECT_URI;
-const dbName = process.env.MONGODB_DB || process.env.MONGODB_DB_NAME || 'shaktiIQ';
+const rawUri = process.env.MONGODB_URI || ATLAS_DIRECT_URI;
+const uri = rawUri.replace(/[\r\n\t]/g, '').trim();
+const rawDbName = process.env.MONGODB_DB || process.env.MONGODB_DB_NAME || 'shaktiIQ';
+const dbName = rawDbName.replace(/[\r\n\t]/g, '').trim();
 
 declare global {
   // eslint-disable-next-line no-var
   var _mongoClientPromise: Promise<MongoClient> | undefined;
-  // eslint-disable-next-line no-var
-  var _mongoClientInstance: MongoClient | undefined;
 }
 
 async function connectWithFallback(targetUri: string): Promise<MongoClient> {
   try {
     const client = new MongoClient(targetUri, {
-      maxPoolSize: 20,
+      maxPoolSize: 10,
       minPoolSize: 1,
       serverSelectionTimeoutMS: 8000,
       connectTimeoutMS: 10000,
@@ -41,7 +45,7 @@ async function connectWithFallback(targetUri: string): Promise<MongoClient> {
     if (isSrvOrDnsError) {
       console.warn('[MongoDB] SRV DNS resolution failed, automatically falling back to direct replica set hosts...');
       const fallbackClient = new MongoClient(ATLAS_DIRECT_URI, {
-        maxPoolSize: 20,
+        maxPoolSize: 10,
         minPoolSize: 1,
         serverSelectionTimeoutMS: 8000,
         connectTimeoutMS: 10000,
@@ -53,18 +57,17 @@ async function connectWithFallback(targetUri: string): Promise<MongoClient> {
 }
 
 function getClientPromise(): Promise<MongoClient> {
-  if (process.env.NODE_ENV === 'development') {
-    if (!global._mongoClientPromise) {
-      global._mongoClientPromise = connectWithFallback(uri).catch((err) => {
-        // Reset cached promise on failure so next request can retry instead of permanently failing
-        global._mongoClientPromise = undefined;
-        throw err;
-      });
-    }
-    return global._mongoClientPromise;
+  // In both local development and Vercel serverless, caching the client promise
+  // in global._mongoClientPromise prevents exhausting the MongoDB Atlas connection pool
+  // and eliminates repeated multi-second TLS handshakes on every request.
+  if (!global._mongoClientPromise) {
+    global._mongoClientPromise = connectWithFallback(uri).catch((err) => {
+      // Clear cache on failure so future requests can retry rather than staying broken
+      global._mongoClientPromise = undefined;
+      throw err;
+    });
   }
-
-  return connectWithFallback(uri);
+  return global._mongoClientPromise;
 }
 
 const clientPromise: Promise<MongoClient> = getClientPromise();
@@ -75,10 +78,7 @@ export async function getDb(): Promise<Db> {
     const client = await getClientPromise();
     return client.db(dbName);
   } catch (err) {
-    // Reset global promise if connection failed
-    if (process.env.NODE_ENV === 'development') {
-      global._mongoClientPromise = undefined;
-    }
+    global._mongoClientPromise = undefined;
     throw err;
   }
 }

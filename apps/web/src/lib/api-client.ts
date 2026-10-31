@@ -1,7 +1,5 @@
 import type { ApiResponse } from '@shaktiq/shared';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
-
 export class ApiError extends Error {
   constructor(
     public readonly code: string,
@@ -14,10 +12,26 @@ export class ApiError extends Error {
   }
 }
 
+function resolveEndpoint(endpoint: string): string {
+  if (endpoint.startsWith('http')) return endpoint;
+  const clean = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+
+  // When running in browser and calling admin or api routes, route via same-origin Next.js /api
+  if (typeof window !== 'undefined') {
+    if (clean.startsWith('/admin')) {
+      return `/api${clean}`;
+    }
+    if (clean.startsWith('/api/')) {
+      return clean;
+    }
+  }
+
+  const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+  return `${base}${clean}`;
+}
+
 export async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = endpoint.startsWith('http')
-    ? endpoint
-    : `${API_BASE}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  const url = resolveEndpoint(endpoint);
 
   const headers = new Headers(options.headers || {});
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
@@ -30,10 +44,22 @@ export async function apiClient<T>(endpoint: string, options: RequestInit = {}):
     credentials: 'include', // Support HTTP-only session cookies
   });
 
-  const json = (await res.json()) as ApiResponse<T>;
+  let json: ApiResponse<T>;
+  try {
+    json = (await res.json()) as ApiResponse<T>;
+  } catch {
+    throw new ApiError(
+      'PARSE_ERROR',
+      `Server returned ${res.status} ${res.statusText || 'Error'}`,
+      res.status,
+    );
+  }
 
   if (!res.ok || !json.ok) {
-    const error = !json.ok ? json.error : { code: 'INTERNAL', message: 'Unknown error occurred' };
+    const error =
+      !json.ok && json.error
+        ? json.error
+        : { code: 'INTERNAL', message: `Request failed with status ${res.status}` };
     throw new ApiError(
       error.code,
       error.message,

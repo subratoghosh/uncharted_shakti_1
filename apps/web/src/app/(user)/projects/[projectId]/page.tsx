@@ -390,7 +390,6 @@ export default function ProjectDetailPage() {
                     </label>
                     <textarea
                       rows={5}
-                      placeholder="Paste base OpenAPI 3.x spec..."
                       value={baseSpec}
                       onChange={e => setBaseSpec(e.target.value)}
                       className="w-full p-2.5 font-mono text-xs bg-surface-2 border border-border rounded-sm focus:outline-none focus:border-accent"
@@ -404,7 +403,6 @@ export default function ProjectDetailPage() {
                     <textarea
                       rows={5}
                       required
-                      placeholder="Paste modified OpenAPI 3.x spec to analyze..."
                       value={headSpec}
                       onChange={e => setHeadSpec(e.target.value)}
                       className="w-full p-2.5 font-mono text-xs bg-surface-2 border border-border rounded-sm focus:outline-none focus:border-accent"

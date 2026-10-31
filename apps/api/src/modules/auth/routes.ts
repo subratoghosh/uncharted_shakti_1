@@ -96,7 +96,25 @@ export const authRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
       throw new AppError('UNAUTHENTICATED', 'Invalid email or password');
     }
 
-    const validPassword = await argon2.verify(user.passwordHash, body.password);
+    let validPassword = false;
+    if (user.passwordHash.startsWith('$scrypt$')) {
+      try {
+        const parts = user.passwordHash.split('$');
+        const salt = parts[3];
+        const expectedHexKey = parts[4];
+        if (salt && expectedHexKey) {
+          const crypto = await import('node:crypto');
+          const derivedKey = crypto.scryptSync(body.password, salt, 64, { N: 16384, r: 8, p: 1 });
+          const expectedBuf = Buffer.from(expectedHexKey, 'hex');
+          validPassword = crypto.timingSafeEqual(expectedBuf, derivedKey);
+        }
+      } catch {
+        validPassword = false;
+      }
+    } else {
+      validPassword = await argon2.verify(user.passwordHash, body.password);
+    }
+
     if (!validPassword) {
       throw new AppError('UNAUTHENTICATED', 'Invalid email or password');
     }

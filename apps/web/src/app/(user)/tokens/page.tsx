@@ -122,7 +122,6 @@ export default function TokensPage() {
           <input
             type="text"
             required
-            placeholder="e.g. My Laptop VS Code"
             value={name}
             onChange={e => setName(e.target.value)}
             className="flex-1 h-9 px-3 text-sm bg-surface-2 border border-border rounded-sm focus:outline-none focus:border-accent"
