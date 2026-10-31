@@ -145,6 +145,22 @@ export const studioRoutes: FastifyPluginAsync = async (app: FastifyInstance) => 
           });
         }
       }
+
+      // Python FastAPI / Flask / Django (@app.get("/users"), @router.post("/items"), @bp.route("/path"))
+      const pythonRegex = /@(?:app|router|api|bp)\.(get|post|put|delete|patch|route)\s*\(\s*['"`]([^'"`]+)['"`]/gi;
+      let pyMatch: RegExpExecArray | null;
+      while ((pyMatch = pythonRegex.exec(content)) !== null) {
+        let m = pyMatch[1].toUpperCase();
+        if (m === 'ROUTE') m = 'GET';
+        const p = pyMatch[2];
+        if (m && p) {
+          routes.push({
+            method: m as any,
+            path: p,
+            summary: `Python ${m} ${p} endpoint`,
+          });
+        }
+      }
     }
 
     return sendSuccess(reply, {

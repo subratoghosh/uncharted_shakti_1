@@ -6,6 +6,10 @@ import { randomUUID } from 'node:crypto';
 
 const execFileAsync = promisify(execFile);
 
+// ============================================================================
+// Types
+// ============================================================================
+
 type FindingItem = {
   fingerprint: string;
   endpoint: string;
@@ -17,29 +21,106 @@ type FindingItem = {
   impact: string;
   recommendation: string;
   locationText?: string;
+  fixSnippet?: string;
 };
 
-type AnalyzeResponse = {
-  ok: boolean;
-  data?: {
-    runId: string;
-    summary: {
-      total: number;
-      breaking: number;
-      warning: number;
-      info: number;
-      releaseStatus: 'safe' | 'review' | 'blocked';
-    };
-    findings: FindingItem[];
-  };
-  error?: {
-    code: string;
-    message: string;
-  };
+type DetectedRoute = {
+  path: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  summary?: string;
+  line?: number;
 };
 
-class FindingsTreeDataProvider implements vscode.TreeDataProvider<FindingTreeItem> {
-  private _onDidChangeTreeData = new vscode.EventEmitter<FindingTreeItem | undefined | void>();
+type CodeReviewResult = {
+  summary: string;
+  breakingRisk: 'HIGH' | 'MEDIUM' | 'LOW';
+  backwardCompatibilityRisk: boolean;
+  criticalFindings: string[];
+  suggestions: string[];
+  actionItems: string[];
+  score?: number;
+};
+
+type CodeFixResult = {
+  originalSnippet: string;
+  fixedSnippet: string;
+  diff?: string;
+  explanation: string;
+  steps?: string[];
+};
+
+// ============================================================================
+// API Helper with Automatic Local/Remote Fallback
+// ============================================================================
+
+async function fetchFromApi<T>(
+  context: vscode.ExtensionContext,
+  endpoint: string,
+  options: RequestInit = {},
+): Promise<{ ok: boolean; data?: T; error?: string }> {
+  const config = vscode.workspace.getConfiguration('shaktiq');
+  const configuredUrl = config.get<string>('apiUrl', 'https://uncharted-shakti-1.onrender.com/api/v1');
+  const localUrl = 'http://127.0.0.1:4000/api/v1';
+
+  const urlsToTry = [configuredUrl];
+  if (configuredUrl !== localUrl) {
+    urlsToTry.push(localUrl);
+  }
+
+  const token = await context.secrets.get('shaktiq.pat');
+  const headers = new Headers(options.headers || {});
+  if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
+    headers.set('Content-Type', 'application/json');
+  }
+  if (token && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+
+  let lastErrorMsg = '';
+
+  for (const baseUrl of urlsToTry) {
+    const fullUrl = `${baseUrl.replace(/\/+$/, '')}${endpoint}`;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+      const res = await fetch(fullUrl, {
+        ...options,
+        headers,
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let errMsg = `Server responded with ${res.status}`;
+        try {
+          const errJson: any = await res.json();
+          errMsg = errJson?.error?.message || errJson?.message || errMsg;
+        } catch {
+          // Ignore json parse error
+        }
+        lastErrorMsg = errMsg;
+        continue; // Try fallback URL if available
+      }
+
+      const json: any = await res.json();
+      const payload = json.data !== undefined ? json.data : json;
+      return { ok: true, data: payload as T };
+    } catch (err: any) {
+      lastErrorMsg = err?.message || 'Network request failed';
+      // Continue to next URL
+    }
+  }
+
+  return { ok: false, error: lastErrorMsg || 'Unable to connect to shaktIQ API service' };
+}
+
+// ============================================================================
+// Sidebar Tree Data Providers
+// ============================================================================
+
+class FindingsTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
+  private _onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   private findings: FindingItem[] = [];
@@ -49,23 +130,41 @@ class FindingsTreeDataProvider implements vscode.TreeDataProvider<FindingTreeIte
     this._onDidChangeTreeData.fire();
   }
 
-  getTreeItem(element: FindingTreeItem): vscode.TreeItem {
+  getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
     return element;
   }
 
-  getChildren(element?: FindingTreeItem): Thenable<FindingTreeItem[]> {
-    if (element) {
-      return Promise.resolve([]);
-    }
+  getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
+    if (element) return Promise.resolve([]);
 
     if (this.findings.length === 0) {
-      const empty = new FindingTreeItem('No breaking changes detected', 'Safe', 'safe');
+      const empty = new vscode.TreeItem('No breaking changes detected', vscode.TreeItemCollapsibleState.None);
+      empty.description = 'Safe';
+      empty.iconPath = new vscode.ThemeIcon('check', new vscode.ThemeColor('testing.iconPassed'));
       return Promise.resolve([empty]);
     }
 
     const items = this.findings.map(f => {
-      const label = `${f.method} ${f.endpoint} [${f.changeType}]`;
-      const item = new FindingTreeItem(label, f.description, f.severity, f);
+      const label = `${f.method || 'API'} ${f.endpoint || ''} [${f.changeType || 'Finding'}]`.trim();
+      const item = new vscode.TreeItem(label, vscode.TreeItemCollapsibleState.None);
+      item.description = f.severity.toUpperCase();
+      item.tooltip = `${f.description}\nImpact: ${f.impact}\nRecommendation: ${f.recommendation}`;
+
+      if (f.severity === 'breaking') {
+        item.iconPath = new vscode.ThemeIcon('error', new vscode.ThemeColor('errorForeground'));
+      } else if (f.severity === 'warning') {
+        item.iconPath = new vscode.ThemeIcon('warning', new vscode.ThemeColor('editorWarning.foreground'));
+      } else {
+        item.iconPath = new vscode.ThemeIcon('info', new vscode.ThemeColor('editorInfo.foreground'));
+      }
+
+      if (f.fixSnippet) {
+        item.command = {
+          command: 'shaktiq.suggestFix',
+          title: 'View & Apply Code Fix',
+          arguments: [f],
+        };
+      }
       return item;
     });
 
@@ -73,44 +172,668 @@ class FindingsTreeDataProvider implements vscode.TreeDataProvider<FindingTreeIte
   }
 }
 
-class FindingTreeItem extends vscode.TreeItem {
-  constructor(
-    public readonly label: string,
-    public readonly descriptionText: string,
-    public readonly severity: 'breaking' | 'warning' | 'info' | 'safe',
-    public readonly finding?: FindingItem,
-  ) {
-    super(label, vscode.TreeItemCollapsibleState.None);
-    this.description = severity.toUpperCase();
-    this.tooltip = finding
-      ? `${descriptionText}\nImpact: ${finding.impact}\nRecommendation: ${finding.recommendation}`
-      : descriptionText;
+class RoutesTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
+  private _onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined | void>();
+  readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
-    if (severity === 'breaking') {
-      this.iconPath = new vscode.ThemeIcon('error', new vscode.ThemeColor('errorForeground'));
-    } else if (severity === 'warning') {
-      this.iconPath = new vscode.ThemeIcon(
-        'warning',
-        new vscode.ThemeColor('editorWarning.foreground'),
-      );
-    } else if (severity === 'info') {
-      this.iconPath = new vscode.ThemeIcon('info', new vscode.ThemeColor('editorInfo.foreground'));
-    } else {
-      this.iconPath = new vscode.ThemeIcon('check', new vscode.ThemeColor('testing.iconPassed'));
+  private routes: DetectedRoute[] = [];
+
+  setRoutes(routes: DetectedRoute[]) {
+    this.routes = routes;
+    this._onDidChangeTreeData.fire();
+  }
+
+  getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
+    return element;
+  }
+
+  getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
+    if (element) return Promise.resolve([]);
+
+    if (this.routes.length === 0) {
+      const empty = new vscode.TreeItem('No routes parsed yet', vscode.TreeItemCollapsibleState.None);
+      empty.description = 'Run Analyze';
+      empty.iconPath = new vscode.ThemeIcon('symbol-interface');
+      return Promise.resolve([empty]);
     }
+
+    const items = this.routes.map(r => {
+      const item = new vscode.TreeItem(`${r.method} ${r.path}`, vscode.TreeItemCollapsibleState.None);
+      item.description = r.summary || '';
+      item.iconPath = new vscode.ThemeIcon('globe');
+      if (r.line !== undefined && r.line >= 0) {
+        item.command = {
+          command: 'shaktiq.jumpToLine',
+          title: 'Jump to Route',
+          arguments: [r.line],
+        };
+      }
+      return item;
+    });
+
+    return Promise.resolve(items);
   }
 }
 
+class ActionsTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
+  private _onDidChangeTreeData = new vscode.EventEmitter<vscode.TreeItem | undefined | void>();
+  readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+
+  private review: CodeReviewResult | null = null;
+  private latestFix: CodeFixResult | null = null;
+
+  setState(review: CodeReviewResult | null, latestFix: CodeFixResult | null) {
+    this.review = review;
+    this.latestFix = latestFix;
+    this._onDidChangeTreeData.fire();
+  }
+
+  getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
+    return element;
+  }
+
+  getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
+    if (element) return Promise.resolve([]);
+
+    const items: vscode.TreeItem[] = [];
+
+    // Review Status item
+    if (this.review) {
+      const riskItem = new vscode.TreeItem(
+        `Risk: ${this.review.breakingRisk} RISK`,
+        vscode.TreeItemCollapsibleState.None,
+      );
+      riskItem.description = this.review.backwardCompatibilityRisk ? 'Breaking Contract' : 'Backward Compatible';
+      riskItem.iconPath = this.review.breakingRisk === 'HIGH'
+        ? new vscode.ThemeIcon('shield', new vscode.ThemeColor('errorForeground'))
+        : new vscode.ThemeIcon('pass', new vscode.ThemeColor('testing.iconPassed'));
+      riskItem.tooltip = this.review.summary;
+      items.push(riskItem);
+
+      // Suggestions
+      for (const s of (this.review.suggestions || []).slice(0, 3)) {
+        const sItem = new vscode.TreeItem(s, vscode.TreeItemCollapsibleState.None);
+        sItem.iconPath = new vscode.ThemeIcon('lightbulb');
+        items.push(sItem);
+      }
+    }
+
+    // Latest Fix item
+    if (this.latestFix) {
+      const fixItem = new vscode.TreeItem('⚡ Apply AI Suggested Fix', vscode.TreeItemCollapsibleState.None);
+      fixItem.description = this.latestFix.explanation.slice(0, 45) + '...';
+      fixItem.iconPath = new vscode.ThemeIcon('wrench', new vscode.ThemeColor('testing.iconPassed'));
+      fixItem.command = {
+        command: 'shaktiq.applyFix',
+        title: 'Apply Fix',
+        arguments: [this.latestFix.fixedSnippet],
+      };
+      items.push(fixItem);
+    }
+
+    // Default trigger actions if empty
+    if (items.length === 0) {
+      const reviewAction = new vscode.TreeItem('Audit Active Code & Endpoints', vscode.TreeItemCollapsibleState.None);
+      reviewAction.iconPath = new vscode.ThemeIcon('sparkle');
+      reviewAction.command = { command: 'shaktiq.reviewCode', title: 'Audit Code' };
+
+      const analyzeAction = new vscode.TreeItem('Analyze OpenAPI Changes', vscode.TreeItemCollapsibleState.None);
+      analyzeAction.iconPath = new vscode.ThemeIcon('zap');
+      analyzeAction.command = { command: 'shaktiq.analyze', title: 'Analyze Spec' };
+
+      items.push(reviewAction, analyzeAction);
+    }
+
+    return Promise.resolve(items);
+  }
+}
+
+// ============================================================================
+// Code Action Provider (Quick Fix 💡 in Editor)
+// ============================================================================
+
+class ShaktiqCodeActionProvider implements vscode.CodeActionProvider {
+  public static readonly providedCodeActionKinds = [vscode.CodeActionKind.QuickFix];
+
+  private activeFix: CodeFixResult | null = null;
+
+  setActiveFix(fix: CodeFixResult | null) {
+    this.activeFix = fix;
+  }
+
+  provideCodeActions(
+    document: vscode.TextDocument,
+    range: vscode.Range | vscode.Selection,
+    context: vscode.CodeActionContext,
+  ): vscode.CodeAction[] {
+    const actions: vscode.CodeAction[] = [];
+
+    // Check if any shaktIQ diagnostics exist in this range
+    const shaktiqDiagnostics = context.diagnostics.filter(d => d.source === 'shaktIQ');
+
+    if (shaktiqDiagnostics.length > 0 && shaktiqDiagnostics[0]) {
+      const diag = shaktiqDiagnostics[0];
+
+      // Quick Fix: Apply AI Code Fix
+      const fixAction = new vscode.CodeAction('⚡ shaktIQ: Apply backward-compatible code fix', vscode.CodeActionKind.QuickFix);
+      fixAction.isPreferred = true;
+      fixAction.diagnostics = [diag];
+      fixAction.command = {
+        command: 'shaktiq.suggestFix',
+        title: 'Suggest & Apply Fix',
+        arguments: [diag],
+      };
+      actions.push(fixAction);
+
+      // Explain Impact Action
+      const explainAction = new vscode.CodeAction('📖 shaktIQ: Explain client compatibility impact', vscode.CodeActionKind.QuickFix);
+      explainAction.diagnostics = [diag];
+      explainAction.command = {
+        command: 'shaktiq.explainImpact',
+        title: 'Explain Impact',
+        arguments: [diag],
+      };
+      actions.push(explainAction);
+    }
+
+    // Direct Code Action if a fix is loaded
+    if (this.activeFix && this.activeFix.fixedSnippet) {
+      const applyFixAction = new vscode.CodeAction('⚡ shaktIQ: Insert suggested remediated snippet', vscode.CodeActionKind.QuickFix);
+      applyFixAction.command = {
+        command: 'shaktiq.applyFix',
+        title: 'Apply Remediation',
+        arguments: [this.activeFix.fixedSnippet],
+      };
+      actions.push(applyFixAction);
+    }
+
+    return actions;
+  }
+}
+
+// ============================================================================
+// Main Extension Activation
+// ============================================================================
+
 let lastRunId: string | null = null;
+let currentCodeFix: CodeFixResult | null = null;
 
 export function activate(context: vscode.ExtensionContext) {
   const diagnosticCollection = vscode.languages.createDiagnosticCollection('shaktiq');
   context.subscriptions.push(diagnosticCollection);
 
-  const treeDataProvider = new FindingsTreeDataProvider();
-  vscode.window.registerTreeDataProvider('shaktiq.findingsView', treeDataProvider);
+  // Initialize Sidebars
+  const findingsTreeDataProvider = new FindingsTreeDataProvider();
+  const routesTreeDataProvider = new RoutesTreeDataProvider();
+  const actionsTreeDataProvider = new ActionsTreeDataProvider();
 
-  // Command: Sign in with token
+  vscode.window.registerTreeDataProvider('shaktiq.findingsView', findingsTreeDataProvider);
+  vscode.window.registerTreeDataProvider('shaktiq.routesView', routesTreeDataProvider);
+  vscode.window.registerTreeDataProvider('shaktiq.actionsView', actionsTreeDataProvider);
+
+  // Initialize Code Actions Provider
+  const codeActionProvider = new ShaktiqCodeActionProvider();
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider(
+      [
+        { scheme: 'file', language: 'yaml' },
+        { scheme: 'file', language: 'json' },
+        { scheme: 'file', language: 'typescript' },
+        { scheme: 'file', language: 'javascript' },
+        { scheme: 'file', language: 'python' },
+      ],
+      codeActionProvider,
+      { providedCodeActionKinds: ShaktiqCodeActionProvider.providedCodeActionKinds },
+    ),
+  );
+
+  // --------------------------------------------------------------------------
+  // Helper: Jump to Line
+  // --------------------------------------------------------------------------
+  vscode.commands.registerCommand('shaktiq.jumpToLine', (line: number) => {
+    const editor = vscode.window.activeTextEditor;
+    if (editor && line >= 0) {
+      const pos = new vscode.Position(line, 0);
+      editor.selection = new vscode.Selection(pos, pos);
+      editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+    }
+  });
+
+  // --------------------------------------------------------------------------
+  // Helper: Explain Impact Modal
+  // --------------------------------------------------------------------------
+  vscode.commands.registerCommand('shaktiq.explainImpact', (diag: vscode.Diagnostic) => {
+    vscode.window.showInformationMessage(
+      `shaktIQ Impact Analysis:\n\n${diag.message}`,
+      { modal: true },
+      'Open Web Studio',
+    ).then(choice => {
+      if (choice === 'Open Web Studio') {
+        vscode.commands.executeCommand('shaktiq.openDashboard');
+      }
+    });
+  });
+
+  // --------------------------------------------------------------------------
+  // Command: Apply Code Fix Directly to Editor
+  // --------------------------------------------------------------------------
+  const applyFixCmd = vscode.commands.registerCommand('shaktiq.applyFix', async (fixedSnippet: string) => {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+      vscode.window.showErrorMessage('No active editor open to apply fix.');
+      return;
+    }
+
+    const doc = editor.document;
+    const selection = editor.selection;
+
+    const edit = new vscode.WorkspaceEdit();
+
+    // If text was selected, replace selection; otherwise replace whole document or prompt
+    if (!selection.isEmpty) {
+      edit.replace(doc.uri, selection, fixedSnippet);
+    } else {
+      // Replace entire file or insert at cursor
+      const fullRange = new vscode.Range(0, 0, doc.lineCount, doc.lineAt(doc.lineCount - 1).text.length);
+      edit.replace(doc.uri, fullRange, fixedSnippet);
+    }
+
+    const applied = await vscode.workspace.applyEdit(edit);
+    if (applied) {
+      diagnosticCollection.clear();
+      vscode.window.showInformationMessage('✅ shaktIQ: Applied backward-compatible fix successfully!');
+    } else {
+      vscode.window.showErrorMessage('Failed to apply code fix.');
+    }
+  });
+
+  // --------------------------------------------------------------------------
+  // Command: Suggest & Generate AI Code Fix
+  // --------------------------------------------------------------------------
+  const suggestFixCmd = vscode.commands.registerCommand('shaktiq.suggestFix', async (arg?: any) => {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+      vscode.window.showErrorMessage('Please open an API specification or backend code file.');
+      return;
+    }
+
+    const doc = editor.document;
+    const code = editor.selection.isEmpty ? doc.getText() : doc.getText(editor.selection);
+
+    await vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: 'shaktIQ: Generating backward-compatible code remediation...',
+        cancellable: false,
+      },
+      async () => {
+        const issues = arg?.message ? [arg.message] : ['Preserve backward compatibility', 'Add fallback default for removed/modified fields'];
+        const res = await fetchFromApi<CodeFixResult>(context, '/studio/fixes', {
+          method: 'POST',
+          body: JSON.stringify({
+            code: code.slice(0, 4000),
+            issues,
+            endpoint: arg?.code || 'Active Endpoint',
+          }),
+        });
+
+        if (!res.ok || !res.data) {
+          vscode.window.showErrorMessage(`Fix generation failed: ${res.error || 'Server error'}`);
+          return;
+        }
+
+        currentCodeFix = res.data;
+        codeActionProvider.setActiveFix(currentCodeFix);
+        actionsTreeDataProvider.setState(null, currentCodeFix);
+
+        const choice = await vscode.window.showInformationMessage(
+          `shaktIQ Remediation Ready: ${res.data.explanation}`,
+          'Apply Fix Directly',
+          'View Diff',
+        );
+
+        if (choice === 'Apply Fix Directly') {
+          vscode.commands.executeCommand('shaktiq.applyFix', res.data.fixedSnippet);
+        } else if (choice === 'View Diff') {
+          const originalDoc = await vscode.workspace.openTextDocument({
+            content: code,
+            language: doc.languageId,
+          });
+          const fixedDoc = await vscode.workspace.openTextDocument({
+            content: res.data.fixedSnippet,
+            language: doc.languageId,
+          });
+          await vscode.commands.executeCommand('vscode.diff', originalDoc.uri, fixedDoc.uri, 'shaktIQ: Original ↔ Remediated Fix');
+        }
+      },
+    );
+  });
+
+  // --------------------------------------------------------------------------
+  // Command: AI Review Code File / Controller
+  // --------------------------------------------------------------------------
+  const reviewCodeCmd = vscode.commands.registerCommand('shaktiq.reviewCode', async () => {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+      vscode.window.showErrorMessage('Please open a code or controller file to review.');
+      return;
+    }
+
+    const doc = editor.document;
+    const code = doc.getText();
+    const filePath = doc.fileName;
+    const language = doc.languageId;
+
+    await vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: `shaktIQ: Performing AI Contract Audit on ${path.basename(filePath)}...`,
+        cancellable: false,
+      },
+      async () => {
+        // 1. Run Route Parsing
+        const routesRes = await fetchFromApi<{ routes: DetectedRoute[] }>(context, '/studio/parse-routes', {
+          method: 'POST',
+          body: JSON.stringify({ content: code, fileType: filePath }),
+        });
+        if (routesRes.ok && routesRes.data?.routes) {
+          routesTreeDataProvider.setRoutes(routesRes.data.routes);
+        }
+
+        // 2. Run AI Code Review
+        const reviewRes = await fetchFromApi<CodeReviewResult>(context, '/studio/review', {
+          method: 'POST',
+          body: JSON.stringify({
+            code: code.slice(0, 10000),
+            filePath,
+            language,
+            projectName: vscode.workspace.name || 'Active Project',
+          }),
+        });
+
+        if (!reviewRes.ok || !reviewRes.data) {
+          vscode.window.showErrorMessage(`Review failed: ${reviewRes.error || 'Server error'}`);
+          return;
+        }
+
+        const review = reviewRes.data;
+        actionsTreeDataProvider.setState(review, currentCodeFix);
+
+        // Map critical findings to diagnostics
+        diagnosticCollection.clear();
+        const diagnostics: vscode.Diagnostic[] = [];
+
+        (review.criticalFindings || []).forEach((cf, idx) => {
+          const lineIdx = Math.min(idx * 4, Math.max(0, doc.lineCount - 1));
+          const range = new vscode.Range(
+            new vscode.Position(lineIdx, 0),
+            new vscode.Position(lineIdx, doc.lineAt(lineIdx).text.length),
+          );
+
+          const isBreaking = review.breakingRisk === 'HIGH';
+          const diag = new vscode.Diagnostic(
+            range,
+            `[shaktIQ Contract Risk] ${cf}`,
+            isBreaking ? vscode.DiagnosticSeverity.Error : vscode.DiagnosticSeverity.Warning,
+          );
+          diag.source = 'shaktIQ';
+          diag.code = `RISK_${review.breakingRisk}`;
+          diagnostics.push(diag);
+        });
+
+        diagnosticCollection.set(doc.uri, diagnostics);
+
+        // Convert findings to sidebar tree
+        const sidebarFindings: FindingItem[] = (review.criticalFindings || []).map((cf, i) => ({
+          fingerprint: `rev_${i}`,
+          endpoint: path.basename(filePath),
+          method: 'CODE',
+          changeType: review.breakingRisk === 'HIGH' ? 'BREAKING_CHANGE' : 'CODE_REVIEW',
+          severity: review.breakingRisk === 'HIGH' ? 'breaking' : 'warning',
+          ruleId: `RISK_${review.breakingRisk}`,
+          description: cf,
+          impact: review.backwardCompatibilityRisk ? 'Consumers will encounter runtime breakage.' : 'Minor risk.',
+          recommendation: review.suggestions?.[0] || 'Review changes with shaktIQ studio.',
+        }));
+
+        findingsTreeDataProvider.setFindings(sidebarFindings);
+
+        const statusMsg = `shaktIQ Audit: ${review.breakingRisk} RISK (${review.backwardCompatibilityRisk ? 'BREAKING' : 'COMPLIANT'})`;
+        vscode.window.showInformationMessage(statusMsg, 'Suggest AI Fix', 'Open Web Studio').then(c => {
+          if (c === 'Suggest AI Fix') {
+            vscode.commands.executeCommand('shaktiq.suggestFix');
+          } else if (c === 'Open Web Studio') {
+            vscode.commands.executeCommand('shaktiq.openDashboard');
+          }
+        });
+      },
+    );
+  });
+
+  // --------------------------------------------------------------------------
+  // Command: Smart Universal Analyze (Spec + Code Auto-Routing)
+  // --------------------------------------------------------------------------
+  const analyzeCmd = vscode.commands.registerCommand('shaktiq.analyze', async () => {
+    const folders = vscode.workspace.workspaceFolders;
+    const activeEditor = vscode.window.activeTextEditor;
+
+    // Check if active editor is a code file (.py, .ts, .js, .go, etc.)
+    if (activeEditor) {
+      const ext = path.extname(activeEditor.document.fileName).toLowerCase();
+      const isCodeFile = ['.py', '.ts', '.js', '.jsx', '.tsx', '.go', '.java', '.php', '.rb', '.cs'].includes(ext);
+      const docText = activeEditor.document.getText();
+      const hasOpenApiHeader = docText.includes('openapi:') || docText.includes('swagger:') || docText.includes('"openapi"');
+
+      // If active editor is code and not openapi, route directly to intelligent Code Review!
+      if (isCodeFile && !hasOpenApiHeader) {
+        await vscode.commands.executeCommand('shaktiq.reviewCode');
+        return;
+      }
+    }
+
+    if (!folders || folders.length === 0 || !folders[0]) {
+      vscode.window.showErrorMessage('Please open a workspace folder containing your API spec or code.');
+      return;
+    }
+
+    const workspaceRoot = folders[0].uri.fsPath;
+    const config = vscode.workspace.getConfiguration('shaktiq');
+    let specRelativePath = config.get<string>('specPath', 'openapi.yaml');
+    const baseRef = config.get<string>('baseRef', 'HEAD');
+
+    // Smart file resolution: Check if configured specPath exists; if not, search workspace
+    let targetSpecUri: vscode.Uri | null = null;
+    const directUri = vscode.Uri.file(path.join(workspaceRoot, specRelativePath));
+
+    try {
+      await vscode.workspace.fs.stat(directUri);
+      targetSpecUri = directUri;
+    } catch {
+      // Direct file not found. If active editor is open and has OpenAPI content, use it!
+      if (activeEditor) {
+        const text = activeEditor.document.getText();
+        if (text.includes('openapi:') || text.includes('swagger:') || text.includes('paths:')) {
+          targetSpecUri = activeEditor.document.uri;
+          specRelativePath = path.relative(workspaceRoot, targetSpecUri.fsPath);
+        }
+      }
+
+      // If still not found, search workspace for common OpenAPI filenames
+      if (!targetSpecUri) {
+        const foundFiles = await vscode.workspace.findFiles(
+          '**/*{openapi,swagger}*.{yaml,yml,json}',
+          '**/node_modules/**',
+          5,
+        );
+
+        if (foundFiles.length === 1 && foundFiles[0]) {
+          targetSpecUri = foundFiles[0];
+          specRelativePath = path.relative(workspaceRoot, targetSpecUri.fsPath);
+        } else if (foundFiles.length > 1) {
+          const picked = await vscode.window.showQuickPick(
+            foundFiles.map(f => ({ label: path.relative(workspaceRoot, f.fsPath), uri: f })),
+            { placeHolder: 'Select the OpenAPI specification file to analyze' },
+          );
+          if (picked) {
+            targetSpecUri = picked.uri;
+            specRelativePath = picked.label;
+          }
+        }
+      }
+    }
+
+    // If still no spec found: If an active editor is open, gracefully fall back to code review!
+    if (!targetSpecUri) {
+      if (activeEditor) {
+        await vscode.commands.executeCommand('shaktiq.reviewCode');
+        return;
+      }
+
+      // Otherwise offer to pick any file or open Web Studio
+      const choice = await vscode.window.showWarningMessage(
+        'No OpenAPI specification found in workspace. Open a route controller (.py, .ts, .js) or select an API spec file.',
+        'Select Spec File...',
+        'Open Web Studio',
+      );
+      if (choice === 'Select Spec File...') {
+        const picked = await vscode.window.showOpenDialog({
+          canSelectMany: false,
+          filters: { 'API Specifications & Code': ['yaml', 'yml', 'json', 'py', 'ts', 'js'] },
+        });
+        if (picked && picked[0]) {
+          targetSpecUri = picked[0];
+          specRelativePath = path.relative(workspaceRoot, targetSpecUri.fsPath);
+        }
+      } else if (choice === 'Open Web Studio') {
+        await vscode.commands.executeCommand('shaktiq.openDashboard');
+        return;
+      }
+
+      if (!targetSpecUri) return;
+    }
+
+    // Read Head Spec Content
+    let headSpecContent: string;
+    try {
+      const doc = await vscode.workspace.openTextDocument(targetSpecUri);
+      headSpecContent = doc.getText();
+    } catch {
+      vscode.window.showErrorMessage(`Could not read spec file at ${specRelativePath}`);
+      return;
+    }
+
+    // Read Base Spec Content from Git
+    let baseSpecContent = '';
+    try {
+      const gitShow = await execFileAsync('git', ['show', `${baseRef}:${specRelativePath}`], {
+        cwd: workspaceRoot,
+      });
+      baseSpecContent = gitShow.stdout;
+    } catch {
+      baseSpecContent = '';
+    }
+
+    await vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: `shaktIQ: Analyzing API changes in ${path.basename(specRelativePath)}...`,
+        cancellable: false,
+      },
+      async () => {
+        // Also parse routes for sidebar
+        fetchFromApi<{ routes: DetectedRoute[] }>(context, '/studio/parse-routes', {
+          method: 'POST',
+          body: JSON.stringify({ content: headSpecContent, fileType: specRelativePath }),
+        }).then(r => {
+          if (r.ok && r.data?.routes) routesTreeDataProvider.setRoutes(r.data.routes);
+        }).catch(() => {});
+
+        // Run Deterministic Breaking Change Analysis
+        const idempotencyKey = randomUUID();
+        const res = await fetchFromApi<any>(context, '/cli/analyze', {
+          method: 'POST',
+          headers: {
+            'Idempotency-Key': idempotencyKey,
+          },
+          body: JSON.stringify({
+            baseSpec: baseSpecContent,
+            headSpec: headSpecContent,
+            specPath: specRelativePath,
+            branch: baseRef,
+          }),
+        });
+
+        if (!res.ok || !res.data) {
+          vscode.window.showErrorMessage(`shaktIQ Analysis error: ${res.error || 'Request failed'}`);
+          return;
+        }
+
+        lastRunId = res.data.runId || null;
+        const findings: FindingItem[] = res.data.findings || [];
+
+        // Update Tree View
+        findingsTreeDataProvider.setFindings(findings);
+
+        // Update Diagnostics in Editor
+        diagnosticCollection.clear();
+        const diagnostics: vscode.Diagnostic[] = [];
+        const lines = headSpecContent.split('\n');
+
+        for (const f of findings) {
+          let lineIdx = 0;
+          if (f.locationText) {
+            const match = f.locationText.match(/(\d+):/);
+            if (match?.[1]) {
+              lineIdx = Math.max(0, parseInt(match[1], 10) - 1);
+            }
+          } else {
+            const foundLine = lines.findIndex(l => l.includes(f.endpoint));
+            if (foundLine !== -1) {
+              lineIdx = foundLine;
+            }
+          }
+
+          const range = new vscode.Range(
+            new vscode.Position(lineIdx, 0),
+            new vscode.Position(lineIdx, Math.max(1, lines[lineIdx]?.length || 1)),
+          );
+
+          let sev = vscode.DiagnosticSeverity.Information;
+          if (f.severity === 'breaking') {
+            sev = vscode.DiagnosticSeverity.Error;
+          } else if (f.severity === 'warning') {
+            sev = vscode.DiagnosticSeverity.Warning;
+          }
+
+          const d = new vscode.Diagnostic(
+            range,
+            `[${f.changeType}] ${f.description}\nImpact: ${f.impact}\nRecommendation: ${f.recommendation}`,
+            sev,
+          );
+          d.source = 'shaktIQ';
+          d.code = f.ruleId;
+          diagnostics.push(d);
+        }
+
+        diagnosticCollection.set(targetSpecUri!, diagnostics);
+
+        const summary = res.data.summary || { breaking: 0, warning: 0, releaseStatus: 'safe' };
+        const statusMsg = `Analysis complete: ${summary.breaking} breaking, ${summary.warning} warning (${(summary.releaseStatus || 'safe').toUpperCase()})`;
+
+        vscode.window.showInformationMessage(statusMsg, 'Suggest AI Fix', 'Open Dashboard').then(choice => {
+          if (choice === 'Suggest AI Fix') {
+            vscode.commands.executeCommand('shaktiq.suggestFix', findings[0]);
+          } else if (choice === 'Open Dashboard') {
+            vscode.commands.executeCommand('shaktiq.openDashboard');
+          }
+        });
+      },
+    );
+  });
+
+  // --------------------------------------------------------------------------
+  // Command: Sign in with Personal Access Token
+  // --------------------------------------------------------------------------
   const signInCmd = vscode.commands.registerCommand('shaktiq.signIn', async () => {
     const token = await vscode.window.showInputBox({
       prompt: 'Enter your shaktIQ Personal Access Token (PAT)',
@@ -119,196 +842,39 @@ export function activate(context: vscode.ExtensionContext) {
       placeHolder: 'sq_...',
     });
 
-    if (!token) {
+    if (!token) return;
+
+    const res = await fetchFromApi<any>(context, '/auth/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!res.ok) {
+      vscode.window.showErrorMessage(`shaktIQ Sign-in failed: ${res.error || 'Invalid token'}`);
       return;
     }
 
-    const config = vscode.workspace.getConfiguration('shaktiq');
-    const apiUrl = config.get<string>('apiUrl', 'https://uncharted-shakti-1.onrender.com/api/v1');
-
-    try {
-      const res = await fetch(`${apiUrl}/auth/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error(`Authentication failed with status ${res.status}`);
-      }
-
-      await context.secrets.store('shaktiq.pat', token);
-      vscode.window.showInformationMessage('Successfully signed in to shaktIQ!');
-    } catch (err: unknown) {
-      vscode.window.showErrorMessage(`shaktIQ sign in failed: ${(err as Error).message}`);
-    }
+    await context.secrets.store('shaktiq.pat', token);
+    vscode.window.showInformationMessage(`Successfully signed in to shaktIQ as ${res.data?.email || 'User'}!`);
   });
 
-  // Command: Analyze API changes
-  const analyzeCmd = vscode.commands.registerCommand('shaktiq.analyze', async () => {
-    const folders = vscode.workspace.workspaceFolders;
-    if (!folders || folders.length === 0) {
-      vscode.window.showErrorMessage('Please open a workspace folder containing an OpenAPI spec.');
-      return;
-    }
-
-    const workspaceRoot = folders[0]?.uri.fsPath;
-    if (!workspaceRoot) {
-      vscode.window.showErrorMessage('No workspace folder found.');
-      return;
-    }
-    const config = vscode.workspace.getConfiguration('shaktiq');
-    const specRelativePath = config.get<string>('specPath', 'openapi.yaml');
-    const baseRef = config.get<string>('baseRef', 'HEAD');
-    const apiUrl = config.get<string>('apiUrl', 'https://uncharted-shakti-1.onrender.com/api/v1');
-
-    const specUri = vscode.Uri.file(path.join(workspaceRoot, specRelativePath));
-
-    let headSpecContent: string;
-    try {
-      const doc = await vscode.workspace.openTextDocument(specUri);
-      headSpecContent = doc.getText();
-    } catch {
-      vscode.window.showErrorMessage(`Could not read spec file at ${specRelativePath}`);
-      return;
-    }
-
-    let baseSpecContent: string;
-    try {
-      const gitShow = await execFileAsync('git', ['show', `${baseRef}:${specRelativePath}`], {
-        cwd: workspaceRoot,
-      });
-      baseSpecContent = gitShow.stdout;
-    } catch {
-      vscode.window.showWarningMessage(
-        `Could not retrieve base spec from git ref ${baseRef}:${specRelativePath}. Using empty spec.`,
-      );
-      baseSpecContent = '';
-    }
-
-    const token = await context.secrets.get('shaktiq.pat');
-
-    await vscode.window.withProgress(
-      {
-        location: vscode.ProgressLocation.Notification,
-        title: 'shaktIQ: Analyzing OpenAPI changes...',
-        cancellable: false,
-      },
-      async () => {
-        try {
-          const idempotencyKey = randomUUID();
-          const headers: Record<string, string> = {
-            'Content-Type': 'application/json',
-            'Idempotency-Key': idempotencyKey,
-          };
-          if (token) {
-            headers.Authorization = `Bearer ${token}`;
-          }
-
-          const res = await fetch(`${apiUrl}/cli/analyze`, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify({
-              baseSpec: baseSpecContent,
-              headSpec: headSpecContent,
-              specPath: specRelativePath,
-              branch: baseRef,
-            }),
-          });
-
-          const json = (await res.json()) as AnalyzeResponse;
-
-          if (!res.ok || !json.ok || !json.data) {
-            const msg = json.error?.message || `Server returned status ${res.status}`;
-            vscode.window.showErrorMessage(`shaktIQ Analysis error: ${msg}`);
-            return;
-          }
-
-          lastRunId = json.data.runId;
-          const findings = json.data.findings || [];
-
-          // Update tree view
-          treeDataProvider.setFindings(findings);
-
-          // Update diagnostics
-          diagnosticCollection.clear();
-          const diagnostics: vscode.Diagnostic[] = [];
-          const lines = headSpecContent.split('\n');
-
-          for (const f of findings) {
-            let lineIdx = 0;
-            if (f.locationText) {
-              const match = f.locationText.match(/(\d+):/);
-              if (match?.[1]) {
-                lineIdx = Math.max(0, parseInt(match[1], 10) - 1);
-              }
-            } else {
-              const foundLine = lines.findIndex(l => l.includes(f.endpoint));
-              if (foundLine !== -1) {
-                lineIdx = foundLine;
-              }
-            }
-
-            const range = new vscode.Range(
-              new vscode.Position(lineIdx, 0),
-              new vscode.Position(lineIdx, Math.max(1, lines[lineIdx]?.length || 1)),
-            );
-
-            let sev = vscode.DiagnosticSeverity.Information;
-            if (f.severity === 'breaking') {
-              sev = vscode.DiagnosticSeverity.Error;
-            } else if (f.severity === 'warning') {
-              sev = vscode.DiagnosticSeverity.Warning;
-            }
-
-            const d = new vscode.Diagnostic(
-              range,
-              `[${f.changeType}] ${f.description}\nImpact: ${f.impact}\nRecommendation: ${f.recommendation}`,
-              sev,
-            );
-            d.source = 'shaktIQ';
-            d.code = f.ruleId;
-            diagnostics.push(d);
-          }
-
-          diagnosticCollection.set(specUri, diagnostics);
-
-          const summary = json.data.summary;
-          const statusMsg = `Analysis complete: ${summary.breaking} breaking, ${summary.warning} warning (${summary.releaseStatus.toUpperCase()})`;
-          if (summary.breaking > 0) {
-            vscode.window.showErrorMessage(statusMsg, 'Open Dashboard').then(choice => {
-              if (choice === 'Open Dashboard') {
-                vscode.commands.executeCommand('shaktiq.openDashboard');
-              }
-            });
-          } else {
-            vscode.window.showInformationMessage(statusMsg, 'Open Dashboard').then(choice => {
-              if (choice === 'Open Dashboard') {
-                vscode.commands.executeCommand('shaktiq.openDashboard');
-              }
-            });
-          }
-        } catch (err: unknown) {
-          vscode.window.showErrorMessage(`Failed to analyze: ${(err as Error).message}`);
-        }
-      },
-    );
-  });
-
-  // Command: Open last run in dashboard
+  // --------------------------------------------------------------------------
+  // Command: Open Web Studio / Dashboard
+  // --------------------------------------------------------------------------
   const openDashboardCmd = vscode.commands.registerCommand('shaktiq.openDashboard', async () => {
-    if (!lastRunId) {
-      vscode.window.showInformationMessage('No recent analysis run found.');
-      return;
-    }
-
     const config = vscode.workspace.getConfiguration('shaktiq');
     const webUrl = config.get<string>('webUrl', 'https://shaktiq.vercel.app');
-    const targetUri = vscode.Uri.parse(`${webUrl}/runs/${lastRunId}`);
-    await vscode.env.openExternal(targetUri);
+    const targetUrl = lastRunId ? `${webUrl}/runs/${lastRunId}` : `${webUrl}/dashboard`;
+    await vscode.env.openExternal(vscode.Uri.parse(targetUrl));
   });
 
-  context.subscriptions.push(signInCmd, analyzeCmd, openDashboardCmd);
+  context.subscriptions.push(
+    signInCmd,
+    analyzeCmd,
+    reviewCodeCmd,
+    suggestFixCmd,
+    applyFixCmd,
+    openDashboardCmd,
+  );
 }
 
 export function deactivate() {}

@@ -32,26 +32,62 @@
     "Other"
   ],
   "activationEvents": [
+    "onStartupFinished",
     "onCommand:shaktiq.signIn",
     "onCommand:shaktiq.analyze",
+    "onCommand:shaktiq.reviewCode",
+    "onCommand:shaktiq.suggestFix",
+    "onCommand:shaktiq.applyFix",
     "onCommand:shaktiq.openDashboard"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "shaktiq.signIn",
-        "title": "shaktIQ: Sign in with token"
+        "command": "shaktiq.analyze",
+        "title": "shaktIQ: Analyze API changes & Review Code",
+        "icon": "$(zap)"
       },
       {
-        "command": "shaktiq.analyze",
-        "title": "shaktIQ: Analyze API changes"
+        "command": "shaktiq.reviewCode",
+        "title": "shaktIQ: AI Review Active Code & Contract",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "shaktiq.suggestFix",
+        "title": "shaktIQ: Suggest & Apply AI Code Fix",
+        "icon": "$(wrench)"
       },
       {
         "command": "shaktiq.openDashboard",
-        "title": "shaktIQ: Open last run in dashboard"
+        "title": "shaktIQ: Open in Web Studio / Dashboard",
+        "icon": "$(link-external)"
+      },
+      {
+        "command": "shaktiq.signIn",
+        "title": "shaktIQ: Sign in with token",
+        "icon": "$(key)"
       }
     ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "shaktiq.analyze",
+          "group": "navigation",
+          "when": "resourceExtname =~ /\\.(yaml|yml|json|py|ts|js|go|java)$/"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "shaktiq.reviewCode",
+          "group": "shaktiq@1"
+        },
+        {
+          "command": "shaktiq.suggestFix",
+          "group": "shaktiq@2"
+        }
+      ]
+    },
     "viewsContainers": {
       "activitybar": [
         {
@@ -65,7 +101,15 @@
       "shaktiq-sidebar": [
         {
           "id": "shaktiq.findingsView",
-          "name": "API Findings"
+          "name": "Breaking Changes & Code Issues"
+        },
+        {
+          "id": "shaktiq.routesView",
+          "name": "Detected API Endpoints"
+        },
+        {
+          "id": "shaktiq.actionsView",
+          "name": "AI Remediation & Fixes"
         }
       ]
     },
@@ -75,7 +119,7 @@
         "shaktiq.apiUrl": {
           "type": "string",
           "default": "https://uncharted-shakti-1.onrender.com/api/v1",
-          "description": "shaktIQ API base URL"
+          "description": "shaktIQ API base URL (falls back to http://127.0.0.1:4000/api/v1 if offline)"
         },
         "shaktiq.webUrl": {
           "type": "string",
@@ -85,7 +129,7 @@
         "shaktiq.specPath": {
           "type": "string",
           "default": "openapi.yaml",
-          "description": "Relative path to OpenAPI specification file"
+          "description": "Default relative path to OpenAPI specification file (auto-detects if missing)"
         },
         "shaktiq.baseRef": {
           "type": "string",
