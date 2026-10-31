@@ -1,4 +1,3 @@
-import { GoogleGenAI } from '@google/genai';
 import { env } from '../../config/env.js';
 import { logger } from '../../lib/logger.js';
 
@@ -51,6 +50,8 @@ export async function generateMultiLayerDossier(
 
   if (isKeyValid) {
     try {
+      // Dynamic import so lack of @google/genai module or offline dev does not break module loading
+      const { GoogleGenAI } = await import('@google/genai');
       const ai = new GoogleGenAI({ apiKey });
 
       const prompt = `You are the Lead API Architecture Auditor for "${projectName}".
