@@ -25,15 +25,31 @@ try {
   // Ignore in restricted environments
 }
 
+// In-memory DNS cache to avoid repeated network roundtrips for Google API endpoints
+let cachedGoogleIps: string[] | null = null;
+let lastGoogleDnsLookup = 0;
+const DNS_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+
 function customDnsLookup(hostname: string, options: any, callback: any) {
   if (typeof options === 'function') {
     callback = options;
     options = {};
   }
+
+  const now = Date.now();
+  if (cachedGoogleIps && cachedGoogleIps.length > 0 && now - lastGoogleDnsLookup < DNS_CACHE_TTL_MS) {
+    if (options && options.all) {
+      return callback(null, cachedGoogleIps.map((ip) => ({ address: ip, family: 4 })));
+    }
+    return callback(null, cachedGoogleIps[0], 4);
+  }
+
   dnsResolver.resolve4(hostname, (err, addresses) => {
     if (err || !addresses || addresses.length === 0) {
       return dns.lookup(hostname, options, callback);
     }
+    cachedGoogleIps = addresses;
+    lastGoogleDnsLookup = Date.now();
     if (options && options.all) {
       return callback(null, addresses.map((a: string) => ({ address: a, family: 4 })));
     }
@@ -44,7 +60,9 @@ function customDnsLookup(hostname: string, options: any, callback: any) {
 const geminiHttpsAgent = new https.Agent({
   lookup: customDnsLookup,
   keepAlive: true,
-  timeout: 30000,
+  keepAliveMsecs: 60000,
+  maxSockets: 32,
+  timeout: 8000,
 });
 
 function getGeminiApiKey(): string | undefined {
@@ -87,13 +105,25 @@ interface AiQueryAnswer {
   generatedBy: string;
 }
 
-function callGeminiHttps(model: string, apiKey: string, prompt: string): Promise<any> {
+interface GeminiCallSuccess {
+  model: string;
+  text: string;
+  data: any;
+}
+
+function callGeminiHttps(
+  model: string,
+  apiKey: string,
+  prompt: string,
+  timeoutMs = 5000
+): Promise<GeminiCallSuccess> {
   return new Promise((resolve, reject) => {
     const postData = JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {
         responseMimeType: 'application/json',
-        temperature: 0.3,
+        temperature: 0.25,
+        maxOutputTokens: 600,
       },
     });
 
@@ -113,13 +143,25 @@ function callGeminiHttps(model: string, apiKey: string, prompt: string): Promise
       let body = '';
       res.on('data', (chunk) => (body += chunk));
       res.on('end', () => {
-        try {
-          const json = JSON.parse(body);
-          resolve({ status: res.statusCode || 200, data: json });
-        } catch (e) {
-          reject(e);
+        if (res.statusCode === 200) {
+          try {
+            const json = JSON.parse(body);
+            const rawText = json.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (rawText) {
+              resolve({ model, text: rawText, data: json });
+              return;
+            }
+          } catch (e) {
+            reject(e);
+            return;
+          }
         }
+        reject(new Error(`Model ${model} returned status ${res.statusCode}`));
       });
+    });
+
+    req.setTimeout(timeoutMs, () => {
+      req.destroy(new Error(`Model ${model} timed out after ${timeoutMs}ms`));
     });
 
     req.on('error', reject);
@@ -232,31 +274,36 @@ export async function POST(req: NextRequest) {
     let recentFindingsContext: any[] = [];
     let recentRunsContext: any[] = [];
 
-    // If projectId is provided, look up project & recent findings from DB
+    // If projectId is provided, look up project & recent findings from DB in parallel
     if (projectId) {
       try {
         const db = await getDb();
         const pObjId = ObjectId.isValid(projectId) ? new ObjectId(projectId) : null;
         if (pObjId) {
-          const project = await db.collection('projects').findOne({ _id: pObjId });
+          const [project, runs] = await Promise.all([
+            db.collection('projects').findOne({ _id: pObjId }, { projection: { name: 1, fullName: 1 } }),
+            db
+              .collection('runs')
+              .find({ projectId: pObjId }, { projection: { status: 1, summary: 1 } })
+              .sort({ createdAt: -1 })
+              .limit(3)
+              .toArray(),
+          ]);
+
           if (project) {
             projectName = project.fullName || project.name || projectName;
           }
-
-          const runs = await db
-            .collection('runs')
-            .find({ projectId: pObjId })
-            .sort({ createdAt: -1 })
-            .limit(3)
-            .toArray();
 
           recentRunsContext = runs;
           const runIds = runs.map((r) => r._id);
           if (runIds.length > 0) {
             recentFindingsContext = await db
               .collection('findings')
-              .find({ runId: { $in: runIds } })
-              .limit(20)
+              .find(
+                { runId: { $in: runIds } },
+                { projection: { endpoint: 1, method: 1, severity: 1, changeType: 1 } }
+              )
+              .limit(10)
               .toArray();
           }
         }
@@ -270,14 +317,10 @@ export async function POST(req: NextRequest) {
     const isKeyValid = !!apiKey && apiKey !== 'your_gemini_api_key_here' && apiKey.length > 10;
 
     if (isKeyValid) {
-      // Candidate models in preference order (starting with active 3.5, 2.5, & 3.8 flash)
-      const candidateModels = [
-        'gemini-3.5-flash',
-        'gemini-2.5-flash',
-        'gemini-3.8-flash',
-        'gemini-flash-latest',
-        'gemini-3.1-flash-lite',
-      ];
+      // Tier 1: Ultra-fast models raced simultaneously for minimum latency (sub-1.5s)
+      const tier1Models = ['gemini-3.5-flash-lite', 'gemini-flash-lite-latest'];
+      // Tier 2: Resilient fallbacks if Tier 1 is throttled
+      const tier2Models = ['gemini-3.6-flash', 'gemini-3.7-flash', 'gemini-3.5-flash'];
 
       const prompt = `You are shaktIQ Natural Language Assistant — an elite Principal Software Architect and Release Governance Specialist for "${projectName}".
 Help developers, QA engineers, and release managers assess release compatibility, prevent breaking changes, protect downstream mobile apps and consumers, and formulate backward-compatible code patches.
@@ -304,37 +347,47 @@ Respond ONLY with valid JSON matching this schema:
   "relatedEndpoints": ["/api/v1/example"]
 }`;
 
-      for (const model of candidateModels) {
-        try {
-          const res = await callGeminiHttps(model, apiKey!, prompt);
-          if (res.status === 200 && res.data) {
-            const rawText = res.data.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (rawText) {
-              let cleanJson = rawText.trim();
-              if (cleanJson.startsWith('```')) {
-                cleanJson = cleanJson.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
-              }
-              let parsed: any;
-              try {
-                parsed = JSON.parse(cleanJson);
-              } catch {
-                parsed = { answer: rawText };
-              }
-              return NextResponse.json({
-                ok: true,
-                data: {
-                  answer: parsed.answer || rawText || 'Analysis complete.',
-                  suggestedFix: parsed.suggestedFix || undefined,
-                  riskLevel: parsed.riskLevel || 'SAFE',
-                  relatedEndpoints: Array.isArray(parsed.relatedEndpoints) ? parsed.relatedEndpoints : [],
-                  generatedBy: `shaktIQ Real-Time Intelligence Engine (${model})`,
-                },
-              });
-            }
+      let successfulResult: GeminiCallSuccess | null = null;
+
+      try {
+        // Speculatively race ultra-fast models in parallel to return the fastest AI response
+        successfulResult = await Promise.any(
+          tier1Models.map((m) => callGeminiHttps(m, apiKey!, prompt, 4500))
+        );
+      } catch {
+        // Fall back to Tier 2 models if Tier 1 experiences demand spikes
+        for (const model of tier2Models) {
+          try {
+            successfulResult = await callGeminiHttps(model, apiKey!, prompt, 5000);
+            if (successfulResult) break;
+          } catch (modelErr) {
+            console.warn(`[AI Query Route] Fallback model ${model} failed:`, modelErr);
           }
-        } catch (modelErr) {
-          console.warn(`[AI Query Route] Model ${model} failed, trying next:`, modelErr);
         }
+      }
+
+      if (successfulResult && successfulResult.text) {
+        const rawText = successfulResult.text;
+        let cleanJson = rawText.trim();
+        if (cleanJson.startsWith('```')) {
+          cleanJson = cleanJson.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+        }
+        let parsed: any;
+        try {
+          parsed = JSON.parse(cleanJson);
+        } catch {
+          parsed = { answer: rawText };
+        }
+        return NextResponse.json({
+          ok: true,
+          data: {
+            answer: parsed.answer || rawText || 'Analysis complete.',
+            suggestedFix: parsed.suggestedFix || undefined,
+            riskLevel: parsed.riskLevel || 'SAFE',
+            relatedEndpoints: Array.isArray(parsed.relatedEndpoints) ? parsed.relatedEndpoints : [],
+            generatedBy: `shaktIQ Real-Time Intelligence Engine (${successfulResult.model})`,
+          },
+        });
       }
     }
 
