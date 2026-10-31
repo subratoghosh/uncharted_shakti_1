@@ -289,6 +289,87 @@ flowchart TD
 
 ---
 
+## ⚡ n8n Orchestration Workflows
+
+ShaktIQ uses **n8n** as an asynchronous event-driven orchestrator between the Fastify API, GitHub repositories, and downstream consumer notifications. All workflows are defined as version-controlled JSON files in [`n8n/workflows/`](n8n/workflows/).
+
+### Complete Workflow Pipeline Diagram
+
+```mermaid
+flowchart TD
+    subgraph Trigger ["1. Trigger & Authentication"]
+        A["Incoming Webhook Event<br/>POST /webhook/shaktiq-analyze-run"] --> B{"Verify Header Auth<br/>x-shaktiq-webhook-token"}
+        B -- "Invalid Token" --> C["Respond 403 Forbidden"]
+        B -- "Valid Token" --> D["Respond 202 Accepted<br/>(Immediate Non-Blocking)"]
+    end
+
+    subgraph Ingestion ["2. Run Initialization & Spec Fetching"]
+        D --> E["HTTP Start Run<br/>POST /internal/runs/:runId/start"]
+        E --> F{"Check Spec Source"}
+        F -- "GitHub PR / Push" --> G["Fetch Base Spec<br/>GitHub REST API"]
+        G --> H["Fetch Head Spec<br/>GitHub REST API"]
+        H --> I["Decode GitHub Specs<br/>(Base64 to UTF-8)"]
+        F -- "Direct Snapshots" --> J["HTTP Analyze Snapshots<br/>POST /internal/runs/:runId/analyze"]
+    end
+
+    subgraph Analysis ["3. AST Diffing & Deterministic Analysis"]
+        I --> K["HTTP Analyze GitHub Specs<br/>POST /internal/runs/:runId/analyze"]
+        J --> L{"Check AI Condition"}
+        K --> L
+    end
+
+    subgraph Intelligence ["4. Intelligence & Verdict"]
+        L -- "AI Enabled & Anthropic Key Present" --> M["Claude Messages API<br/>Generate Plain Explanations"]
+        M --> N["Parse Claude Output"]
+        N --> O["HTTP Submit Explanations<br/>POST /internal/runs/:runId/explanations"]
+        L -- "Claude Skipped / Disabled" --> P{"Check PR Notification Condition"}
+        O --> P
+    end
+
+    subgraph Notifications ["5. Notification & Audit"]
+        P -- "PR Number Present" --> Q["Post GitHub PR Comment<br/>Markdown Compatibility Report"]
+        Q --> R["HTTP Record Notification<br/>POST /internal/runs/:runId/notifications"]
+        P -- "No PR (Direct Push / CLI)" --> R
+    end
+
+    subgraph ErrorRecovery ["6. Global Error Handler"]
+        ERR["Any Node Failure"] -.-> EH["shaktiq-error-handler<br/>(Error Trigger)"]
+        EH --> ECTX["Extract Error Context<br/>(Node, Message, runId)"]
+        ECTX --> EFAIL["HTTP Report Failure<br/>POST /internal/runs/:runId/fail<br/>errorCode: WORKFLOW_FAILED"]
+    end
+
+    classDef success fill:#0C382E,stroke:#428E75,stroke-width:2px,color:#FFF0B3;
+    classDef warning fill:#FEE790,stroke:#D97706,stroke-width:2px,color:#0C382E;
+    classDef error fill:#DC2626,stroke:#991B1B,stroke-width:2px,color:#FFFFFF;
+    class A,D,E,G,H,I,J,K,Q,R success;
+    class B,F,L,P warning;
+    class C,ERR,EH,ECTX,EFAIL error;
+```
+
+### Detailed Node Specifications
+
+1. **`Webhook Trigger` & `Verify Header Auth`:**
+   - Listens on `POST /webhook/shaktiq-analyze-run`.
+   - Validates `x-shaktiq-webhook-token` against environment configuration. Rejects unauthorized traffic immediately with `403 Forbidden`.
+   - Returns an immediate `202 Accepted` envelope so calling services are never blocked waiting for analysis.
+2. **`HTTP Start Run`:**
+   - Calls `POST /api/v1/internal/runs/:runId/start` authenticated by `x-shaktiq-internal-key`.
+   - Transitions run state in MongoDB from `queued` to `running`, triggering real-time UI status updates via Change Streams and SSE.
+3. **Spec Fetching (`Fetch Base Spec GitHub` & `Fetch Head Spec GitHub`):**
+   - Automatically retrieves specification content from GitHub's Contents API using the repository path and commit refs with `Bearer {{ $env.GITHUB_TOKEN }}`.
+   - Built-in 3x retry with 2000ms exponential backoff for network resilience.
+4. **`HTTP Analyze Specs`:**
+   - Dispatches specs to the core AST analyzer engine at `POST /api/v1/internal/runs/:runId/analyze`.
+   - Executes deterministic AST diffing (`oasdiff`), generates SHA-256 finding fingerprints, and calculates the release verdict (`safe`, `review`, or `blocked`).
+5. **`Check AI Condition` & Explanations:**
+   - Evaluates whether AI explanations are requested and an Anthropic key is present. If skipped, continues automatically without blocking.
+6. **`Post GitHub PR Comment`:**
+   - Posts a rich markdown compatibility report directly to the pull request conversation on GitHub.
+7. **`shaktiq-error-handler` (Error Recovery):**
+   - Attached as the designated `errorWorkflow`. On any failure, captures the failing node and message, reporting the failure to `POST /internal/runs/:runId/fail` with `errorCode: WORKFLOW_FAILED` to guarantee clean state reconciliation.
+
+---
+
 ## 🍃 Production MongoDB Atlas Deep Dive
 
 shaktIQ is built with production-grade MongoDB Atlas architecture:

@@ -15,7 +15,7 @@ if [ -f "$ROOT_DIR/.env" ]; then
   set +a
 fi
 
-export SHAKTIQ_API_URL="${SHAKTIQ_API_URL:-http://localhost:4000}"
+export SHAKTIQ_API_URL="${SHAKTIQ_API_URL:-http://127.0.0.1:4000}"
 export INTERNAL_API_KEY="${INTERNAL_API_KEY:-super_secret_internal_key_at_least_32_chars_long}"
 export N8N_WEBHOOK_TOKEN="${N8N_WEBHOOK_TOKEN:-shaktiq-secret-n8n-token}"
 export GITHUB_TOKEN="${GITHUB_TOKEN:-}"

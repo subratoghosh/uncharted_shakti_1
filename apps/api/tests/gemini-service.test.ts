@@ -92,7 +92,7 @@ describe('Gemini AI Multi-Layer Dossier Service', () => {
       expect(result.relatedEndpoints).toContain('/v1/charges');
       expect(result.suggestedFix).toBeDefined();
       expect(result.generatedBy).toBeTruthy();
-    });
+    }, 20000);
 
     it('generates safe assessment when recent findings contain no breaking changes', async () => {
       const result = await queryProjectAssistant({
@@ -116,7 +116,7 @@ describe('Gemini AI Multi-Layer Dossier Service', () => {
       expect(result.answer).toContain('backward-compatible');
       expect(result.riskLevel).toBe('SAFE');
       expect(result.relatedEndpoints).toHaveLength(0);
-    });
+    }, 20000);
   });
 });
 

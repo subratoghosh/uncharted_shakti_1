@@ -22,7 +22,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://api:4000') + '/api/v1/internal/runs/' + $json.runId + '/fail' }}",
+        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://127.0.0.1:4000') + '/api/v1/internal/runs/' + $json.runId + '/fail' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [

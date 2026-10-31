@@ -20,8 +20,8 @@
         "conditions": {
           "string": [
             {
-              "value1": "={{ $headers['x-shaktiq-webhook-token'] }}",
-              "operation": "equals",
+              "value1": "={{ $json.headers ? $json.headers['x-shaktiq-webhook-token'] : ($headers ? $headers['x-shaktiq-webhook-token'] : '') }}",
+              "operation": "equal",
               "value2": "={{ $env.N8N_WEBHOOK_TOKEN }}"
             }
           ]
@@ -62,7 +62,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://api:4000') + '/api/v1/internal/runs/' + $node['Webhook Trigger'].json.body.runId + '/start' }}",
+        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://127.0.0.1:4000') + '/api/v1/internal/runs/' + ($node['Webhook Trigger'].json.body?.runId || $node['Webhook Trigger'].json.runId || '') + '/start' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -76,6 +76,9 @@
             }
           ]
         },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
         "options": {
           "retryOnFail": true,
           "maxTries": 3,
@@ -94,7 +97,7 @@
           "string": [
             {
               "value1": "={{ $json.data.specSource }}",
-              "operation": "equals",
+              "operation": "equal",
               "value2": "github"
             }
           ]
@@ -185,7 +188,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://api:4000') + '/api/v1/internal/runs/' + $node['HTTP Start Run'].json.data.runId + '/analyze' }}",
+        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://127.0.0.1:4000') + '/api/v1/internal/runs/' + $node['HTTP Start Run'].json.data.runId + '/analyze' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -217,7 +220,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://api:4000') + '/api/v1/internal/runs/' + $node['HTTP Start Run'].json.data.runId + '/analyze' }}",
+        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://127.0.0.1:4000') + '/api/v1/internal/runs/' + $node['HTTP Start Run'].json.data.runId + '/analyze' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -252,6 +255,7 @@
           "boolean": [
             {
               "value1": "={{ Boolean($node['HTTP Start Run'].json.data.aiEnabled) && Boolean($env.ANTHROPIC_API_KEY) }}",
+              "operation": "equal",
               "value2": true
             }
           ],
@@ -274,8 +278,6 @@
       "parameters": {
         "method": "POST",
         "url": "https://api.anthropic.com/v1/messages",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "anthropicApi",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -286,6 +288,10 @@
             {
               "name": "content-type",
               "value": "application/json"
+            },
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.ANTHROPIC_API_KEY || '' }}"
             }
           ]
         },
@@ -315,7 +321,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://api:4000') + '/api/v1/internal/runs/' + $node['HTTP Start Run'].json.data.runId + '/explanations' }}",
+        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://127.0.0.1:4000') + '/api/v1/internal/runs/' + $node['HTTP Start Run'].json.data.runId + '/explanations' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -350,7 +356,7 @@
           "string": [
             {
               "value1": "={{ $node['HTTP Start Run'].json.data.source }}",
-              "operation": "equals",
+              "operation": "equal",
               "value2": "github"
             }
           ],
@@ -408,7 +414,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://api:4000') + '/api/v1/internal/runs/' + $node['HTTP Start Run'].json.data.runId + '/notifications' }}",
+        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://127.0.0.1:4000') + '/api/v1/internal/runs/' + $node['HTTP Start Run'].json.data.runId + '/notifications' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
