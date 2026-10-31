@@ -99,6 +99,13 @@ export const authOptions: NextAuthOptions = {
       clientId: googleClientId,
       clientSecret: googleClientSecret,
       allowDangerousEmailAccountLinking: true,
+      authorization: {
+        params: {
+          prompt: 'select_account',
+          access_type: 'offline',
+          response_type: 'code',
+        },
+      },
     }),
     GithubProvider({
       clientId: githubClientId,
@@ -115,20 +122,20 @@ export const authOptions: NextAuthOptions = {
         const users = db.collection('users');
         const normalizedEmail = user.email.toLowerCase().trim();
 
-        // Sync with alternative database name (shaktiIQ / shaktiq) to guarantee data visibility across Atlas views
+        // Target alternative database name (shaktiIQ / shaktiq) for background parity
         const altDbName = db.databaseName === 'shaktiIQ' ? 'shaktiq' : 'shaktiIQ';
-        let altUsers: any = null;
-        try {
-          const altDb = await getDb(altDbName);
-          altUsers = altDb.collection('users');
-        } catch {
-          // Alt db sync is non-blocking
-        }
+        const syncAltDb = (doc: any, isNew: boolean) => {
+          getDb(altDbName)
+            .then((altDb) => {
+              if (isNew) {
+                return altDb.collection('users').replaceOne({ email: normalizedEmail }, doc, { upsert: true });
+              }
+              return altDb.collection('users').updateOne({ email: normalizedEmail }, doc, { upsert: true });
+            })
+            .catch(() => {});
+        };
 
-        let existing = await users.findOne({ email: normalizedEmail });
-        if (!existing && altUsers) {
-          existing = await altUsers.findOne({ email: normalizedEmail });
-        }
+        const existing = await users.findOne({ email: normalizedEmail });
 
         if (existing) {
           // If the user was suspended by admin or in the DB, reject login
@@ -149,11 +156,9 @@ export const authOptions: NextAuthOptions = {
             },
           };
 
-          // Update profile information in primary and alt database
+          // Update profile in primary DB, and sync replica non-blockingly
           await users.updateOne({ _id: existing._id }, updatePayload);
-          if (altUsers) {
-            await altUsers.updateOne({ email: normalizedEmail }, updatePayload, { upsert: true }).catch(() => {});
-          }
+          syncAltDb(updatePayload, false);
         } else {
           // New OAuth user registration
           const now = new Date();
@@ -172,9 +177,7 @@ export const authOptions: NextAuthOptions = {
           };
 
           const insertResult = await users.insertOne(newDoc);
-          if (altUsers) {
-            await altUsers.replaceOne({ email: normalizedEmail }, newDoc, { upsert: true }).catch(() => {});
-          }
+          syncAltDb(newDoc, true);
 
           user.id = insertResult.insertedId.toHexString();
           user.role = 'user';
@@ -190,19 +193,28 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.role = user.role;
         token.disabled = !!user.disabled;
+        token.checkedAt = Date.now();
+        return token;
       }
 
-      // Check live database state so role changes and suspensions take effect immediately
-      if (token.id && ObjectId.isValid(token.id)) {
+      // Check live database at most once every 5 minutes to prevent redundant queries on every request
+      const now = Date.now();
+      const lastChecked = typeof token.checkedAt === 'number' ? token.checkedAt : 0;
+
+      if (token.id && ObjectId.isValid(token.id) && now - lastChecked > 5 * 60 * 1000) {
         try {
           const db = await getDb();
-          const userDoc = await db.collection('users').findOne({ _id: new ObjectId(token.id) });
+          const userDoc = await db.collection('users').findOne(
+            { _id: new ObjectId(token.id) },
+            { projection: { role: 1, disabled: 1 } }
+          );
           if (userDoc) {
             token.role = userDoc.role || 'user';
             token.disabled = !!userDoc.disabled;
           } else {
             token.disabled = true;
           }
+          token.checkedAt = now;
         } catch {
           // Keep existing token claims if DB temporarily fails
         }

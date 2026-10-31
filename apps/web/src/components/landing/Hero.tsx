@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import {
   ArrowRight,
   ShieldCheck,
@@ -12,9 +13,13 @@ import {
   Network,
   GitBranch,
   Zap,
+  LogIn,
 } from 'lucide-react';
 
 export const Hero: React.FC = () => {
+  const { data: session, status } = useSession();
+  const isLoggedIn = status === 'authenticated' && !!session?.user;
+  const consoleHref = session?.user?.role === 'admin' ? '/admin/overview' : '/dashboard';
   const capabilities = [
     {
       icon: GitBranch,
@@ -94,11 +99,19 @@ export const Hero: React.FC = () => {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 w-full sm:w-auto mb-10">
-              <Link href="/dashboard" className="btn-butter">
-                <Terminal className="w-4 h-4" />
-                <span>Launch Live Console</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              {isLoggedIn ? (
+                <Link href={consoleHref} className="btn-butter">
+                  <Terminal className="w-4 h-4" />
+                  <span>Go to Console</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              ) : (
+                <Link href="/login" className="btn-butter">
+                  <LogIn className="w-4 h-4" />
+                  <span>Get Started / Login</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              )}
 
               <Link href="/workflow" className="btn-hero-ghost">
                 <Layers className="w-4 h-4" />

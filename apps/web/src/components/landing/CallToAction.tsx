@@ -1,8 +1,15 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
-import { Terminal, ShieldCheck, ArrowRight } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { Terminal, ShieldCheck, ArrowRight, LogIn } from 'lucide-react';
 
 export const CallToAction: React.FC = () => {
+  const { data: session, status } = useSession();
+  const isLoggedIn = status === 'authenticated' && !!session?.user;
+  const consoleHref = session?.user?.role === 'admin' ? '/admin/overview' : '/dashboard';
+
   return (
     <section className="py-20 bg-butter-bg border-b border-green-dark/10">
       <div className="max-w-[1240px] mx-auto px-6">
@@ -25,11 +32,19 @@ export const CallToAction: React.FC = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3.5 shrink-0 relative z-10 w-full sm:w-auto">
-            <Link href="/dashboard" className="btn-butter">
-              <Terminal className="w-4 h-4" />
-              <span>Launch Live Console</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            {isLoggedIn ? (
+              <Link href={consoleHref} className="btn-butter">
+                <Terminal className="w-4 h-4" />
+                <span>Go to Console</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            ) : (
+              <Link href="/login" className="btn-butter">
+                <LogIn className="w-4 h-4" />
+                <span>Get Started / Login</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            )}
             <Link href="/workflow" className="btn-hero-ghost">
               <span>Explore 4-Step Workflow</span>
             </Link>
