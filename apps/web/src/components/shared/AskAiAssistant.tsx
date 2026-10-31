@@ -4,13 +4,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Send,
   X,
-  AlertTriangle,
-  CheckCircle,
   Copy,
   Check,
   Bot,
   User,
-  ShieldAlert,
   Terminal,
   RotateCcw,
 } from 'lucide-react';
@@ -19,13 +16,13 @@ import type { AiQueryResponse } from '@shaktiq/shared';
 
 /**
  * AskAiAssistant Component
- * Interactive natural language assistant powered by automated compatibility intelligence.
- * Allows developers to query project health, breaking changes, and backward-compatible patches.
+ * Interactive natural language processor assistant powered by automated release intelligence.
+ * Allows developers to query release health, breaking changes, and backward-compatible patches in plain English.
  */
 interface AskAiAssistantProps {
-  /** The unique ObjectId string of the active project */
-  projectId: string;
-  /** Human-readable display name of the project */
+  /** The unique ObjectId string of the active project (optional) */
+  projectId?: string;
+  /** Human-readable display name of the project (optional) */
   projectName?: string;
 }
 
@@ -44,6 +41,13 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+  // Allow any button on the website to trigger the assistant via custom event
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener('open-ai-assistant', handleOpen);
+    return () => window.removeEventListener('open-ai-assistant', handleOpen);
+  }, []);
+
   // Close drawer on Escape key press for accessibility
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -59,9 +63,9 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
     {
       id: 'welcome',
       sender: 'assistant',
-      content: `Hello! I'm **shaktIQ Copilot**, your continuous release intelligence assistant.\n\nAsk me any question about **${
-        projectName || 'this project'
-      }** — breaking changes, downstream client impact, or backward-compatible code fixes!`,
+      content: `Hello! I'm **shaktIQ Assistant**, your natural language release intelligence guide.\n\nAsk me any question in plain English about **${
+        projectName || 'your software releases'
+      }** — breaking changes, downstream client impact, CI/CD gates, or backward-compatible code fixes!`,
       timestamp: new Date(),
     },
   ]);
@@ -76,8 +80,9 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
   const presetQuestions = [
     'Will this release break our mobile apps or consumers?',
     'Give me code fixes for active breaking changes',
-    'Which endpoints are recurring hotspots?',
+    'How do I add required fields backward-compatibly?',
     'Explain the release readiness score',
+    'How does the CI/CD release gate work?',
   ];
 
   const handleSend = async (textToSend?: string) => {
@@ -97,10 +102,10 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
 
     try {
       const response = await apiClient<AiQueryResponse>(
-        `/projects/${projectId}/ai/query`,
+        '/api/ai/query',
         {
           method: 'POST',
-          body: JSON.stringify({ question: queryText }),
+          body: JSON.stringify({ question: queryText, projectId }),
         },
       );
 
@@ -119,7 +124,7 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
         {
           id: `error-${Date.now()}`,
           sender: 'assistant',
-          content: `⚠️ Failed to get an AI answer: ${err.message || 'Network error'}. Please ensure the backend is running.`,
+          content: `⚠️ Failed to get an AI answer: ${err.message || 'Network error'}. Please try asking again.`,
           timestamp: new Date(),
         },
       ]);
@@ -140,10 +145,15 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 bg-[#0C382E] text-butter-cream font-semibold text-sm rounded-full shadow-lg hover:bg-[#164E3E] hover:scale-105 active:scale-95 transition-all duration-200 border border-emerald-500/30"
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 bg-[#0C382E] text-butter-cream font-bold text-xs sm:text-sm rounded-full shadow-2xl hover:bg-[#124B3E] hover:scale-105 active:scale-95 transition-all duration-200 border border-[#52B143]/40 group"
+          title="Open Natural Language AI Assistant"
         >
-          <Bot className="w-4 h-4 text-butter-gold" />
-          <span>Ask <strong>shakt<span className="text-emerald-400">IQ</span></strong> Architect</span>
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#52B143] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#52B143]"></span>
+          </span>
+          <Bot className="w-4 h-4 text-butter-gold group-hover:rotate-12 transition-transform" />
+          <span>Natural Language <strong>AI Assistant</strong></span>
         </button>
       )}
 
@@ -159,18 +169,18 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
               <div>
                 <h3 className="font-semibold text-sm text-white flex items-center gap-2">
                   <span>
-                    shakt<span className="text-[#52B143]">IQ</span> Architect
+                    shakt<span className="text-[#52B143]">IQ</span> Assistant
                   </span>
-                  <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+                  <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
                     <span className="relative flex h-1.5 w-1.5">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
                     </span>
-                    Intelligence Engine
+                    NLP Intelligence
                   </span>
                 </h3>
                 <p className="text-xs text-slate-400">
-                  {projectName || 'Project Architecture & Release Intelligence'}
+                  {projectName || 'Release Safety & Compatibility Copilot'}
                 </p>
               </div>
             </div>
@@ -181,8 +191,8 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
                     {
                       id: 'welcome',
                       sender: 'assistant',
-                      content: `Thread reset. Ask me anything about **${
-                        projectName || 'this project'
+                      content: `Thread reset. Ask me anything in plain English about **${
+                        projectName || 'your software releases'
                       }**!`,
                       timestamp: new Date(),
                     },
@@ -344,6 +354,7 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
                   type="text"
                   value={input}
                   maxLength={1000}
+                  placeholder="Ask a question in plain English (e.g. Will this break mobile apps?)..."
                   onChange={(e) => setInput(e.target.value)}
                   disabled={isLoading}
                   className="flex-1 bg-slate-900 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"

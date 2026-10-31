@@ -20,6 +20,7 @@ import {
   ShieldAlert,
   Pin,
   PinOff,
+  Bot,
 } from 'lucide-react';
 import { ShaktiqLogoIcon } from '../shared/ShaktiqLogoIcon';
 
@@ -185,6 +186,17 @@ export function Sidebar() {
                   </Link>
                 );
               })}
+
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('open-ai-assistant'))}
+                title={!isExpanded ? 'Natural Language AI Assistant' : undefined}
+                className={`w-full flex items-center gap-3 px-2.5 py-2 rounded-xl text-sm transition-all text-green-dark hover:bg-butter-warm font-medium ${
+                  !isExpanded ? 'justify-center px-0' : ''
+                }`}
+              >
+                <Bot className="w-4 h-4 flex-shrink-0 text-[#16A34A]" />
+                {isExpanded && <span className="truncate">AI Assistant</span>}
+              </button>
             </nav>
 
             {/* If admin is viewing user workspace, provide clear button to switch to Admin Console */}
