@@ -1,17 +1,17 @@
 # Graph Report - ShaktIQ  (2026-10-31)
 
 ## Corpus Check
-- 198 files · ~90,773 words
+- 198 files · ~91,456 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 15 file(s) not represented in the graph (top: (none) 8, .example 3, .ico 2)
 
 ## Summary
-- 1158 nodes · 2279 edges · 86 communities (62 shown, 24 thin omitted)
+- 1158 nodes · 2282 edges · 86 communities (62 shown, 24 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 21 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e1ae0bfe`
+- Built from commit: `9a60e267`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -388,13 +388,13 @@ Nodes (4): NOTIFICATION_CHANNELS, NOTIFICATION_STATUSES, Notification, notificat
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `react` connect `next-auth` to `layout.tsx`, `MarketingLayout`, `web/package.json`, `faq/page.tsx`, `apiClient`, `MarketingLayout.tsx`, `app/page.tsx`, `lucide-react`?**
-  _High betweenness centrality (0.118) - this node is a cross-community bridge._
+  _High betweenness centrality (0.117) - this node is a cross-community bridge._
 - **What connects `eslint:recommended`, `plugin:@typescript-eslint/recommended`, `../../tsconfig.base.json` to the rest of the system?**
   _36 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `MarketingLayout` be split into smaller, more focused modules?**
   _Cohesion score 0.11255411255411256 - nodes in this community are weakly interconnected._
 - **Why does `lucide-react` connect `lucide-react` to `MarketingLayout`, `web/package.json`, `faq/page.tsx`, `apiClient`, `next-auth`, `MarketingLayout.tsx`, `app/page.tsx`?**
-  _High betweenness centrality (0.042) - this node is a cross-community bridge._
+  _High betweenness centrality (0.041) - this node is a cross-community bridge._
 - **Should `API Diff Analyzer Core` be split into smaller, more focused modules?**
   _Cohesion score 0.06093189964157706 - nodes in this community are weakly interconnected._
 - **Why does `next` connect `faq/page.tsx` to `layout.tsx`, `register/route.ts`, `MarketingLayout`, `web/package.json`, `apiClient`, `next-auth`, `MarketingLayout.tsx`, `app/page.tsx`, `lucide-react`?**
