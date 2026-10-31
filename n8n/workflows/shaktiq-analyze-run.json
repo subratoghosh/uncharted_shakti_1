@@ -110,8 +110,6 @@
       "parameters": {
         "method": "GET",
         "url": "={{ 'https://api.github.com/repos/' + $node['HTTP Start Run'].json.data.repo.fullName + '/contents/' + $node['HTTP Start Run'].json.data.repo.specPath + '?ref=' + $node['HTTP Start Run'].json.data.baseRef }}",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "githubApi",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -122,6 +120,10 @@
             {
               "name": "User-Agent",
               "value": "ShaktIQ-n8n"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($env.GITHUB_TOKEN || '') }}"
             }
           ]
         },
@@ -141,8 +143,6 @@
       "parameters": {
         "method": "GET",
         "url": "={{ 'https://api.github.com/repos/' + $node['HTTP Start Run'].json.data.repo.fullName + '/contents/' + $node['HTTP Start Run'].json.data.repo.specPath + '?ref=' + $node['HTTP Start Run'].json.data.headRef }}",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "githubApi",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -153,6 +153,10 @@
             {
               "name": "User-Agent",
               "value": "ShaktIQ-n8n"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($env.GITHUB_TOKEN || '') }}"
             }
           ]
         },
@@ -247,7 +251,7 @@
         "conditions": {
           "boolean": [
             {
-              "value1": "={{ Boolean($node['HTTP Start Run'].json.data.aiEnabled) }}",
+              "value1": "={{ Boolean($node['HTTP Start Run'].json.data.aiEnabled) && Boolean($env.ANTHROPIC_API_KEY) }}",
               "value2": true
             }
           ],
@@ -369,8 +373,6 @@
       "parameters": {
         "method": "POST",
         "url": "={{ 'https://api.github.com/repos/' + $node['HTTP Start Run'].json.data.repo.fullName + '/issues/' + $node['HTTP Start Run'].json.data.pullRequestNumber + '/comments' }}",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "githubApi",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -381,6 +383,10 @@
             {
               "name": "User-Agent",
               "value": "ShaktIQ-n8n"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + ($env.GITHUB_TOKEN || '') }}"
             }
           ]
         },

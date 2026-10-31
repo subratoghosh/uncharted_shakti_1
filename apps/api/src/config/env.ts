@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
 
-// Load root .env file, then local fallback
+// Load root .env file, local fallback, and default cwd .env
 dotenv.config({ path: path.resolve(currentDir, '../../../../.env') });
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 dotenv.config();
