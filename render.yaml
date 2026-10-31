@@ -40,13 +40,19 @@ services:
     name: shaktiq-n8n
     runtime: image
     image:
-      url: docker.n8n.io/n8nio/n8n:latest
+      url: n8nio/n8n:latest
     plan: starter
     disk:
       name: n8n-storage
       mountPath: /home/node/.n8n
       sizeGB: 1
     envVars:
+      - key: PORT
+        value: 5678
+      - key: N8N_PORT
+        value: 5678
+      - key: N8N_PROTOCOL
+        value: https
       - key: N8N_BASIC_AUTH_ACTIVE
         value: "true"
       - key: N8N_BASIC_AUTH_USER
@@ -61,9 +67,11 @@ services:
         value: "true"
       - key: EXECUTIONS_DATA_MAX_AGE
         value: "168"
+      - key: N8N_WEBHOOK_TOKEN
+        value: shaktiq-n8n-header-token-production
       - key: WEBHOOK_URL
         sync: false # e.g. https://shaktiq-n8n.onrender.com
       - key: SHAKTIQ_API_URL
-        sync: false # e.g. https://shaktiq-api.onrender.com
+        value: https://uncharted-shakti-1.onrender.com
       - key: INTERNAL_API_KEY
         sync: false # Must match the INTERNAL_API_KEY on shaktiq-api

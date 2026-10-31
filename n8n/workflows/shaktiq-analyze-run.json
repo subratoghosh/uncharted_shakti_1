@@ -22,7 +22,7 @@
             {
               "value1": "={{ $json.headers ? $json.headers['x-shaktiq-webhook-token'] : ($headers ? $headers['x-shaktiq-webhook-token'] : '') }}",
               "operation": "equal",
-              "value2": "={{ $env.N8N_WEBHOOK_TOKEN }}"
+              "value2": "={{ $env.N8N_WEBHOOK_TOKEN || $vars.N8N_WEBHOOK_TOKEN || 'shaktiq-n8n-header-token-production' }}"
             }
           ]
         }
@@ -62,13 +62,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://127.0.0.1:4000') + '/api/v1/internal/runs/' + ($node['Webhook Trigger'].json.body?.runId || $node['Webhook Trigger'].json.runId || '') + '/start' }}",
+        "url": "={{ ($env.SHAKTIQ_API_URL || $vars.SHAKTIQ_API_URL || 'https://uncharted-shakti-1.onrender.com') + '/api/v1/internal/runs/' + ($node['Webhook Trigger'].json.body?.runId || $node['Webhook Trigger'].json.runId || '') + '/start' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-shaktiq-internal-key",
-              "value": "={{ $env.INTERNAL_API_KEY }}"
+              "value": "={{ $env.INTERNAL_API_KEY || $vars.INTERNAL_API_KEY || '' }}"
             },
             {
               "name": "content-type",
@@ -188,13 +188,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://127.0.0.1:4000') + '/api/v1/internal/runs/' + $node['HTTP Start Run'].json.data.runId + '/analyze' }}",
+        "url": "={{ ($env.SHAKTIQ_API_URL || $vars.SHAKTIQ_API_URL || 'https://uncharted-shakti-1.onrender.com') + '/api/v1/internal/runs/' + $node['HTTP Start Run'].json.data.runId + '/analyze' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-shaktiq-internal-key",
-              "value": "={{ $env.INTERNAL_API_KEY }}"
+              "value": "={{ $env.INTERNAL_API_KEY || $vars.INTERNAL_API_KEY || '' }}"
             },
             {
               "name": "content-type",
@@ -220,13 +220,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://127.0.0.1:4000') + '/api/v1/internal/runs/' + $node['HTTP Start Run'].json.data.runId + '/analyze' }}",
+        "url": "={{ ($env.SHAKTIQ_API_URL || $vars.SHAKTIQ_API_URL || 'https://uncharted-shakti-1.onrender.com') + '/api/v1/internal/runs/' + $node['HTTP Start Run'].json.data.runId + '/analyze' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-shaktiq-internal-key",
-              "value": "={{ $env.INTERNAL_API_KEY }}"
+              "value": "={{ $env.INTERNAL_API_KEY || $vars.INTERNAL_API_KEY || '' }}"
             },
             {
               "name": "content-type",
@@ -321,13 +321,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://127.0.0.1:4000') + '/api/v1/internal/runs/' + $node['HTTP Start Run'].json.data.runId + '/explanations' }}",
+        "url": "={{ ($env.SHAKTIQ_API_URL || $vars.SHAKTIQ_API_URL || 'https://uncharted-shakti-1.onrender.com') + '/api/v1/internal/runs/' + $node['HTTP Start Run'].json.data.runId + '/explanations' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-shaktiq-internal-key",
-              "value": "={{ $env.INTERNAL_API_KEY }}"
+              "value": "={{ $env.INTERNAL_API_KEY || $vars.INTERNAL_API_KEY || '' }}"
             },
             {
               "name": "content-type",
@@ -414,13 +414,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://127.0.0.1:4000') + '/api/v1/internal/runs/' + $node['HTTP Start Run'].json.data.runId + '/notifications' }}",
+        "url": "={{ ($env.SHAKTIQ_API_URL || $vars.SHAKTIQ_API_URL || 'https://uncharted-shakti-1.onrender.com') + '/api/v1/internal/runs/' + $node['HTTP Start Run'].json.data.runId + '/notifications' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-shaktiq-internal-key",
-              "value": "={{ $env.INTERNAL_API_KEY }}"
+              "value": "={{ $env.INTERNAL_API_KEY || $vars.INTERNAL_API_KEY || '' }}"
             },
             {
               "name": "content-type",

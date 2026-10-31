@@ -174,14 +174,14 @@
     "semantic_hash": "6761bf21446877ef56029050e4da529e"
   },
   "apps/vscode-ext/package.json": {
-    "mtime": 1793444175.3626256,
-    "seen": 1793444704.1469738,
+    "mtime": 1793444769.4615507,
+    "seen": 1793447984.771667,
     "ast_hash": "763e4df6312874c3a25149e953345ebd",
     "semantic_hash": ""
   },
   "apps/vscode-ext/src/extension.ts": {
-    "mtime": 1793444245.3481293,
-    "seen": 1793444704.146977,
+    "mtime": 1793445067.5550864,
+    "seen": 1793447984.771669,
     "ast_hash": "e3f609a0cd152a2e7fcf8cb6943ba67f",
     "semantic_hash": ""
   },
@@ -486,15 +486,15 @@
     "semantic_hash": "201be5a8f9ef12aaddd53c2e24d5bbca"
   },
   "n8n/workflows/shaktiq-analyze-run.json": {
-    "mtime": 1793438021.6364512,
-    "seen": 1793439663.8014212,
-    "ast_hash": "3d014285beac20409d30ad0543c26d63",
+    "mtime": 1793447919.2879658,
+    "seen": 1793447984.7770538,
+    "ast_hash": "e70ce5645307135d67f022ccedeb5499",
     "semantic_hash": ""
   },
   "n8n/workflows/shaktiq-error-handler.json": {
-    "mtime": 1793438021.709745,
-    "seen": 1793439663.801422,
-    "ast_hash": "fed13e6354719517e639addcf32d4390",
+    "mtime": 1793447925.43769,
+    "seen": 1793447984.777056,
+    "ast_hash": "a15d2653f3960b48748137450fbe6277",
     "semantic_hash": ""
   },
   "package.json": {
@@ -696,8 +696,8 @@
     "semantic_hash": "464376fb11ebfc3cea6135b38563dbba"
   },
   "README.md": {
-    "mtime": 1793444604.993513,
-    "seen": 1793444704.153825,
+    "mtime": 1793444769.3274934,
+    "seen": 1793447984.7785769,
     "ast_hash": "6eab467e8c7225277a195e8716625af6",
     "semantic_hash": ""
   },
@@ -882,14 +882,14 @@
     "semantic_hash": ""
   },
   "packages/analyzer/src/cli.ts": {
-    "mtime": 1793443692.5751429,
-    "seen": 1793444704.1522539,
+    "mtime": 1793444769.693847,
+    "seen": 1793447984.777122,
     "ast_hash": "aa9c9e0d2cfa194e31cb118000f6bfa1",
     "semantic_hash": ""
   },
   "packages/analyzer/src/mcp.ts": {
-    "mtime": 1793443723.035721,
-    "seen": 1793444704.1523788,
+    "mtime": 1793444769.722407,
+    "seen": 1793447984.777235,
     "ast_hash": "3a1252b407556b517411a7f32263fedf",
     "semantic_hash": ""
   },
@@ -942,8 +942,8 @@
     "semantic_hash": ""
   },
   "skills/shaktiq/SKILL.md": {
-    "mtime": 1793443806.4949162,
-    "seen": 1793444704.154233,
+    "mtime": 1793444769.7472832,
+    "seen": 1793447984.77895,
     "ast_hash": "c0a81a22d7ed87d6818be419875e0a56",
     "semantic_hash": ""
   },
@@ -1230,9 +1230,9 @@
     "semantic_hash": ""
   },
   "render.yaml": {
-    "mtime": 1793441525.9930024,
-    "seen": 1793442800.644866,
-    "ast_hash": "3352345a21847f9e8a4f2eeb89dcdfc2",
+    "mtime": 1793447868.5065951,
+    "seen": 1793447984.778209,
+    "ast_hash": "425bc196038b5aded963c9e369e0301f",
     "semantic_hash": ""
   },
   "apps/web/src/app/api/admin/events/route.ts": {
@@ -1281,6 +1281,12 @@
     "mtime": 1793441535.3022568,
     "seen": 1793442800.641231,
     "ast_hash": "e779c26555186b8f2c734d2e8a5db35a",
+    "semantic_hash": ""
+  },
+  "scripts/setup-production-n8n.sh": {
+    "mtime": 1793447944.5202236,
+    "seen": 1793447984.778335,
+    "ast_hash": "5548348cd32a4d3c5a66b5aacac6d95f",
     "semantic_hash": ""
   },
   "package-lock.json": {

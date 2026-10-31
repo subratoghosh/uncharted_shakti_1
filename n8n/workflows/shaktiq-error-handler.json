@@ -22,13 +22,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ ($env.SHAKTIQ_API_URL || 'http://127.0.0.1:4000') + '/api/v1/internal/runs/' + $json.runId + '/fail' }}",
+        "url": "={{ ($env.SHAKTIQ_API_URL || $vars.SHAKTIQ_API_URL || 'https://uncharted-shakti-1.onrender.com') + '/api/v1/internal/runs/' + $json.runId + '/fail' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "x-shaktiq-internal-key",
-              "value": "={{ $env.INTERNAL_API_KEY }}"
+              "value": "={{ $env.INTERNAL_API_KEY || $vars.INTERNAL_API_KEY || '' }}"
             },
             {
               "name": "content-type",
