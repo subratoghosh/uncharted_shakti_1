@@ -10,8 +10,12 @@ export const metadata: Metadata = {
   description:
     'Deterministic OpenAPI breaking change detection, history tracking, and release impact assessment.',
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/icon.png', type: 'image/png' },
+    ],
+    apple: '/icon.png',
+    shortcut: '/icon.svg',
   },
 };
 
