@@ -5,15 +5,15 @@ description: "Detect OpenAPI breaking changes, compare API specifications, and g
 
 # /shaktiq - API Breaking Change & Release Intelligence
 
-ShaktIQ provides deterministic, rule-based OpenAPI contract diffing, breaking change detection, and release safety verdicts (`SAFE`, `REVIEW`, `BLOCKED`) for AI coding agents (Antigravity, Claude Code, Cursor, Windsurf) and developer CI/CD workflows.
+shaktIQ provides deterministic, rule-based OpenAPI contract diffing, breaking change detection, and release safety verdicts (`SAFE`, `REVIEW`, `BLOCKED`) for AI coding agents (Antigravity, Claude Code, Cursor, Windsurf) and developer CI/CD workflows.
 
 ---
 
-## What ShaktIQ Does for AI Agents
+## What shaktIQ Does for AI Agents
 
 During active coding, an AI agent modifying backend controllers, route schemas, or OpenAPI specifications can inadvertently introduce breaking changes that crash downstream consumers, mobile apps, or partner integrations.
 
-Activating **ShaktIQ** allows agents to:
+Activating **shaktIQ** allows agents to:
 1. **Compare Specs In-Flight:** Compare the working-tree OpenAPI spec against `main` (or previous snapshots) before committing or pushing.
 2. **Deterministic Classification:** Categorize changes as `breaking` (level 3), `warning` (level 2), or `info` (level 1) using deterministic AST rule mapping.
 3. **Generate Release Verdicts:**
@@ -24,7 +24,7 @@ Activating **ShaktIQ** allows agents to:
 
 ---
 
-## When You (the AI Agent) Must Trigger ShaktIQ
+## When You (the AI Agent) Must Trigger shaktIQ
 
 Activate this skill whenever:
 - The user requests to "check API changes", "verify release safety", "run shaktiq", or "/shaktiq".
@@ -36,28 +36,30 @@ Activate this skill whenever:
 
 ## Command Reference
 
-### 1. Compare Current Working Spec Against Git Main
+### 1. In-Between Code Writing Verification (Git Diff)
 
-Run between code edits to verify whether recent changes broke backward compatibility:
+Run between code edits or controller refactoring to verify whether recent changes broke backward compatibility against `main`:
 
 ```bash
-shaktiq git-diff --spec path/to/openapi.yaml --base-ref main --markdown
-```
+# Markdown summary for human/agent review:
+node packages/analyzer/dist/cli.js git-diff --spec path/to/openapi.yaml --base-ref main --markdown
 
-For agent-parsable structured JSON:
-```bash
-shaktiq git-diff --spec path/to/openapi.yaml --base-ref main --json
+# Or via npm script:
+npm run shaktiq -- git-diff --spec path/to/openapi.yaml --base-ref main --markdown
+
+# For agent-parsable structured JSON:
+node packages/analyzer/dist/cli.js git-diff --spec path/to/openapi.yaml --base-ref main --json
 ```
 
 ### 2. Compare Two Specification Files Directly
 
 ```bash
-shaktiq analyze --base fixtures/v1.yaml --head fixtures/v2.yaml --markdown
+node packages/analyzer/dist/cli.js analyze --base fixtures/v1.yaml --head fixtures/v2.yaml --markdown
 ```
 
-Or with failure exit code for automated pre-commit / CI gates:
+Or with failure exit code for automated pre-commit / agent verification loops:
 ```bash
-shaktiq analyze --base ./openapi-base.yaml --head ./openapi-head.yaml --fail-on-breaking
+node packages/analyzer/dist/cli.js analyze --base ./openapi-base.yaml --head ./openapi-head.yaml --fail-on-breaking
 ```
 
 ---
