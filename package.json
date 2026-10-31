@@ -20,7 +20,8 @@
     "test:ai": "npm run test:ai -w apps/api",
     "dev:mongo": "npx tsx scripts/start-local-mongo.ts",
     "dev:api": "npm run dev -w apps/api",
-    "dev:web": "npm run dev -w apps/web"
+    "dev:web": "npm run dev -w apps/web",
+    "dev:n8n": "./scripts/start-n8n.sh"
   },
   "devDependencies": {
     "@next/swc-darwin-arm64": "^16.4.3",
