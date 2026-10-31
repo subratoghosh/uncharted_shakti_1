@@ -1,94 +1,106 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
-  ShieldAlert,
-  ShieldCheck,
-  AlertTriangle,
+  FolderTree,
+  Github,
+  Upload,
   Play,
-  GitCommit,
-  Layers,
-  History,
-  Key,
-  Database,
-  RefreshCw,
-  Search,
-  ChevronRight,
-  X,
-  FileCode,
-  Sliders,
   CheckCircle2,
+  AlertTriangle,
+  AlertCircle,
+  FileCode,
   Copy,
   Check,
-  Cpu,
+  RotateCcw,
+  Sparkles,
+  GitCommit,
+  History,
+  Wrench,
+  Search,
+  ChevronRight,
+  Shield,
+  X,
+  RefreshCw,
+  Plus,
+  ExternalLink,
+  Code2,
+  Layers,
+  Sliders,
+  FileText,
+  Filter,
+  CheckCheck,
 } from 'lucide-react';
-import dynamic from 'next/dynamic';
 import { api } from '@/lib/api';
-import { ShaktiqLogoIcon } from '@/components/shared/ShaktiqLogoIcon';
-import { Skeleton } from '@/components/common/Skeleton';
-import { CodeIntelligenceStudio } from '@/components/CodeIntelligenceStudio';
-
-const AiReleaseDossier = dynamic(
-  () => import('@/components/AiReleaseDossier').then((mod) => mod.AiReleaseDossier),
-  {
-    loading: () => (
-      <div className="rounded-3xl p-6 bg-[#082820] text-butter-cream space-y-4 border border-[#0C382E]/40 animate-fade-in">
-        <div className="flex items-center justify-between">
-          <Skeleton variant="dark" className="h-5 w-48" rounded="md" />
-          <Skeleton variant="dark" className="h-4 w-28" rounded="full" />
-        </div>
-        <div className="p-4 rounded-2xl bg-black/30 space-y-2">
-          <Skeleton variant="dark" className="h-4 w-3/4" rounded="sm" />
-          <Skeleton variant="dark" className="h-4 w-1/2" rounded="sm" />
-          <Skeleton variant="dark" className="h-4 w-5/6" rounded="sm" />
-        </div>
-      </div>
-    ),
-    ssr: false,
-  }
-);
 import type {
   Project,
   Run,
-  Finding,
-  Hotspot,
-  ApiToken,
-  WebhookEvent,
-  AdminOverview,
-  CompareResult,
-  AnalyzerResult,
-  AuthUser,
-  MultiLayerDossier,
+  DetectedRoute,
+  StudioCodeReview,
+  StudioCommitMessage,
+  StudioCodeFix,
 } from '@/types/index';
 
-// Demo sample specs for instant testing
-const sampleBaseSpec = `openapi: 3.0.0
+// Optional quick presets if the user explicitly wants to test
+const PRESET_OPENAPI = `openapi: 3.0.0
 info:
-  title: Orders Service
-  version: 1.0.0
+  title: Orders & Checkout API
+  version: 2.1.0
+  description: Core microservice powering mobile and web checkout flows.
 paths:
-  /orders:
+  /api/v1/orders:
     get:
-      summary: List all orders
+      summary: List customer orders
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [pending, completed, cancelled]
       responses:
         '200':
-          description: OK
+          description: Orders retrieved successfully
     post:
-      summary: Create an order
+      summary: Place a new order
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required: [customerId, items, totalAmount]
               properties:
                 customerId:
                   type: string
-                amount:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      sku:
+                        type: string
+                      quantity:
+                        type: integer
+                totalAmount:
                   type: number
-  /orders/{id}:
+      responses:
+        '201':
+          description: Order created
+  /api/v1/orders/{id}:
+    get:
+      summary: Retrieve order by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order details
     delete:
-      summary: Cancel an order
+      summary: Cancel existing order
       parameters:
         - name: id
           in: path
@@ -97,1566 +109,1356 @@ paths:
             type: string
       responses:
         '204':
-          description: No Content
-`;
-
-const sampleHeadSpec = `openapi: 3.0.0
-info:
-  title: Orders Service
-  version: 2.0.0
-paths:
-  /orders:
-    get:
-      summary: List all orders
-      responses:
-        '200':
-          description: OK
+          description: Order cancelled
+  /api/v1/orders/{id}/refund:
     post:
-      summary: Create an order
+      summary: Issue customer refund
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required:
-                - customerId
-                - paymentMethodId
+              required: [reason]
               properties:
-                customerId:
-                  type: string
-                paymentMethodId:
+                reason:
                   type: string
                 amount:
-                  type: string
-`;
+                  type: number
+      responses:
+        '200':
+          description: Refund accepted`;
 
-export default function ShaktIQDashboard() {
-  const [activeTab, setActiveTab] = useState<'overview' | 'studio' | 'runs' | 'compare' | 'memory' | 'dossier' | 'analyzer' | 'tokens' | 'admin'>('overview');
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [sseConnected, setSseConnected] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+const PRESET_CONTROLLER = `import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { z } from 'zod';
 
-  // Data states
+const createOrderSchema = z.object({
+  customerId: z.string().min(1),
+  items: z.array(z.object({
+    sku: z.string(),
+    quantity: z.number().int().positive(),
+  })),
+  totalAmount: z.number().positive(),
+  priorityShipping: z.boolean(),
+});
+
+export async function orderRoutes(app: FastifyInstance) {
+  // GET /api/v1/orders
+  app.get('/api/v1/orders', async (req: FastifyRequest, reply: FastifyReply) => {
+    return reply.send({ success: true, orders: [] });
+  });
+
+  // POST /api/v1/orders
+  app.post('/api/v1/orders', async (req: FastifyRequest, reply: FastifyReply) => {
+    const payload = createOrderSchema.parse(req.body);
+    return reply.status(201).send({ success: true, orderId: 'ord_98765', payload });
+  });
+
+  // DELETE /api/v1/orders/:id
+  app.delete('/api/v1/orders/:id', async (req: FastifyRequest, reply: FastifyReply) => {
+    return reply.status(204).send();
+  });
+}`;
+
+export default function DashboardPage() {
+  // Database Projects state
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
-  const [runs, setRuns] = useState<Run[]>([]);
-  const [selectedRun, setSelectedRun] = useState<Run | null>(null);
-  const [findings, setFindings] = useState<Finding[]>([]);
-  const [selectedFinding, setSelectedFinding] = useState<Finding | null>(null);
-  const [hotspots, setHotspots] = useState<Hotspot[]>([]);
-  const [tokens, setTokens] = useState<ApiToken[]>([]);
-  const [adminOverview, setAdminOverview] = useState<AdminOverview | null>(null);
-  const [adminEvents, setAdminEvents] = useState<WebhookEvent[]>([]);
-  const [aiDossier, setAiDossier] = useState<MultiLayerDossier | null>(null);
-  const [loadingDossier, setLoadingDossier] = useState(false);
-  const [copiedSnippetIndex, setCopiedSnippetIndex] = useState<number | null>(null);
+  const [isLoadingProjects, setIsLoadingProjects] = useState<boolean>(true);
+  const [recentRuns, setRecentRuns] = useState<Run[]>([]);
 
-  // Compare states
-  const [compareBaseId, setCompareBaseId] = useState('');
-  const [compareHeadId, setCompareHeadId] = useState('');
-  const [compareResult, setCompareResult] = useState<CompareResult | null>(null);
-  const [compareTab, setCompareTab] = useState<'new' | 'resolved' | 'unresolved'>('new');
+  // Workspace Code state (EMPTY by default - NO mock data unless imported)
+  const [codeContent, setCodeContent] = useState<string>('');
+  const [loadedFileName, setLoadedFileName] = useState<string>('');
+  const [selectedRoute, setSelectedRoute] = useState<DetectedRoute | null>(null);
+  const [selectedText, setSelectedText] = useState<string>('');
+  const [selectedLineRange, setSelectedLineRange] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // Filters
-  const [severityFilter, setSeverityFilter] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  // Active drawer (progressive disclosure: clicking a button reveals the drawer)
+  const [activeDrawer, setActiveDrawer] = useState<'review' | 'fixes' | 'commit' | 'safety' | 'history' | null>(null);
 
-  // Interactive Analyzer state
-  const [analyzerBase, setAnalyzerBase] = useState(sampleBaseSpec);
-  const [analyzerHead, setAnalyzerHead] = useState(sampleHeadSpec);
-  const [analyzerResult, setAnalyzerResult] = useState<AnalyzerResult | null>(null);
-  const [analyzing, setAnalyzing] = useState(false);
+  // Modals state
+  const [showImportModal, setShowImportModal] = useState<boolean>(false);
+  const [importTab, setImportTab] = useState<'github' | 'upload' | 'paste'>('github');
+  const [githubUrl, setGithubUrl] = useState<string>('');
+  const [githubBranch, setGithubBranch] = useState<string>('main');
+  const [githubPath, setGithubPath] = useState<string>('openapi.yaml');
+  const [isImportingGithub, setIsImportingGithub] = useState<boolean>(false);
+  const [githubImportError, setGithubImportError] = useState<string | null>(null);
+  const [pasteInput, setPasteInput] = useState<string>('');
 
-  // New Project Modal
-  const [showNewProjectModal, setShowNewProjectModal] = useState(false);
-  const [newProjectName, setNewProjectName] = useState('');
-  const [newProjectRepo, setNewProjectRepo] = useState('');
-  const [newProjectBranch, setNewProjectBranch] = useState('main');
-  const [newProjectSpec, setNewProjectSpec] = useState('openapi.yaml');
+  // New Project modal state
+  const [showNewProjectModal, setShowNewProjectModal] = useState<boolean>(false);
+  const [newProjectName, setNewProjectName] = useState<string>('');
+  const [newProjectRepo, setNewProjectRepo] = useState<string>('');
+  const [isCreatingProject, setIsCreatingProject] = useState<boolean>(false);
 
-  // New Token Modal
-  const [showNewTokenModal, setShowNewTokenModal] = useState(false);
-  const [newTokenName, setNewTokenName] = useState('');
-  const [createdTokenSecret, setCreatedTokenSecret] = useState<string | null>(null);
-  const [copiedToken, setCopiedToken] = useState(false);
+  // Results State
+  const [isReviewing, setIsReviewing] = useState<boolean>(false);
+  const [reviewResult, setReviewResult] = useState<StudioCodeReview | null>(null);
+  const [isGeneratingFix, setIsGeneratingFix] = useState<boolean>(false);
+  const [fixResult, setFixResult] = useState<StudioCodeFix | null>(null);
+  const [isGeneratingCommitMsg, setIsGeneratingCommitMsg] = useState<boolean>(false);
+  const [commitMsgResult, setCommitMsgResult] = useState<StudioCommitMessage | null>(null);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
-  // Auth check & initial load
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // 1. Fetch Real Projects from MongoDB
   useEffect(() => {
-    async function init() {
+    let mounted = true;
+    async function loadProjects() {
       try {
-        const me = await api.getMe();
-        setUser(me);
-      } catch {
-        // Auto-login with default admin credentials for smooth demo
-        try {
-          const res = await api.login({ email: 'admin@shaktiq.dev', password: 'admin1234!' });
-          setUser(res.user);
-        } catch {
-          setErrorMsg('Backend offline or authentication failed. Make sure the API server is running on port 4000.');
+        const res = await api.getProjects();
+        if (mounted && Array.isArray(res)) {
+          setProjects(res);
+          if (res.length > 0 && !selectedProjectId) {
+            setSelectedProjectId(res[0]._id || res[0].id || '');
+          }
         }
+      } catch {
+        // Fallback or empty if not yet seeded
+      } finally {
+        if (mounted) setIsLoadingProjects(false);
       }
     }
-    init();
+    loadProjects();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  // Load projects & tokens when user is available
-  useEffect(() => {
-    if (!user) return;
-    loadProjects();
-    loadTokens();
-    loadAdminData();
-  }, [user]);
-
-  async function loadProjects() {
-    try {
-      const data = await api.getProjects();
-      setProjects(data);
-      if (data.length > 0 && !selectedProjectId) {
-        setSelectedProjectId(data[0]._id || data[0].id || '');
-      }
-    } catch {
-      // ignore
-    }
-  }
-
-  async function loadTokens() {
-    try {
-      const data = await api.getTokens();
-      setTokens(data);
-    } catch {
-      // ignore
-    }
-  }
-
-  async function loadAdminData() {
-    try {
-      const [overview, events] = await Promise.all([
-        api.getAdminOverview().catch(() => null),
-        api.getAdminEvents().catch(() => []),
-      ]);
-      setAdminOverview(overview);
-      setAdminEvents(events);
-    } catch {
-      // ignore
-    }
-  }
-
-  // Load project runs & hotspots when selected project changes
+  // Fetch recent runs for active project
   useEffect(() => {
     if (!selectedProjectId) return;
-    loadProjectDetails(selectedProjectId);
-  }, [selectedProjectId]);
-
-  async function loadProjectDetails(projectId: string) {
-    try {
-      const [runsRes, hotspotsRes] = await Promise.all([
-        api.getRuns(projectId, { limit: 20 }),
-        api.getHotspots(projectId, 10).catch(() => []),
-      ]);
-      const runsList = Array.isArray(runsRes) ? runsRes : [];
-      setRuns(runsList);
-      setHotspots(Array.isArray(hotspotsRes) ? hotspotsRes : []);
-      if (runsList.length > 0) {
-        setSelectedRun(runsList[0]);
-        loadRunFindings(projectId, runsList[0]._id || runsList[0].id || '');
-        loadAiDossier(projectId, runsList[0]._id || runsList[0].id || '');
-      } else {
-        setSelectedRun(null);
-        setFindings([]);
-        setAiDossier(null);
-      }
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Failed to load project runs';
-      setErrorMsg(msg);
-    }
-  }
-
-  async function loadRunFindings(projectId: string, runId: string) {
-    try {
-      const res = await api.getRunFindings(projectId, runId);
-      setFindings(res);
-    } catch {
-      // ignore
-    }
-  }
-
-  async function loadAiDossier(projectId: string, runId: string) {
-    setLoadingDossier(true);
-    try {
-      const res = await api.getAiDossier(projectId, runId);
-      setAiDossier(res);
-    } catch {
-      // ignore
-    } finally {
-      setLoadingDossier(false);
-    }
-  }
-
-  // Live SSE Connection
-  useEffect(() => {
-    const streamUrl = api.getStreamUrl();
-    let es: EventSource | null = null;
-    try {
-      es = new EventSource(streamUrl, { withCredentials: true });
-      es.onopen = () => setSseConnected(true);
-      es.onerror = () => setSseConnected(false);
-      es.onmessage = (event) => {
-        try {
-          const payload = JSON.parse(event.data);
-          if (payload.type === 'run.updated' && selectedProjectId) {
-            loadProjectDetails(selectedProjectId);
-          }
-        } catch {
-          // ignore
+    let mounted = true;
+    api.getRuns(selectedProjectId, { limit: 5 })
+      .then((runs) => {
+        if (mounted && Array.isArray(runs)) {
+          setRecentRuns(runs);
         }
-      };
-    } catch {
-      setSseConnected(false);
-    }
+      })
+      .catch(() => {});
     return () => {
-      if (es) es.close();
+      mounted = false;
     };
   }, [selectedProjectId]);
 
-  // Handle direct analyzer compare
-  async function handleAnalyze() {
-    setAnalyzing(true);
-    setErrorMsg(null);
-    try {
-      const result = await api.analyzeSpecs({
-        baseSpec: analyzerBase,
-        headSpec: analyzerHead,
-      });
-      setAnalyzerResult(result);
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Analysis failed';
-      setErrorMsg(msg);
-    } finally {
-      setAnalyzing(false);
-    }
-  }
+  // 2. Client-side & Server-assisted Route Extraction
+  const detectedRoutes = useMemo<DetectedRoute[]>(() => {
+    if (!codeContent.trim()) return [];
 
-  // Handle create project
-  async function handleCreateProject(e: React.FormEvent) {
-    e.preventDefault();
+    const routes: DetectedRoute[] = [];
+
+    // Check if OpenAPI YAML/JSON
+    if (codeContent.includes('paths:') || codeContent.includes('"paths"')) {
+      const lines = codeContent.split('\n');
+      let currentPath = '';
+      let inPaths = false;
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.match(/^paths:/) || line.includes('"paths":')) {
+          inPaths = true;
+          continue;
+        }
+
+        if (inPaths) {
+          // Detect path e.g. "  /api/v1/orders:"
+          const pathMatch = line.match(/^\s{2,4}(\/[a-zA-Z0-9_{\}\/-]+):/);
+          if (pathMatch) {
+            currentPath = pathMatch[1];
+            continue;
+          }
+
+          // Detect HTTP Method under path
+          const methodMatch = line.match(/^\s{4,6}(get|post|put|delete|patch|options|head):/i);
+          if (methodMatch && currentPath) {
+            const method = methodMatch[1].toUpperCase() as DetectedRoute['method'];
+            // Look ahead for summary
+            let summary = '';
+            for (let j = i + 1; j < Math.min(i + 6, lines.length); j++) {
+              const summaryMatch = lines[j].match(/summary:\s*['"]?([^'"]+)['"]?/);
+              if (summaryMatch) {
+                summary = summaryMatch[1].trim();
+                break;
+              }
+            }
+            routes.push({
+              path: currentPath,
+              method,
+              summary: summary || `${method} ${currentPath}`,
+              line: i + 1,
+            });
+          }
+        }
+      }
+    }
+
+    // Check if TypeScript / Express / Fastify / Next.js route file
+    const expressRegex = /(app|router|fastify)\.(get|post|put|delete|patch)\(\s*['"`]([^'"`]+)['"`]/gi;
+    let match;
+    while ((match = expressRegex.exec(codeContent)) !== null) {
+      const method = match[2].toUpperCase() as DetectedRoute['method'];
+      const path = match[3];
+      if (!routes.some((r) => r.path === path && r.method === method)) {
+        routes.push({
+          path,
+          method,
+          summary: `${method} handler for ${path}`,
+        });
+      }
+    }
+
+    return routes;
+  }, [codeContent]);
+
+  // Filtered routes by search query
+  const filteredRoutes = useMemo(() => {
+    if (!searchQuery.trim()) return detectedRoutes;
+    const q = searchQuery.toLowerCase();
+    return detectedRoutes.filter(
+      (r) => r.path.toLowerCase().includes(q) || r.method.toLowerCase().includes(q) || r.summary?.toLowerCase().includes(q)
+    );
+  }, [detectedRoutes, searchQuery]);
+
+  // Handle Text Selection in Code Editor
+  const handleSelectCode = () => {
+    if (!textareaRef.current) return;
+    const start = textareaRef.current.selectionStart;
+    const end = textareaRef.current.selectionEnd;
+    if (start !== end) {
+      const selected = codeContent.substring(start, end);
+      setSelectedText(selected);
+      const textBefore = codeContent.substring(0, start);
+      const startLine = textBefore.split('\n').length;
+      const endLine = startLine + selected.split('\n').length - 1;
+      setSelectedLineRange(`L${startLine} - L${endLine}`);
+    } else {
+      setSelectedText('');
+      setSelectedLineRange('');
+    }
+  };
+
+  // Jump to / select a route
+  const handleRouteClick = (route: DetectedRoute) => {
+    setSelectedRoute(route);
+    // Find route in text if possible
+    if (textareaRef.current) {
+      const idx = codeContent.indexOf(route.path);
+      if (idx !== -1) {
+        textareaRef.current.focus();
+        textareaRef.current.setSelectionRange(idx, idx + route.path.length);
+      }
+    }
+  };
+
+  // Trigger Code Review
+  const handleRunReview = async () => {
+    setIsReviewing(true);
+    setActiveDrawer('review');
     try {
-      const project = await api.createProject({
-        name: newProjectName,
-        repositoryUrl: newProjectRepo,
-        defaultBranch: newProjectBranch,
-        specPath: newProjectSpec,
+      const res = await api.reviewStudioCode({
+        code: selectedText || codeContent,
+        selection: selectedText || undefined,
+        language: loadedFileName.endsWith('.ts') ? 'typescript' : 'yaml',
+        filePath: loadedFileName || 'spec.yaml',
+        projectName: projects.find((p) => (p._id || p.id) === selectedProjectId)?.name || 'Custom Workspace',
       });
+      setReviewResult(res);
+    } catch {
+      // Fallback handled in API
+    } finally {
+      setIsReviewing(false);
+    }
+  };
+
+  // Trigger Code Fixes
+  const handleRunFixes = async () => {
+    setIsGeneratingFix(true);
+    setActiveDrawer('fixes');
+    try {
+      const res = await api.getStudioCodeFixes({
+        code: selectedText || codeContent,
+        issues: reviewResult?.issues.map((i) => i.title),
+        endpoint: selectedRoute?.path || detectedRoutes[0]?.path || '/api/v1/orders',
+      });
+      setFixResult(res);
+    } finally {
+      setIsGeneratingFix(false);
+    }
+  };
+
+  // Trigger Commit Message Optimization
+  const handleRunCommitMsg = async () => {
+    setIsGeneratingCommitMsg(true);
+    setActiveDrawer('commit');
+    try {
+      const res = await api.getStudioCommitMessage({
+        diff: fixResult?.diff || codeContent.slice(0, 800),
+        code: codeContent.slice(0, 800),
+        context: selectedRoute ? `Endpoint: ${selectedRoute.method} ${selectedRoute.path}` : 'API contract updates',
+        branch: 'main',
+      });
+      setCommitMsgResult(res);
+    } finally {
+      setIsGeneratingCommitMsg(false);
+    }
+  };
+
+  // Apply fix to editor
+  const handleApplyFix = (newCode: string) => {
+    setCodeContent(newCode);
+    setCopiedKey('applied');
+    setTimeout(() => setCopiedKey(null), 2000);
+  };
+
+  // Copy helper
+  const handleCopy = (text: string, key: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+    setTimeout(() => setCopiedKey(null), 2000);
+  };
+
+  // Import from GitHub Real Fetcher
+  const handleImportFromGithub = async () => {
+    if (!githubUrl.trim()) return;
+    setIsImportingGithub(true);
+    setGithubImportError(null);
+
+    try {
+      // Parse owner/repo
+      let cleanUrl = githubUrl.trim().replace(/\/$/, '');
+      cleanUrl = cleanUrl.replace(/^https?:\/\/github\.com\//, '');
+      const parts = cleanUrl.split('/');
+      if (parts.length < 2) {
+        throw new Error('Please enter a valid GitHub repository in "owner/repo" or full URL format.');
+      }
+      const owner = parts[0];
+      const repo = parts[1];
+      const branch = githubBranch.trim() || 'main';
+
+      // Candidates to try
+      const candidates = [
+        githubPath.trim(),
+        'openapi.yaml',
+        'openapi.json',
+        'openapi.yml',
+        'swagger.yaml',
+        'swagger.json',
+        'src/routes.ts',
+        'src/index.ts',
+        'routes.ts',
+      ].filter(Boolean);
+
+      let fetchedContent = '';
+      let successfulFile = '';
+
+      for (const file of candidates) {
+        const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file}`;
+        try {
+          const res = await fetch(rawUrl);
+          if (res.ok) {
+            const text = await res.text();
+            if (text && !text.includes('404: Not Found')) {
+              fetchedContent = text;
+              successfulFile = file;
+              break;
+            }
+          }
+        } catch {
+          // Continue to next candidate
+        }
+      }
+
+      if (!fetchedContent) {
+        throw new Error(
+          `Could not locate an OpenAPI spec or route file in ${owner}/${repo} on branch "${branch}". Please verify the repository is public and contains openapi.yaml, or specify the exact file path.`
+        );
+      }
+
+      setCodeContent(fetchedContent);
+      setLoadedFileName(successfulFile);
+      setShowImportModal(false);
+      setGithubUrl('');
+      setSelectedRoute(null);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to import from GitHub.';
+      setGithubImportError(msg);
+    } finally {
+      setIsImportingGithub(false);
+    }
+  };
+
+  // Handle direct file upload from computer
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const text = ev.target?.result as string;
+        if (text) {
+          setCodeContent(text);
+          setLoadedFileName(file.name);
+          setShowImportModal(false);
+          setSelectedRoute(null);
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  // Handle create real project in DB
+  const handleCreateProject = async () => {
+    if (!newProjectName.trim()) return;
+    setIsCreatingProject(true);
+    try {
+      const created = await api.createProject({
+        name: newProjectName.trim(),
+        repositoryUrl: newProjectRepo.trim() || 'https://github.com/shaktiq/api',
+        defaultBranch: 'main',
+      });
+      setProjects((prev) => [created, ...prev]);
+      setSelectedProjectId(created._id || created.id || '');
       setShowNewProjectModal(false);
       setNewProjectName('');
       setNewProjectRepo('');
-      await loadProjects();
-      setSelectedProjectId(project._id || project.id || '');
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Failed to create project';
-      setErrorMsg(msg);
+    } catch {
+      // Error handled
+    } finally {
+      setIsCreatingProject(false);
     }
-  }
-
-  // Handle create token
-  async function handleCreateToken(e: React.FormEvent) {
-    e.preventDefault();
-    try {
-      const res = await api.createToken({ name: newTokenName });
-      setCreatedTokenSecret(res.token);
-      setNewTokenName('');
-      loadTokens();
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Failed to create token';
-      setErrorMsg(msg);
-    }
-  }
-
-  // Handle Compare
-  async function handleCompare() {
-    if (!compareBaseId || !compareHeadId || !selectedProjectId) return;
-    try {
-      const res = await api.compareRuns(selectedProjectId, compareBaseId, compareHeadId);
-      setCompareResult(res);
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Failed to compare runs';
-      setErrorMsg(msg);
-    }
-  }
-
-  // Filtered findings
-  const filteredFindings = useMemo(() => {
-    return findings.filter((f) => {
-      if (severityFilter !== 'all' && f.severity !== severityFilter) return false;
-      if (searchQuery) {
-        const q = searchQuery.toLowerCase();
-        return (
-          f.endpoint.toLowerCase().includes(q) ||
-          f.method.toLowerCase().includes(q) ||
-          f.description.toLowerCase().includes(q)
-        );
-      }
-      return true;
-    });
-  }, [findings, severityFilter, searchQuery]);
-
-  // Method badge color helper
-  const getMethodBadgeClass = (method: string) => {
-    const m = method.toUpperCase();
-    if (m === 'GET') return 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20';
-    if (m === 'POST') return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20';
-    if (m === 'DELETE') return 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20';
-    if (m === 'PUT' || m === 'PATCH') return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20';
-    return 'bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20';
   };
 
-  // Severity badge color helper
-  const getSeverityBadgeClass = (sev: string) => {
-    if (sev === 'breaking') return 'badge-breaking';
-    if (sev === 'warning') return 'badge-warning';
-    return 'badge-info';
-  };
-
-  // Verdict banner text
-  const getVerdictText = (status?: string) => {
-    if (status === 'safe') return 'Safe based on configured checks';
-    if (status === 'review') return 'Warning: review required';
-    return 'Not ready: blocking changes detected';
+  // Reset workspace
+  const handleClearWorkspace = () => {
+    setCodeContent('');
+    setLoadedFileName('');
+    setSelectedRoute(null);
+    setSelectedText('');
+    setReviewResult(null);
+    setFixResult(null);
+    setCommitMsgResult(null);
+    setActiveDrawer(null);
   };
 
   return (
-    <div className="flex h-screen w-full bg-bg text-text overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-60 border-r border-border bg-surface flex flex-col justify-between select-none">
-        <div>
-          {/* Logo */}
-          <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-md bg-[#0A382C] flex items-center justify-center p-1 border border-emerald-500/20 shadow-xs">
-                  <ShaktiqLogoIcon className="w-4 h-4" theme="dark" />
-                </div>
-                <span className="font-extrabold tracking-tight text-base">
-                  <span className="text-foreground">shakt</span>
-                  <span className="text-[#52B143]">IQ</span>
-                </span>
-              </div>
-              <p className="text-[11px] text-text-muted mt-0.5">API Release Intelligence</p>
-            </div>
-          </div>
-
-          {/* Project Picker */}
-          <div className="p-3 border-b border-border">
-            <label className="text-[11px] uppercase tracking-wider text-text-muted font-medium block mb-1.5 px-1">
-              Active Project
-            </label>
-            <div className="flex items-center gap-1.5">
-              <select
-                value={selectedProjectId}
-                onChange={(e) => setSelectedProjectId(e.target.value)}
-                className="w-full bg-surface-2 border border-border text-sm rounded-md px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-accent font-medium"
-              >
-                {projects.map((p) => (
+    <div className="space-y-4 text-green-dark">
+      {/* 1. TOP TOOLBAR: Consistent Green & Butter Navigation */}
+      <div className="bg-white rounded-xl border border-border p-3.5 sm:p-4 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        {/* Left: Active Project Selector & Import Buttons */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-green-mid uppercase tracking-wider">
+              Project:
+            </span>
+            <select
+              value={selectedProjectId}
+              onChange={(e) => setSelectedProjectId(e.target.value)}
+              className="bg-butter-panel border border-border text-xs rounded-lg px-3 py-1.5 font-semibold text-green-dark focus:outline-none focus:ring-1 focus:ring-green-mid"
+            >
+              {projects.length > 0 ? (
+                projects.map((p) => (
                   <option key={p._id || p.id} value={p._id || p.id}>
                     {p.name}
                   </option>
-                ))}
-                {projects.length === 0 && <option value="">No projects found</option>}
-              </select>
-              <button
-                onClick={() => setShowNewProjectModal(true)}
-                title="Create Project"
-                className="p-1.5 border border-border bg-surface-2 hover:bg-border/40 rounded-md text-text-muted hover:text-text transition-colors"
-              >
-                +
-              </button>
-            </div>
+                ))
+              ) : (
+                <option value="">Custom Workspace</option>
+              )}
+            </select>
+            <button
+              onClick={() => setShowNewProjectModal(true)}
+              title="Create New Project"
+              className="p-1.5 rounded-lg border border-border bg-butter-panel hover:bg-butter-warm text-green-dark transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+            </button>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="p-2 space-y-0.5 text-sm">
-            <button
-              onClick={() => setActiveTab('overview')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-left ${
-                activeTab === 'overview' ? 'bg-accent/10 text-accent font-medium' : 'text-text-muted hover:text-text hover:bg-surface-2'
-              }`}
-            >
-              <Layers className="w-4 h-4" />
-              <span>Overview</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('studio')}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-md transition-colors text-left ${
-                activeTab === 'studio' ? 'bg-accent/10 text-accent font-medium' : 'text-text-muted hover:text-text hover:bg-surface-2'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <FileCode className="w-4 h-4 text-emerald-400" />
-                <span>Code Studio</span>
-              </div>
-              <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-[#52B143]/20 text-[#52B143] font-bold border border-[#52B143]/30">
-                LIVE
-              </span>
-            </button>
-            <button
-              onClick={() => setActiveTab('runs')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-left ${
-                activeTab === 'runs' ? 'bg-accent/10 text-accent font-medium' : 'text-text-muted hover:text-text hover:bg-surface-2'
-              }`}
-            >
-              <GitCommit className="w-4 h-4" />
-              <span>Runs & Findings</span>
-            </button>
-            <button
-              onClick={() => {
-                setActiveTab('dossier');
-                if (selectedProjectId && selectedRun) {
-                  loadAiDossier(selectedProjectId, selectedRun._id || selectedRun.id || '');
-                }
-              }}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-left ${
-                activeTab === 'dossier' ? 'bg-accent/10 text-accent font-medium' : 'text-text-muted hover:text-text hover:bg-surface-2'
-              }`}
-            >
-              <Cpu className="w-4 h-4 text-accent" />
-              <span>AI Release Dossier</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('compare')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-left ${
-                activeTab === 'compare' ? 'bg-accent/10 text-accent font-medium' : 'text-text-muted hover:text-text hover:bg-surface-2'
-              }`}
-            >
-              <Sliders className="w-4 h-4" />
-              <span>Compare Runs</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('memory')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-left ${
-                activeTab === 'memory' ? 'bg-accent/10 text-accent font-medium' : 'text-text-muted hover:text-text hover:bg-surface-2'
-              }`}
-            >
-              <History className="w-4 h-4" />
-              <span>Hotspot Memory</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('analyzer')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-left ${
-                activeTab === 'analyzer' ? 'bg-accent/10 text-accent font-medium' : 'text-text-muted hover:text-text hover:bg-surface-2'
-              }`}
-            >
-              <FileCode className="w-4 h-4" />
-              <span>Spec Playground</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('tokens')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-left ${
-                activeTab === 'tokens' ? 'bg-accent/10 text-accent font-medium' : 'text-text-muted hover:text-text hover:bg-surface-2'
-              }`}
-            >
-              <Key className="w-4 h-4" />
-              <span>API Tokens</span>
-            </button>
+          <div className="h-5 w-px bg-border hidden sm:block" />
 
-            <div className="pt-3 pb-1 px-3 text-[11px] uppercase tracking-wider text-text-muted font-medium">
-              Platform Admin
-            </div>
-            <button
-              onClick={() => setActiveTab('admin')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-left ${
-                activeTab === 'admin' ? 'bg-accent/10 text-accent font-medium' : 'text-text-muted hover:text-text hover:bg-surface-2'
-              }`}
-            >
-              <Database className="w-4 h-4" />
-              <span>Admin Console</span>
-            </button>
-          </nav>
+          {/* Action: Connect GitHub */}
+          <button
+            onClick={() => {
+              setImportTab('github');
+              setShowImportModal(true);
+            }}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-green-dark text-butter-cream hover:bg-green-deep transition-all shadow-xs"
+          >
+            <Github className="w-3.5 h-3.5 text-butter-gold" />
+            <span>Connect GitHub</span>
+          </button>
+
+          {/* Action: Upload / Add Code */}
+          <button
+            onClick={() => {
+              setImportTab('upload');
+              setShowImportModal(true);
+            }}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-butter-panel border border-border hover:bg-butter-warm text-green-dark transition-colors shadow-xs"
+          >
+            <Upload className="w-3.5 h-3.5 text-green-mid" />
+            <span>Upload File</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setImportTab('paste');
+              setShowImportModal(true);
+            }}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-butter-panel border border-border hover:bg-butter-warm text-green-dark transition-colors shadow-xs"
+          >
+            <Code2 className="w-3.5 h-3.5 text-green-mid" />
+            <span>Paste Code</span>
+          </button>
         </div>
 
-        {/* User Footer */}
-        <div className="p-3 border-t border-border bg-surface-2/50 text-xs">
-          <div className="flex items-center justify-between">
-            <div className="truncate">
-              <span className="font-medium truncate block">{user?.email || 'admin@shaktiq.dev'}</span>
-              <span className="text-[10px] text-text-muted uppercase tracking-wider">
-                Role: {user?.role || 'admin'}
-              </span>
-            </div>
+        {/* Right: MongoDB Status & Reset */}
+        <div className="flex items-center gap-3 self-end md:self-auto">
+          <div className="flex items-center gap-1.5 text-xs bg-butter-panel border border-border px-2.5 py-1 rounded-full text-green-mid">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-medium text-[11px]">MongoDB 7.0 Atlas</span>
+          </div>
+
+          {codeContent && (
             <button
-              onClick={() => loadProjectDetails(selectedProjectId)}
-              title="Refresh Data"
-              className="p-1.5 hover:bg-surface rounded text-text-muted hover:text-text"
+              onClick={handleClearWorkspace}
+              title="Clear workspace"
+              className="inline-flex items-center gap-1 text-xs text-text-muted hover:text-green-dark px-2 py-1 rounded hover:bg-butter-panel transition-colors"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
+              <RotateCcw className="w-3 h-3" />
+              <span>Clear</span>
             </button>
-          </div>
+          )}
         </div>
-      </aside>
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Top Header Bar */}
-        <header className="h-14 border-b border-border bg-surface px-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h2 className="text-base font-semibold capitalize tracking-tight">
-              {activeTab === 'overview' && 'Project Overview'}
-              {activeTab === 'studio' && 'Code Intelligence Studio & Route Review'}
-              {activeTab === 'runs' && 'Compatibility Runs & Findings'}
-              {activeTab === 'dossier' && 'Multi-Layer AI Release Dossier (Gemini 3.8 Flash)'}
-              {activeTab === 'compare' && 'Run to Run Comparison'}
-              {activeTab === 'memory' && 'Endpoint History & Hotspots'}
-              {activeTab === 'analyzer' && 'Interactive OpenAPI Spec Analyzer'}
-              {activeTab === 'tokens' && 'Personal Access Tokens'}
-              {activeTab === 'admin' && 'Platform Administration'}
-            </h2>
-            {selectedProjectId && (
-              <span className="text-xs text-text-muted border border-border px-2 py-0.5 rounded bg-surface-2 font-mono">
-                {projects.find((p) => (p._id || p.id) === selectedProjectId)?.name || 'Default'}
-              </span>
-            )}
-          </div>
-
-          {/* SSE Live Connection status */}
-          <div className="flex items-center gap-4 text-xs">
-            <div className="flex items-center gap-1.5">
-              <div
-                className={`w-2 h-2 rounded-full ${
-                  sseConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
-                }`}
-              />
-              <span className="text-text-muted">
-                {sseConnected ? 'Live Updates Active' : 'Connecting to ChangeStream...'}
-              </span>
-            </div>
-            <span className="text-border">|</span>
-            <span className="text-text-muted font-mono">MongoDB 7.0 WiredTiger</span>
-          </div>
-        </header>
-
-        {/* Global Error Notice if any */}
-        {errorMsg && (
-          <div className="bg-rose-500/10 border-b border-rose-500/20 px-6 py-2.5 text-xs text-rose-600 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-              <span>{errorMsg}</span>
-            </div>
-            <button onClick={() => setErrorMsg(null)} className="text-rose-600 hover:text-rose-800">
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        )}
-
-        {/* Main View Container */}
-        <main className="flex-1 overflow-y-auto p-6 max-w-7xl w-full mx-auto space-y-6">
-          {/* TAB: STUDIO */}
-          {activeTab === 'studio' && (
-            <div className="space-y-6">
-              <CodeIntelligenceStudio
-                projects={projects}
-                runs={runs}
-                activeProject={projects.find((p) => (p._id || p.id) === selectedProjectId) || projects[0] || null}
-                onSelectProject={(proj) => setSelectedProjectId(proj._id || proj.id || '')}
-              />
-            </div>
-          )}
-
-          {/* TAB: OVERVIEW */}
-          {activeTab === 'overview' && (
-            <div className="space-y-6">
-              {/* Primary Code Intelligence Studio Workspace */}
-              <CodeIntelligenceStudio
-                projects={projects}
-                runs={runs}
-                activeProject={projects.find((p) => (p._id || p.id) === selectedProjectId) || projects[0] || null}
-                onSelectProject={(proj) => setSelectedProjectId(proj._id || proj.id || '')}
-              />
-
-              {/* KPI Cards Row */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="border border-border bg-surface p-4 rounded-lg">
-                  <div className="text-xs text-text-muted font-medium mb-1">Latest Release Status</div>
-                  <div className="flex items-center gap-2">
-                    {selectedRun?.releaseStatus === 'safe' ? (
-                      <CheckCircle2 className="w-5 h-5 text-ok" />
-                    ) : selectedRun?.releaseStatus === 'review' ? (
-                      <AlertTriangle className="w-5 h-5 text-sev-warning" />
-                    ) : (
-                      <ShieldAlert className="w-5 h-5 text-sev-breaking" />
-                    )}
-                    <span className="text-lg font-bold capitalize">
-                      {selectedRun?.releaseStatus || 'No Runs'}
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-text-muted mt-2">
-                    {selectedRun ? `Commit ${selectedRun.headSha?.slice(0, 7) || 'HEAD'}` : 'Awaiting first webhook'}
-                  </div>
-                </div>
-
-                <div className="border border-border bg-surface p-4 rounded-lg">
-                  <div className="text-xs text-text-muted font-medium mb-1">Breaking Findings</div>
-                  <div className="text-2xl font-bold text-sev-breaking">
-                    {selectedRun?.summary?.breaking ?? 0}
-                  </div>
-                  <div className="text-[11px] text-text-muted mt-2">Will break existing API clients</div>
-                </div>
-
-                <div className="border border-border bg-surface p-4 rounded-lg">
-                  <div className="text-xs text-text-muted font-medium mb-1">Warning Findings</div>
-                  <div className="text-2xl font-bold text-sev-warning">
-                    {selectedRun?.summary?.warning ?? 0}
-                  </div>
-                  <div className="text-[11px] text-text-muted mt-2">Potentially breaking schema alterations</div>
-                </div>
-
-                <div className="border border-border bg-surface p-4 rounded-lg">
-                  <div className="text-xs text-text-muted font-medium mb-1">Total Runs Tracked</div>
-                  <div className="text-2xl font-bold">{runs.length}</div>
-                  <div className="text-[11px] text-text-muted mt-2">Indexed in MongoDB change stream</div>
-                </div>
-              </div>
-
-              {/* Latest Run Verdict Banner */}
-              {selectedRun && (
-                <div
-                  className={`p-4 rounded-lg border flex items-center justify-between ${
-                    selectedRun.releaseStatus === 'safe'
-                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300'
-                      : selectedRun.releaseStatus === 'review'
-                      ? 'bg-amber-500/10 border-amber-500/30 text-amber-800 dark:text-amber-300'
-                      : 'bg-rose-500/10 border-rose-500/30 text-rose-800 dark:text-rose-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    {selectedRun.releaseStatus === 'safe' ? (
-                      <ShieldCheck className="w-6 h-6 flex-shrink-0" />
-                    ) : (
-                      <ShieldAlert className="w-6 h-6 flex-shrink-0" />
-                    )}
-                    <div>
-                      <div className="font-semibold text-sm">
-                        {getVerdictText(selectedRun.releaseStatus)}
-                      </div>
-                      <div className="text-xs opacity-80 mt-0.5">
-                        Run ID: {selectedRun._id || selectedRun.id} • Source: {selectedRun.source} • Branch:{' '}
-                        {selectedRun.headBranch || 'main'}
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setActiveTab('runs')}
-                    className="text-xs font-semibold underline hover:opacity-80"
-                  >
-                    View All {findings.length} Findings &rarr;
-                  </button>
-                </div>
-              )}
-
-              {/* Grid: Recent Runs & Hotspots */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Recent Runs Table */}
-                <div className="lg:col-span-2 border border-border bg-surface rounded-lg overflow-hidden">
-                  <div className="p-4 border-b border-border flex items-center justify-between">
-                    <h3 className="font-semibold text-sm">Recent Analysis Runs</h3>
-                    <button
-                      onClick={() => setActiveTab('runs')}
-                      className="text-xs text-accent hover:underline font-medium"
-                    >
-                      View all
-                    </button>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs">
-                      <thead className="bg-surface-2 text-text-muted border-b border-border">
-                        <tr>
-                          <th className="py-2.5 px-4 font-medium">Commit / Ref</th>
-                          <th className="py-2.5 px-4 font-medium">Verdict</th>
-                          <th className="py-2.5 px-4 font-medium">Findings</th>
-                          <th className="py-2.5 px-4 font-medium">Source</th>
-                          <th className="py-2.5 px-4 font-medium">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-border">
-                        {runs.slice(0, 5).map((r) => (
-                          <tr
-                            key={r._id || r.id}
-                            onClick={() => {
-                              setSelectedRun(r);
-                              loadRunFindings(selectedProjectId, r._id || r.id || '');
-                              setActiveTab('runs');
-                            }}
-                            className="hover:bg-surface-2/60 cursor-pointer transition-colors"
-                          >
-                            <td className="py-3 px-4 font-mono font-medium">
-                              {r.headSha?.slice(0, 7) || 'manual'}
-                              <span className="block text-[11px] text-text-muted font-sans">
-                                {r.headBranch || 'main'}
-                              </span>
-                            </td>
-                            <td className="py-3 px-4">
-                              <span
-                                className={`px-2 py-0.5 rounded text-[11px] font-medium ${
-                                  r.releaseStatus === 'safe'
-                                    ? 'badge-ok'
-                                    : r.releaseStatus === 'review'
-                                    ? 'badge-warning'
-                                    : 'badge-breaking'
-                                }`}
-                              >
-                                {r.releaseStatus}
-                              </span>
-                            </td>
-                            <td className="py-3 px-4 font-medium">
-                              <span className="text-sev-breaking font-semibold">{r.summary?.breaking || 0}B</span>{' '}
-                              <span className="text-sev-warning">{r.summary?.warning || 0}W</span>{' '}
-                              <span className="text-sev-info">{r.summary?.info || 0}I</span>
-                            </td>
-                            <td className="py-3 px-4 text-text-muted capitalize">{r.source}</td>
-                            <td className="py-3 px-4 text-text-muted capitalize">
-                              <span className="flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-ok" />
-                                {r.status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                        {runs.length === 0 && (
-                          <tr>
-                            <td colSpan={5} className="py-8 text-center text-text-muted">
-                              No runs found for this project. Trigger a run or push to GitHub to generate an analysis.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* Hotspot Endpoints Card */}
-                <div className="border border-border bg-surface rounded-lg p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold text-sm flex items-center gap-1.5">
-                      <History className="w-4 h-4 text-accent" />
-                      Recurring Hotspots
-                    </h3>
-                    <span className="text-[11px] text-text-muted font-medium">≥2 runs</span>
-                  </div>
-                  <p className="text-xs text-text-muted">
-                    Endpoints where breaking changes have recurred across multiple runs (Project Memory).
-                  </p>
-
-                  <div className="space-y-2 pt-2">
-                    {hotspots.map((h, i) => (
-                      <div
-                        key={i}
-                        className="p-2.5 rounded-md border border-border bg-surface-2/40 hover:bg-surface-2 transition-colors"
-                      >
-                        <div className="flex items-center justify-between text-xs">
-                          <span className={`px-1.5 py-0.5 rounded font-mono font-bold text-[10px] border ${getMethodBadgeClass(h.method)}`}>
-                            {h.method}
-                          </span>
-                          <span className="badge-breaking px-1.5 py-0.5 rounded text-[10px] font-bold">
-                            {h.distinctRuns} runs broken
-                          </span>
-                        </div>
-                        <div className="font-mono text-xs mt-1.5 font-medium truncate" title={h.endpoint}>
-                          {h.endpoint}
-                        </div>
-                      </div>
-                    ))}
-                    {hotspots.length === 0 && (
-                      <div className="text-xs text-text-muted py-6 text-center border border-dashed border-border rounded-md">
-                        No recurring hotspot endpoints detected yet.
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Disclaimer footer per FR-5 */}
-              <div className="text-[11px] text-text-muted text-center pt-4 border-t border-border">
-                *This report assesses API compatibility based on the OpenAPI specifications provided. It does not guarantee the release is safe.*
-              </div>
-            </div>
-          )}
-
-          {/* TAB: RUNS & FINDINGS */}
-          {activeTab === 'runs' && (
-            <div className="space-y-6">
-              {/* Run Selector Header */}
-              <div className="border border-border bg-surface rounded-lg p-4 flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="text-xs text-text-muted font-medium">Select Run:</div>
-                  <select
-                    value={selectedRun?._id || selectedRun?.id || ''}
-                    onChange={(e) => {
-                      const r = runs.find((item) => (item._id || item.id) === e.target.value);
-                      setSelectedRun(r || null);
-                      if (r) loadRunFindings(selectedProjectId, r._id || r.id || '');
-                    }}
-                    className="bg-surface-2 border border-border text-xs rounded-md px-3 py-1.5 font-mono focus:outline-none"
-                  >
-                    {runs.map((r) => (
-                      <option key={r._id || r.id} value={r._id || r.id}>
-                        {r.headSha?.slice(0, 7) || 'manual'} • {r.releaseStatus?.toUpperCase()} • {r.source} • {new Date(r.createdAt).toLocaleTimeString()}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider ${
-                      selectedRun?.releaseStatus === 'safe'
-                        ? 'badge-ok'
-                        : selectedRun?.releaseStatus === 'review'
-                        ? 'badge-warning'
-                        : 'badge-breaking'
-                    }`}
-                  >
-                    Verdict: {selectedRun?.releaseStatus || 'PENDING'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Filters & Search */}
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setSeverityFilter('all')}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium border ${
-                      severityFilter === 'all'
-                        ? 'bg-accent text-white border-accent'
-                        : 'bg-surface border-border text-text-muted hover:text-text'
-                    }`}
-                  >
-                    All ({findings.length})
-                  </button>
-                  <button
-                    onClick={() => setSeverityFilter('breaking')}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium border ${
-                      severityFilter === 'breaking'
-                        ? 'bg-sev-breaking text-white border-sev-breaking'
-                        : 'bg-surface border-border text-sev-breaking'
-                    }`}
-                  >
-                    Breaking ({findings.filter((f) => f.severity === 'breaking').length})
-                  </button>
-                  <button
-                    onClick={() => setSeverityFilter('warning')}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium border ${
-                      severityFilter === 'warning'
-                        ? 'bg-sev-warning text-white border-sev-warning'
-                        : 'bg-surface border-border text-sev-warning'
-                    }`}
-                  >
-                    Warning ({findings.filter((f) => f.severity === 'warning').length})
-                  </button>
-                  <button
-                    onClick={() => setSeverityFilter('info')}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium border ${
-                      severityFilter === 'info'
-                        ? 'bg-sev-info text-white border-sev-info'
-                        : 'bg-surface border-border text-sev-info'
-                    }`}
-                  >
-                    Info ({findings.filter((f) => f.severity === 'info').length})
-                  </button>
-                </div>
-
-                <div className="relative">
-                  <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-text-muted" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="bg-surface border border-border pl-8 pr-3 py-1.5 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-accent w-64"
-                  />
-                </div>
-              </div>
-
-              {/* Findings Table */}
-              <div className="border border-border bg-surface rounded-lg overflow-hidden">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-surface-2 text-text-muted border-b border-border">
-                    <tr>
-                      <th className="py-2.5 px-4 font-medium w-24">Severity</th>
-                      <th className="py-2.5 px-4 font-medium w-24">Method</th>
-                      <th className="py-2.5 px-4 font-medium">Endpoint</th>
-                      <th className="py-2.5 px-4 font-medium">Change Type</th>
-                      <th className="py-2.5 px-4 font-medium">Description</th>
-                      <th className="py-2.5 px-4 font-medium w-20">Details</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {filteredFindings.map((f, i) => (
-                      <tr
-                        key={f._id || f.id || i}
-                        onClick={() => setSelectedFinding(f)}
-                        className="hover:bg-surface-2/60 cursor-pointer transition-colors"
-                      >
-                        <td className="py-3 px-4">
-                          <span className={`px-2 py-0.5 rounded font-bold text-[10px] uppercase ${getSeverityBadgeClass(f.severity)}`}>
-                            {f.severity}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className={`px-2 py-0.5 rounded font-mono font-bold text-[10px] border ${getMethodBadgeClass(f.method)}`}>
-                            {f.method}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 font-mono font-medium truncate max-w-xs">{f.endpoint}</td>
-                        <td className="py-3 px-4 font-mono text-text-muted text-[11px]">{f.changeType}</td>
-                        <td className="py-3 px-4 text-text-muted truncate max-w-sm">{f.description}</td>
-                        <td className="py-3 px-4 text-right">
-                          <ChevronRight className="w-4 h-4 text-text-muted inline" />
-                        </td>
-                      </tr>
-                    ))}
-                    {filteredFindings.length === 0 && (
-                      <tr>
-                        <td colSpan={6} className="py-12 text-center text-text-muted">
-                          {findings.length === 0 ? 'No findings recorded for this run.' : 'No findings matched the current filter.'}
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* TAB: AI RELEASE DOSSIER (MULTI-LAYER INTELLIGENCE) */}
-          {activeTab === 'dossier' && (
-            <AiReleaseDossier
-              aiDossier={aiDossier}
-              loadingDossier={loadingDossier}
-              selectedRun={selectedRun}
-              runs={runs}
-              findings={findings}
-              onSelectRun={(runId) => {
-                const run = runs.find((r) => (r._id || r.id) === runId);
-                if (run) {
-                  setSelectedRun(run);
-                  loadRunFindings(selectedProjectId, run._id || run.id || '');
-                  loadAiDossier(selectedProjectId, run._id || run.id || '');
-                }
-              }}
-              onRefreshDossier={() => {
-                if (selectedProjectId && selectedRun) {
-                  loadAiDossier(selectedProjectId, selectedRun._id || selectedRun.id || '');
-                }
-              }}
-              getMethodBadgeClass={getMethodBadgeClass}
-            />
-          )}
-
-          {/* TAB: COMPARE RUNS */}
-          {activeTab === 'compare' && (
-            <div className="space-y-6">
-              <div className="border border-border bg-surface p-6 rounded-lg space-y-4">
-                <h3 className="font-semibold text-sm">Select Runs to Compare</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-text-muted font-medium block mb-1">Base Run (Previous)</label>
-                    <select
-                      value={compareBaseId}
-                      onChange={(e) => setCompareBaseId(e.target.value)}
-                      className="w-full bg-surface-2 border border-border p-2 rounded text-xs font-mono"
-                    >
-                      <option value="">Select Base Run...</option>
-                      {runs.map((r) => (
-                        <option key={r._id || r.id} value={r._id || r.id}>
-                          {r.headSha?.slice(0, 7) || 'manual'} • {r.releaseStatus} ({new Date(r.createdAt).toLocaleDateString()})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-xs text-text-muted font-medium block mb-1">Head Run (Current)</label>
-                    <select
-                      value={compareHeadId}
-                      onChange={(e) => setCompareHeadId(e.target.value)}
-                      className="w-full bg-surface-2 border border-border p-2 rounded text-xs font-mono"
-                    >
-                      <option value="">Select Head Run...</option>
-                      {runs.map((r) => (
-                        <option key={r._id || r.id} value={r._id || r.id}>
-                          {r.headSha?.slice(0, 7) || 'manual'} • {r.releaseStatus} ({new Date(r.createdAt).toLocaleDateString()})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleCompare}
-                  disabled={!compareBaseId || !compareHeadId}
-                  className="px-4 py-2 bg-accent text-white rounded text-xs font-semibold hover:bg-accent/90 disabled:opacity-50"
-                >
-                  Run Comparison
-                </button>
-              </div>
-
-              {/* Compare Results */}
-              {compareResult && (
-                <div className="space-y-4">
-                  {/* Tabs: New / Resolved / Unresolved */}
-                  <div className="flex border-b border-border gap-6">
-                    <button
-                      onClick={() => setCompareTab('new')}
-                      className={`pb-2 text-xs font-medium border-b-2 flex items-center gap-1.5 ${
-                        compareTab === 'new' ? 'border-sev-breaking text-sev-breaking' : 'border-transparent text-text-muted'
-                      }`}
-                    >
-                      New Findings
-                      <span className="px-1.5 py-0.5 rounded bg-sev-breaking/10 text-[10px] font-bold">
-                        {compareResult.counts.new}
-                      </span>
-                    </button>
-                    <button
-                      onClick={() => setCompareTab('resolved')}
-                      className={`pb-2 text-xs font-medium border-b-2 flex items-center gap-1.5 ${
-                        compareTab === 'resolved' ? 'border-ok text-ok' : 'border-transparent text-text-muted'
-                      }`}
-                    >
-                      Resolved Findings
-                      <span className="px-1.5 py-0.5 rounded bg-ok/10 text-[10px] font-bold">
-                        {compareResult.counts.resolved}
-                      </span>
-                    </button>
-                    <button
-                      onClick={() => setCompareTab('unresolved')}
-                      className={`pb-2 text-xs font-medium border-b-2 flex items-center gap-1.5 ${
-                        compareTab === 'unresolved' ? 'border-sev-warning text-sev-warning' : 'border-transparent text-text-muted'
-                      }`}
-                    >
-                      Unresolved Findings
-                      <span className="px-1.5 py-0.5 rounded bg-sev-warning/10 text-[10px] font-bold">
-                        {compareResult.counts.unresolved}
-                      </span>
-                    </button>
-                  </div>
-
-                  {/* List for active tab */}
-                  <div className="border border-border bg-surface rounded-lg divide-y divide-border">
-                    {(compareTab === 'new'
-                      ? compareResult.newFindings
-                      : compareTab === 'resolved'
-                      ? compareResult.resolvedFindings
-                      : compareResult.unresolvedFindings
-                    ).map((f: Finding, i: number) => (
-                      <div key={i} className="p-3.5 flex items-center justify-between text-xs">
-                        <div className="flex items-center gap-3">
-                          <span className={`px-2 py-0.5 rounded font-mono font-bold text-[10px] border ${getMethodBadgeClass(f.method)}`}>
-                            {f.method}
-                          </span>
-                          <span className="font-mono font-medium">{f.endpoint}</span>
-                          <span className="text-text-muted">{f.description}</span>
-                        </div>
-                        <span className={`px-2 py-0.5 rounded font-bold text-[10px] uppercase ${getSeverityBadgeClass(f.severity)}`}>
-                          {f.severity}
-                        </span>
-                      </div>
-                    ))}
-                    {(compareTab === 'new' && compareResult.newFindings.length === 0) ||
-                    (compareTab === 'resolved' && compareResult.resolvedFindings.length === 0) ||
-                    (compareTab === 'unresolved' && compareResult.unresolvedFindings.length === 0) ? (
-                      <div className="p-8 text-center text-xs text-text-muted">No findings in this category.</div>
-                    ) : null}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* TAB: HOTSPOT MEMORY */}
-          {activeTab === 'memory' && (
-            <div className="space-y-6">
-              <div className="border border-border bg-surface p-5 rounded-lg space-y-1">
-                <h3 className="font-semibold text-sm">Project Memory & Hotspot Detection</h3>
-                <p className="text-xs text-text-muted">
-                  Endpoints with recurring breaking changes across previous runs. Powered by MongoDB aggregation pipelines.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {hotspots.map((h, i) => (
-                  <div key={i} className="border border-border bg-surface p-4 rounded-lg space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className={`px-2 py-0.5 rounded font-mono font-bold text-xs border ${getMethodBadgeClass(h.method)}`}>
-                        {h.method}
-                      </span>
-                      <span className="badge-breaking px-2 py-0.5 rounded text-xs font-bold">
-                        {h.distinctRuns} distinct runs broken
-                      </span>
-                    </div>
-                    <div className="font-mono text-sm font-semibold">{h.endpoint}</div>
-                    <div className="text-xs text-text-muted pt-2 border-t border-border flex justify-between">
-                      <span>Total findings: {h.totalOccurrences || h.distinctRuns}</span>
-                      <span>Last broken: {new Date(h.lastSeenAt || Date.now()).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                ))}
-                {hotspots.length === 0 && (
-                  <div className="col-span-2 border border-dashed border-border p-12 text-center text-xs text-text-muted rounded-lg">
-                    No recurring hotspots recorded yet for this project.
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* TAB: SPEC PLAYGROUND (ANALYZER) */}
-          {activeTab === 'analyzer' && (
-            <div className="space-y-6">
-              <div className="border border-border bg-surface p-5 rounded-lg flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold text-sm">Interactive OpenAPI 3.x Diff Playground</h3>
-                  <p className="text-xs text-text-muted mt-0.5">
-                    Compare any two specifications directly without pushing code or committing.
-                  </p>
-                </div>
-                <button
-                  onClick={handleAnalyze}
-                  disabled={analyzing}
-                  className="px-4 py-2 bg-accent text-white rounded text-xs font-semibold hover:bg-accent/90 flex items-center gap-2"
-                >
-                  <Play className="w-3.5 h-3.5" />
-                  {analyzing ? 'Analyzing...' : 'Run Diff'}
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="border border-border bg-surface rounded-lg p-3 space-y-2">
-                  <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Base Spec (V1)</span>
-                  <textarea
-                    value={analyzerBase}
-                    onChange={(e) => setAnalyzerBase(e.target.value)}
-                    rows={14}
-                    className="w-full bg-surface-2 border border-border rounded font-mono text-xs p-3 focus:outline-none focus:ring-1 focus:ring-accent"
-                  />
-                </div>
-                <div className="border border-border bg-surface rounded-lg p-3 space-y-2">
-                  <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Head Spec (V2)</span>
-                  <textarea
-                    value={analyzerHead}
-                    onChange={(e) => setAnalyzerHead(e.target.value)}
-                    rows={14}
-                    className="w-full bg-surface-2 border border-border rounded font-mono text-xs p-3 focus:outline-none focus:ring-1 focus:ring-accent"
-                  />
-                </div>
-              </div>
-
-              {/* Analyzer Results */}
-              {analyzerResult && (
-                <div className="border border-border bg-surface rounded-lg p-5 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-semibold text-sm">
-                      Analysis Results: {analyzerResult.findings?.length || 0} findings detected
-                    </h4>
-                    <span
-                      className={`px-3 py-1 rounded text-xs font-bold uppercase ${
-                        analyzerResult.releaseStatus === 'safe'
-                          ? 'badge-ok'
-                          : analyzerResult.releaseStatus === 'review'
-                          ? 'badge-warning'
-                          : 'badge-breaking'
-                      }`}
-                    >
-                      Verdict: {analyzerResult.releaseStatus}
-                    </span>
-                  </div>
-
-                  <div className="border border-border rounded divide-y divide-border">
-                    {analyzerResult.findings?.map((f: Finding, i: number) => (
-                      <div key={i} className="p-3 text-xs flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <span className={`px-2 py-0.5 rounded font-bold uppercase text-[10px] ${getSeverityBadgeClass(f.severity)}`}>
-                            {f.severity}
-                          </span>
-                          <span className={`px-2 py-0.5 rounded font-mono font-bold text-[10px] border ${getMethodBadgeClass(f.method)}`}>
-                            {f.method}
-                          </span>
-                          <span className="font-mono font-medium">{f.endpoint}</span>
-                          <span className="text-text-muted">{f.description}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* TAB: API TOKENS */}
-          {activeTab === 'tokens' && (
-            <div className="space-y-6">
-              <div className="border border-border bg-surface p-5 rounded-lg flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold text-sm">Personal Access Tokens</h3>
-                  <p className="text-xs text-text-muted mt-0.5">
-                    Generate tokens (`sq_...`) to authenticate VS Code extensions or CI/CD pipelines.
-                  </p>
-                </div>
-                <button
-                  onClick={() => setShowNewTokenModal(true)}
-                  className="px-3.5 py-1.5 bg-accent text-white rounded text-xs font-semibold hover:bg-accent/90"
-                >
-                  Generate New Token
-                </button>
-              </div>
-
-              {/* Tokens Table */}
-              <div className="border border-border bg-surface rounded-lg overflow-hidden">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-surface-2 text-text-muted border-b border-border">
-                    <tr>
-                      <th className="py-2.5 px-4 font-medium">Name</th>
-                      <th className="py-2.5 px-4 font-medium">Token Prefix</th>
-                      <th className="py-2.5 px-4 font-medium">Created</th>
-                      <th className="py-2.5 px-4 font-medium">Last Used</th>
-                      <th className="py-2.5 px-4 font-medium text-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {tokens.map((t) => (
-                      <tr key={t._id || t.id} className="hover:bg-surface-2/40">
-                        <td className="py-3 px-4 font-medium">{t.name}</td>
-                        <td className="py-3 px-4 font-mono text-text-muted">{t.tokenPrefix || 'sq_...'}</td>
-                        <td className="py-3 px-4 text-text-muted">{new Date(t.createdAt).toLocaleDateString()}</td>
-                        <td className="py-3 px-4 text-text-muted">
-                          {t.lastUsedAt ? new Date(t.lastUsedAt).toLocaleDateString() : 'Never'}
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          <button
-                            onClick={async () => {
-                              await api.deleteToken(t._id || t.id || '');
-                              loadTokens();
-                            }}
-                            className="text-rose-600 hover:underline"
-                          >
-                            Revoke
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                    {tokens.length === 0 && (
-                      <tr>
-                        <td colSpan={5} className="py-8 text-center text-text-muted">
-                          No API tokens generated yet.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* TAB: ADMIN CONSOLE */}
-          {activeTab === 'admin' && (
-            <div className="space-y-6">
-              <div className="border border-border bg-surface p-5 rounded-lg space-y-1">
-                <h3 className="font-semibold text-sm">Platform Admin Dashboard</h3>
-                <p className="text-xs text-text-muted">
-                  Monitor all projects, webhooks, duplicate event deliveries, and system audits.
-                </p>
-              </div>
-
-              {/* Admin Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="border border-border bg-surface p-4 rounded-lg">
-                  <div className="text-xs text-text-muted">Total Projects</div>
-                  <div className="text-xl font-bold mt-1">{adminOverview?.totalProjects ?? projects.length}</div>
-                </div>
-                <div className="border border-border bg-surface p-4 rounded-lg">
-                  <div className="text-xs text-text-muted">Total Runs Processed</div>
-                  <div className="text-xl font-bold mt-1">{adminOverview?.totalRuns ?? runs.length}</div>
-                </div>
-                <div className="border border-border bg-surface p-4 rounded-lg">
-                  <div className="text-xs text-text-muted">Total Webhook Events</div>
-                  <div className="text-xl font-bold mt-1">{adminEvents.length}</div>
-                </div>
-                <div className="border border-border bg-surface p-4 rounded-lg">
-                  <div className="text-xs text-text-muted">Duplicate Events Caught</div>
-                  <div className="text-xl font-bold mt-1 text-emerald-600">
-                    {adminEvents.reduce((acc, curr) => acc + (curr.duplicateCount || 0), 0)}
-                  </div>
-                </div>
-              </div>
-
-              {/* Webhook Events Log */}
-              <div className="border border-border bg-surface rounded-lg overflow-hidden">
-                <div className="p-4 border-b border-border font-semibold text-xs">
-                  Webhook Event Intake & Deduplication Log
-                </div>
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-surface-2 text-text-muted border-b border-border">
-                    <tr>
-                      <th className="py-2.5 px-4 font-medium">Delivery ID</th>
-                      <th className="py-2.5 px-4 font-medium">Event Type</th>
-                      <th className="py-2.5 px-4 font-medium">Duplicate Count</th>
-                      <th className="py-2.5 px-4 font-medium">Signature Status</th>
-                      <th className="py-2.5 px-4 font-medium">Received At</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {adminEvents.map((ev) => (
-                      <tr key={ev._id || ev.id} className="hover:bg-surface-2/40">
-                        <td className="py-2.5 px-4 font-mono">{ev.deliveryId || ev._id?.slice(0, 8)}</td>
-                        <td className="py-2.5 px-4 capitalize font-medium">{ev.type || 'push'}</td>
-                        <td className="py-2.5 px-4">
-                          <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                              (ev.duplicateCount || 0) > 0 ? 'badge-warning' : 'badge-ok'
-                            }`}
-                          >
-                            {ev.duplicateCount || 0}
-                          </span>
-                        </td>
-                        <td className="py-2.5 px-4 text-emerald-600 font-medium">Valid (HMAC Verified)</td>
-                        <td className="py-2.5 px-4 text-text-muted">{new Date(ev.createdAt).toLocaleString()}</td>
-                      </tr>
-                    ))}
-                    {adminEvents.length === 0 && (
-                      <tr>
-                        <td colSpan={5} className="py-6 text-center text-text-muted">
-                          No webhook events logged yet.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </main>
       </div>
 
-      {/* Slide-out Drawer: Finding Detail */}
-      {selectedFinding && (
-        <div className="fixed inset-y-0 right-0 w-96 bg-surface border-l border-border shadow-2xl p-6 flex flex-col justify-between z-50 overflow-y-auto">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
-              <span className={`px-2.5 py-0.5 rounded text-xs font-bold uppercase ${getSeverityBadgeClass(selectedFinding.severity)}`}>
-                {selectedFinding.severity}
+      {/* 2. MAIN WORKSPACE VIEW */}
+      {!codeContent ? (
+        /* ================= EMPTY STATE / IMPORT ONBOARDING ================= */
+        <div className="bg-white rounded-2xl border border-border p-8 sm:p-12 shadow-xs text-center max-w-4xl mx-auto space-y-8 animate-fade-in">
+          <div className="space-y-3 max-w-xl mx-auto">
+            <div className="w-12 h-12 rounded-2xl bg-[#0C382E] text-butter-cream mx-auto flex items-center justify-center shadow-md">
+              <FolderTree className="w-6 h-6 text-butter-gold" />
+            </div>
+            <h2 className="text-2xl font-extrabold tracking-tight text-green-dark">
+              API Release & Contract Studio
+            </h2>
+            <p className="text-sm text-text-muted leading-relaxed">
+              Import your OpenAPI contract or backend route controller. We will extract every endpoint on the left, let you inspect routes, and audit breaking changes with instant AI code reviews.
+            </p>
+          </div>
+
+          {/* Two Hero Choice Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-left max-w-2xl mx-auto">
+            {/* Card 1: Connect GitHub */}
+            <div
+              onClick={() => {
+                setImportTab('github');
+                setShowImportModal(true);
+              }}
+              className="group p-6 rounded-xl border-2 border-dashed border-border hover:border-green-dark/40 bg-butter-panel hover:bg-butter-warm/40 cursor-pointer transition-all space-y-3"
+            >
+              <div className="w-9 h-9 rounded-xl bg-green-dark text-butter-cream flex items-center justify-center shadow-xs">
+                <Github className="w-5 h-5 text-butter-gold" />
+              </div>
+              <h3 className="text-base font-bold text-green-dark group-hover:text-green-mid">
+                Connect GitHub & Import Repo
+              </h3>
+              <p className="text-xs text-text-muted leading-relaxed">
+                Enter your public repo URL or organization repository to auto-discover OpenAPI specs, fastify, or express routers.
+              </p>
+              <span className="inline-flex items-center gap-1 text-xs font-bold text-green-mid group-hover:underline pt-1">
+                Import from GitHub &rarr;
               </span>
-              <button
-                onClick={() => setSelectedFinding(null)}
-                className="p-1 hover:bg-surface-2 rounded text-text-muted hover:text-text"
-              >
-                <X className="w-4 h-4" />
-              </button>
             </div>
 
-            <div>
-              <div className="text-xs text-text-muted uppercase tracking-wider font-semibold">Endpoint</div>
-              <div className="flex items-center gap-2 mt-1">
-                <span className={`px-2 py-0.5 rounded font-mono font-bold text-xs border ${getMethodBadgeClass(selectedFinding.method)}`}>
-                  {selectedFinding.method}
-                </span>
-                <span className="font-mono text-sm font-semibold">{selectedFinding.endpoint}</span>
+            {/* Card 2: Upload or Paste Code */}
+            <div
+              onClick={() => {
+                setImportTab('upload');
+                setShowImportModal(true);
+              }}
+              className="group p-6 rounded-xl border-2 border-dashed border-border hover:border-green-dark/40 bg-butter-panel hover:bg-butter-warm/40 cursor-pointer transition-all space-y-3"
+            >
+              <div className="w-9 h-9 rounded-xl bg-green-mid text-butter-cream flex items-center justify-center shadow-xs">
+                <Upload className="w-5 h-5 text-butter-gold" />
               </div>
-            </div>
-
-            <div>
-              <div className="text-xs text-text-muted uppercase tracking-wider font-semibold">Change Classification</div>
-              <div className="font-mono text-xs mt-1 bg-surface-2 p-2 rounded border border-border">
-                {selectedFinding.changeType}
-              </div>
-            </div>
-
-            <div>
-              <div className="text-xs text-text-muted uppercase tracking-wider font-semibold">Description</div>
-              <p className="text-xs mt-1 text-text leading-relaxed">{selectedFinding.description}</p>
-            </div>
-
-            {selectedFinding.impact && (
-              <div>
-                <div className="text-xs text-text-muted uppercase tracking-wider font-semibold">Client Impact</div>
-                <p className="text-xs mt-1 text-text leading-relaxed bg-rose-500/5 border border-rose-500/20 p-2.5 rounded">
-                  {selectedFinding.impact}
-                </p>
-              </div>
-            )}
-
-            {selectedFinding.recommendation && (
-              <div>
-                <div className="text-xs text-text-muted uppercase tracking-wider font-semibold">Recommendation</div>
-                <p className="text-xs mt-1 text-text leading-relaxed bg-emerald-500/5 border border-emerald-500/20 p-2.5 rounded">
-                  {selectedFinding.recommendation}
-                </p>
-              </div>
-            )}
-
-            <div>
-              <div className="text-xs text-text-muted uppercase tracking-wider font-semibold">Fingerprint</div>
-              <div className="font-mono text-[10px] break-all text-text-muted mt-1 bg-surface-2 p-1.5 rounded">
-                {selectedFinding.fingerprint}
-              </div>
+              <h3 className="text-base font-bold text-green-dark group-hover:text-green-mid">
+                Upload or Paste Your Code
+              </h3>
+              <p className="text-xs text-text-muted leading-relaxed">
+                Upload an OpenAPI `.yaml` / `.json` or paste your route controller to inspect your endpoints in real time.
+              </p>
+              <span className="inline-flex items-center gap-1 text-xs font-bold text-green-mid group-hover:underline pt-1">
+                Upload file or paste &rarr;
+              </span>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-border">
+          {/* Quick Demo Option */}
+          <div className="pt-2 border-t border-border/60 text-xs text-text-muted flex items-center justify-center gap-3">
+            <span>Want to test the studio right away?</span>
             <button
-              onClick={() => setSelectedFinding(null)}
-              className="w-full py-2 bg-surface-2 hover:bg-border/60 text-xs font-semibold rounded border border-border"
+              onClick={() => {
+                setCodeContent(PRESET_OPENAPI);
+                setLoadedFileName('openapi.yaml');
+              }}
+              className="font-bold text-green-dark hover:underline"
             >
-              Close
+              Load Sample OpenAPI Spec
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => {
+                setCodeContent(PRESET_CONTROLLER);
+                setLoadedFileName('order-controller.ts');
+              }}
+              className="font-bold text-green-dark hover:underline"
+            >
+              Load Sample Fastify Controller
             </button>
           </div>
         </div>
-      )}
-
-      {/* Modal: New Project */}
-      {showNewProjectModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-surface border border-border rounded-lg max-w-md w-full p-6 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm">Register New Project</h3>
-              <button onClick={() => setShowNewProjectModal(false)}>
-                <X className="w-4 h-4 text-text-muted" />
-              </button>
+      ) : (
+        /* ================= ACTIVE STUDIO WORKSPACE ================= */
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start animate-fade-in">
+          {/* ================= LEFT ROUTING NAVIGATOR (Col 4) ================= */}
+          <div className="lg:col-span-4 bg-white rounded-xl border border-border p-4 space-y-3 shadow-xs">
+            <div className="flex items-center justify-between pb-2.5 border-b border-border">
+              <div className="flex items-center gap-2">
+                <FolderTree className="w-4 h-4 text-green-mid" />
+                <span className="text-xs font-bold text-green-dark uppercase tracking-wider">
+                  Routing Navigator
+                </span>
+              </div>
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-butter-panel text-green-dark border border-border">
+                {detectedRoutes.length} Routes
+              </span>
             </div>
-            <form onSubmit={handleCreateProject} className="space-y-3">
-              <div>
-                <label className="text-xs text-text-muted block mb-1">Project Name</label>
-                <input
-                  type="text"
-                  required
-                  value={newProjectName}
-                  onChange={(e) => setNewProjectName(e.target.value)}
-                  className="w-full bg-surface-2 border border-border px-3 py-1.5 rounded text-xs focus:outline-none focus:ring-1 focus:ring-accent"
-                />
+
+            {/* Route Search Filter */}
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search endpoints..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-butter-panel border border-border text-xs text-green-dark focus:outline-none focus:ring-1 focus:ring-green-mid placeholder:text-text-muted"
+              />
+            </div>
+
+            {/* Detected Endpoints List */}
+            <div className="space-y-1.5 max-h-[500px] overflow-y-auto pr-1">
+              {filteredRoutes.length === 0 ? (
+                <div className="text-xs text-text-muted p-4 text-center bg-butter-panel rounded-lg border border-border/40">
+                  No routes detected in active file.
+                </div>
+              ) : (
+                filteredRoutes.map((r, i) => {
+                  const isSelected = selectedRoute?.path === r.path && selectedRoute?.method === r.method;
+
+                  // Method badge style
+                  const methodStyle =
+                    r.method === 'GET'
+                      ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                      : r.method === 'POST'
+                      ? 'bg-emerald-700 text-butter-cream border-emerald-800'
+                      : r.method === 'PUT'
+                      ? 'bg-amber-100 text-amber-900 border-amber-300'
+                      : r.method === 'DELETE'
+                      ? 'bg-rose-100 text-rose-800 border-rose-300'
+                      : 'bg-purple-100 text-purple-900 border-purple-300';
+
+                  return (
+                    <div
+                      key={`${r.method}-${r.path}-${i}`}
+                      onClick={() => handleRouteClick(r)}
+                      className={`p-2.5 rounded-lg border text-left cursor-pointer transition-all flex items-start justify-between gap-2 ${
+                        isSelected
+                          ? 'bg-butter-cream/60 border-green-dark/40 ring-1 ring-green-mid/30 shadow-xs'
+                          : 'bg-butter-panel hover:bg-butter-warm/40 border-border/80'
+                      }`}
+                    >
+                      <div className="space-y-1 overflow-hidden">
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-[10px] font-black px-1.5 py-0.5 rounded border font-mono ${methodStyle}`}>
+                            {r.method}
+                          </span>
+                          <span className="text-xs font-bold text-green-dark truncate font-mono">
+                            {r.path}
+                          </span>
+                        </div>
+                        {r.summary && (
+                          <p className="text-[11px] text-text-muted truncate pl-0.5">
+                            {r.summary}
+                          </p>
+                        )}
+                      </div>
+                      <ChevronRight className={`w-3.5 h-3.5 mt-1 flex-shrink-0 transition-opacity ${
+                        isSelected ? 'text-green-dark opacity-100' : 'text-text-muted opacity-40'
+                      }`} />
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Loaded File Info Card */}
+            <div className="pt-3 border-t border-border flex items-center justify-between text-xs text-text-muted">
+              <div className="flex items-center gap-2 truncate">
+                <FileCode className="w-4 h-4 text-green-mid flex-shrink-0" />
+                <span className="font-semibold text-green-dark truncate">
+                  {loadedFileName || 'custom-spec.yaml'}
+                </span>
               </div>
-              <div>
-                <label className="text-xs text-text-muted block mb-1">Repository URL</label>
-                <input
-                  type="url"
-                  required
-                  value={newProjectRepo}
-                  onChange={(e) => setNewProjectRepo(e.target.value)}
-                  className="w-full bg-surface-2 border border-border px-3 py-1.5 rounded text-xs focus:outline-none focus:ring-1 focus:ring-accent"
-                />
+              <span className="text-[11px] font-mono">
+                {codeContent.split('\n').length} lines
+              </span>
+            </div>
+          </div>
+
+          {/* ================= CENTER / RIGHT: CODE EDITOR & BUTTON ACTION BAR (Col 8) ================= */}
+          <div className="lg:col-span-8 space-y-3">
+            {/* Top Action Toolbar (Button-Based Disclosure) */}
+            <div className="bg-white rounded-xl border border-border p-3 shadow-xs flex flex-wrap items-center justify-between gap-2.5">
+              {/* Active Scope Badge */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-green-dark">Scope:</span>
+                {selectedRoute ? (
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-butter-cream border border-butter-gold text-green-dark text-xs font-mono font-semibold">
+                    <span>{selectedRoute.method} {selectedRoute.path}</span>
+                    <button
+                      onClick={() => setSelectedRoute(null)}
+                      title="Clear route filter"
+                      className="hover:text-rose-600 ml-1"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <span className="text-xs text-text-muted bg-butter-panel border border-border px-2.5 py-1 rounded-md">
+                    Entire File ({detectedRoutes.length} routes)
+                  </span>
+                )}
+                {selectedLineRange && (
+                  <span className="text-[11px] text-green-mid font-mono bg-green-50 px-2 py-0.5 rounded border border-green-200">
+                    {selectedLineRange}
+                  </span>
+                )}
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="text-xs text-text-muted block mb-1">Default Branch</label>
-                  <input
-                    type="text"
-                    value={newProjectBranch}
-                    onChange={(e) => setNewProjectBranch(e.target.value)}
-                    className="w-full bg-surface-2 border border-border px-3 py-1.5 rounded text-xs focus:outline-none focus:ring-1 focus:ring-accent"
+
+              {/* ACTION BUTTONS (Clicking reveals results in drawer) */}
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={handleRunReview}
+                  disabled={isReviewing}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-xs ${
+                    activeDrawer === 'review'
+                      ? 'bg-green-dark text-butter-cream ring-2 ring-emerald-500'
+                      : 'bg-green-dark text-butter-cream hover:bg-green-deep'
+                  }`}
+                >
+                  <Search className={`w-3.5 h-3.5 text-butter-gold ${isReviewing ? 'animate-spin' : ''}`} />
+                  <span>{isReviewing ? 'Auditing...' : 'Review Code'}</span>
+                </button>
+
+                <button
+                  onClick={handleRunFixes}
+                  disabled={isGeneratingFix}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-xs ${
+                    activeDrawer === 'fixes'
+                      ? 'bg-green-mid text-butter-cream ring-2 ring-emerald-500'
+                      : 'bg-butter-panel border border-border text-green-dark hover:bg-butter-warm'
+                  }`}
+                >
+                  <Wrench className="w-3.5 h-3.5 text-green-mid" />
+                  <span>Suggest Fixes</span>
+                </button>
+
+                <button
+                  onClick={handleRunCommitMsg}
+                  disabled={isGeneratingCommitMsg}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-xs ${
+                    activeDrawer === 'commit'
+                      ? 'bg-green-mid text-butter-cream ring-2 ring-emerald-500'
+                      : 'bg-butter-panel border border-border text-green-dark hover:bg-butter-warm'
+                  }`}
+                >
+                  <GitCommit className="w-3.5 h-3.5 text-green-mid" />
+                  <span>Commit Msg</span>
+                </button>
+
+                <button
+                  onClick={() => setActiveDrawer(activeDrawer === 'safety' ? null : 'safety')}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-xs ${
+                    activeDrawer === 'safety'
+                      ? 'bg-green-mid text-butter-cream ring-2 ring-emerald-500'
+                      : 'bg-butter-panel border border-border text-green-dark hover:bg-butter-warm'
+                  }`}
+                >
+                  <Shield className="w-3.5 h-3.5 text-green-mid" />
+                  <span>Safety Verdict</span>
+                </button>
+
+                <button
+                  onClick={() => setActiveDrawer(activeDrawer === 'history' ? null : 'history')}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-xs ${
+                    activeDrawer === 'history'
+                      ? 'bg-green-mid text-butter-cream ring-2 ring-emerald-500'
+                      : 'bg-butter-panel border border-border text-green-dark hover:bg-butter-warm'
+                  }`}
+                >
+                  <History className="w-3.5 h-3.5 text-green-mid" />
+                  <span>History</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Split Grid when Drawer is Open vs Full Width Editor */}
+            <div className="grid grid-cols-1 gap-4 items-start">
+              {/* THE CODE EDITOR */}
+              <div className="bg-[#061D17] rounded-xl border border-green-dark/30 shadow-md overflow-hidden">
+                <div className="bg-[#0C382E] px-4 py-2 border-b border-green-mid/40 flex items-center justify-between text-xs text-butter-cream">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                    <span className="font-mono font-bold text-butter-gold">{loadedFileName || 'spec.yaml'}</span>
+                  </div>
+                  <span className="text-[11px] text-green-sage">
+                    {selectedText ? `${selectedLineRange} selected` : 'Select code to audit specific lines'}
+                  </span>
+                </div>
+
+                <div className="p-3">
+                  <textarea
+                    ref={textareaRef}
+                    value={codeContent}
+                    onChange={(e) => setCodeContent(e.target.value)}
+                    onSelect={handleSelectCode}
+                    rows={20}
+                    spellCheck={false}
+                    className="w-full bg-transparent text-butter-cream font-mono text-xs leading-5 p-2 focus:outline-none resize-y selection:bg-green-mid/70"
                   />
                 </div>
-                <div>
-                  <label className="text-xs text-text-muted block mb-1">Spec Path</label>
-                  <input
-                    type="text"
-                    value={newProjectSpec}
-                    onChange={(e) => setNewProjectSpec(e.target.value)}
-                    className="w-full bg-surface-2 border border-border px-3 py-1.5 rounded text-xs focus:outline-none focus:ring-1 focus:ring-accent"
-                  />
+              </div>
+
+              {/* ================= PROGRESSIVE DISCLOSURE SLIDE-OVER PANELS ================= */}
+              {activeDrawer && (
+                <div className="bg-white rounded-xl border border-border p-5 shadow-lg space-y-4 animate-fade-in">
+                  <div className="flex items-center justify-between pb-3 border-b border-border">
+                    <div className="flex items-center gap-2">
+                      {activeDrawer === 'review' && <Search className="w-5 h-5 text-green-dark" />}
+                      {activeDrawer === 'fixes' && <Wrench className="w-5 h-5 text-green-mid" />}
+                      {activeDrawer === 'commit' && <GitCommit className="w-5 h-5 text-green-mid" />}
+                      {activeDrawer === 'safety' && <Shield className="w-5 h-5 text-green-dark" />}
+                      {activeDrawer === 'history' && <History className="w-5 h-5 text-green-mid" />}
+                      <h3 className="text-base font-extrabold text-green-dark">
+                        {activeDrawer === 'review' && 'AI Code Review & Compatibility Audit'}
+                        {activeDrawer === 'fixes' && 'Backward-Compatible Fixes & Patch'}
+                        {activeDrawer === 'commit' && 'Conventional Commit Message Optimizer'}
+                        {activeDrawer === 'safety' && 'Release Safety & Breaking Change Analysis'}
+                        {activeDrawer === 'history' && 'Past Runs & Verdict History'}
+                      </h3>
+                    </div>
+                    <button
+                      onClick={() => setActiveDrawer(null)}
+                      className="p-1 rounded-lg hover:bg-butter-panel text-text-muted hover:text-green-dark"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {/* DRAWER 1: CODE REVIEW */}
+                  {activeDrawer === 'review' && (
+                    <div className="space-y-4">
+                      {isReviewing ? (
+                        <div className="p-8 text-center space-y-3 bg-butter-panel rounded-xl">
+                          <RefreshCw className="w-6 h-6 animate-spin text-green-mid mx-auto" />
+                          <p className="text-xs font-semibold text-green-dark">Analyzing route schema contracts with AI...</p>
+                        </div>
+                      ) : reviewResult ? (
+                        <div className="space-y-4">
+                          {/* Verdict Box */}
+                          <div className={`p-4 rounded-xl border flex items-center justify-between ${
+                            reviewResult.verdict === 'SAFE'
+                              ? 'bg-emerald-50 border-emerald-300 text-emerald-900'
+                              : reviewResult.verdict === 'WARNING'
+                              ? 'bg-amber-50 border-amber-300 text-amber-900'
+                              : 'bg-rose-50 border-rose-300 text-rose-900'
+                          }`}>
+                            <div>
+                              <div className="text-[10px] font-bold uppercase tracking-wider opacity-80">
+                                Compatibility Verdict
+                              </div>
+                              <div className="text-base font-extrabold">{reviewResult.verdict}</div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-2xl font-black">{reviewResult.score}/100</div>
+                              <div className="text-[10px] opacity-75">Safety Score</div>
+                            </div>
+                          </div>
+
+                          <p className="text-xs text-green-dark bg-butter-panel p-3 rounded-lg border border-border">
+                            {reviewResult.summary}
+                          </p>
+
+                          {/* Issues List */}
+                          <div className="space-y-2">
+                            <span className="text-xs font-bold text-green-dark uppercase tracking-wider">
+                              Audit Findings ({reviewResult.issues.length})
+                            </span>
+                            {reviewResult.issues.length === 0 ? (
+                              <div className="p-3 bg-emerald-50 text-emerald-800 text-xs rounded-lg border border-emerald-200 flex items-center gap-2">
+                                <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-600" />
+                                <span>All endpoint schemas and route parameters are backward-compatible.</span>
+                              </div>
+                            ) : (
+                              reviewResult.issues.map((issue, idx) => (
+                                <div key={idx} className="p-3 rounded-lg bg-butter-panel border border-border space-y-1.5">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs font-bold text-green-dark">{issue.title}</span>
+                                    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
+                                      issue.severity === 'critical'
+                                        ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                                        : issue.severity === 'warning'
+                                        ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                                        : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                                    }`}>
+                                      {issue.severity}
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-text-muted">{issue.description}</p>
+                                  <div className="text-xs text-green-dark bg-emerald-50 border border-emerald-200 p-2 rounded font-mono">
+                                    Fix: {issue.suggestion}
+                                  </div>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-6 text-center text-xs text-text-muted bg-butter-panel rounded-xl">
+                          Click &quot;Review Code&quot; to inspect your routes.
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* DRAWER 2: CODE FIXES */}
+                  {activeDrawer === 'fixes' && (
+                    <div className="space-y-4">
+                      {isGeneratingFix ? (
+                        <div className="p-8 text-center space-y-3 bg-butter-panel rounded-xl">
+                          <RefreshCw className="w-6 h-6 animate-spin text-green-mid mx-auto" />
+                          <p className="text-xs font-semibold text-green-dark">Generating backward-compatible patch...</p>
+                        </div>
+                      ) : fixResult ? (
+                        <div className="space-y-3">
+                          <p className="text-xs text-green-dark bg-butter-panel p-3 rounded-lg border border-border">
+                            {fixResult.explanation}
+                          </p>
+
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-green-dark uppercase tracking-wider">
+                                Suggested Diff
+                              </span>
+                              <button
+                                onClick={() => handleCopy(fixResult.fixedSnippet, 'fixed')}
+                                className="text-xs text-green-mid font-semibold hover:underline flex items-center gap-1"
+                              >
+                                {copiedKey === 'fixed' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                                Copy Code
+                              </button>
+                            </div>
+                            <pre className="p-3 rounded-lg bg-[#061D17] text-butter-cream text-xs font-mono overflow-x-auto max-h-56 leading-5 border border-green-dark/30">
+                              {fixResult.diff}
+                            </pre>
+                          </div>
+
+                          <button
+                            onClick={() => handleApplyFix(fixResult.fixedSnippet)}
+                            className="w-full py-2.5 rounded-xl bg-green-dark text-butter-cream font-bold text-xs hover:bg-green-deep transition-all shadow-xs flex items-center justify-center gap-2"
+                          >
+                            {copiedKey === 'applied' ? (
+                              <>
+                                <CheckCheck className="w-4 h-4 text-emerald-400" />
+                                <span>Applied to Editor!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Wrench className="w-4 h-4 text-butter-gold" />
+                                <span>Apply Fix Directly to Editor</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="p-6 text-center text-xs text-text-muted bg-butter-panel rounded-xl">
+                          Click &quot;Suggest Fixes&quot; to auto-generate backward-compatible remediation code.
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* DRAWER 3: COMMIT MESSAGE */}
+                  {activeDrawer === 'commit' && (
+                    <div className="space-y-4">
+                      {isGeneratingCommitMsg ? (
+                        <div className="p-8 text-center space-y-3 bg-butter-panel rounded-xl">
+                          <RefreshCw className="w-6 h-6 animate-spin text-green-mid mx-auto" />
+                          <p className="text-xs font-semibold text-green-dark">Formulating conventional commit message...</p>
+                        </div>
+                      ) : commitMsgResult ? (
+                        <div className="space-y-3">
+                          <div className="p-3.5 rounded-lg bg-[#061D17] border border-green-dark/30 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] font-bold text-butter-gold uppercase tracking-wider">
+                                Conventional Commit
+                              </span>
+                              <button
+                                onClick={() => handleCopy(commitMsgResult.conventionalMessage, 'commit-msg')}
+                                className="text-xs text-butter-cream hover:underline flex items-center gap-1"
+                              >
+                                {copiedKey === 'commit-msg' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                                Copy
+                              </button>
+                            </div>
+                            <p className="text-xs font-mono text-butter-cream font-semibold">
+                              {commitMsgResult.title}
+                            </p>
+                            {commitMsgResult.body && (
+                              <p className="text-xs font-mono text-butter-cream/80 whitespace-pre-wrap">
+                                {commitMsgResult.body}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <span className="text-xs font-bold text-green-dark uppercase tracking-wider">
+                              Alternative Commit Titles
+                            </span>
+                            <div className="space-y-1">
+                              {commitMsgResult.alternativeSuggestions.map((alt, idx) => (
+                                <div
+                                  key={idx}
+                                  onClick={() => handleCopy(alt, `alt-${idx}`)}
+                                  className="p-2 rounded-lg bg-butter-panel hover:bg-butter-warm border border-border text-xs font-mono text-green-dark cursor-pointer flex items-center justify-between"
+                                >
+                                  <span>{alt}</span>
+                                  {copiedKey === `alt-${idx}` ? (
+                                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                  ) : (
+                                    <Copy className="w-3.5 h-3.5 text-text-muted" />
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-6 text-center text-xs text-text-muted bg-butter-panel rounded-xl">
+                          Click &quot;Commit Msg&quot; to synthesize semantic conventional commit messages.
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* DRAWER 4: SAFETY VERDICT */}
+                  {activeDrawer === 'safety' && (
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-3 gap-3 text-center">
+                        <div className="p-3 bg-butter-panel rounded-lg border border-border">
+                          <div className="text-xl font-bold text-green-dark">{detectedRoutes.length}</div>
+                          <div className="text-[11px] text-text-muted">Total Routes</div>
+                        </div>
+                        <div className="p-3 bg-butter-panel rounded-lg border border-border">
+                          <div className="text-xl font-bold text-rose-600">
+                            {reviewResult?.issues.filter((i) => i.severity === 'critical').length ?? 0}
+                          </div>
+                          <div className="text-[11px] text-text-muted">Breaking Issues</div>
+                        </div>
+                        <div className="p-3 bg-butter-panel rounded-lg border border-border">
+                          <div className="text-xl font-bold text-amber-600">
+                            {reviewResult?.issues.filter((i) => i.severity === 'warning').length ?? 0}
+                          </div>
+                          <div className="text-[11px] text-text-muted">Warnings</div>
+                        </div>
+                      </div>
+                      <div className="p-3 bg-butter-panel rounded-lg border border-border text-xs text-green-dark leading-relaxed">
+                        API contracts are checked against breaking REST guidelines: mandatory new fields without defaults, parameter deletion, and modified response types.
+                      </div>
+                    </div>
+                  )}
+
+                  {/* DRAWER 5: HISTORY */}
+                  {activeDrawer === 'history' && (
+                    <div className="space-y-2">
+                      {recentRuns.length === 0 ? (
+                        <div className="p-6 text-center text-xs text-text-muted bg-butter-panel rounded-xl">
+                          No past runs recorded for this project yet.
+                        </div>
+                      ) : (
+                        recentRuns.map((r) => (
+                          <div key={r._id || r.id} className="p-3 rounded-lg bg-butter-panel border border-border flex items-center justify-between text-xs">
+                            <div>
+                              <div className="font-mono font-bold text-green-dark">
+                                {r.headSha ? r.headSha.slice(0, 7) : 'HEAD'} • {r.headBranch || 'main'}
+                              </div>
+                              <div className="text-[11px] text-text-muted">
+                                {new Date(r.createdAt).toLocaleString()}
+                              </div>
+                            </div>
+                            <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
+                              r.releaseStatus === 'safe'
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : r.releaseStatus === 'review'
+                                ? 'bg-amber-100 text-amber-800'
+                                : 'bg-rose-100 text-rose-800'
+                            }`}>
+                              {r.releaseStatus || 'Completed'}
+                            </span>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
-              <div className="flex justify-end gap-2 pt-3">
-                <button
-                  type="button"
-                  onClick={() => setShowNewProjectModal(false)}
-                  className="px-3 py-1.5 border border-border rounded text-xs text-text-muted"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-3 py-1.5 bg-accent text-white rounded text-xs font-semibold hover:bg-accent/90"
-                >
-                  Create Project
-                </button>
-              </div>
-            </form>
+              )}
+            </div>
           </div>
         </div>
       )}
 
-      {/* Modal: New Token */}
-      {showNewTokenModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-surface border border-border rounded-lg max-w-md w-full p-6 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm">Generate Personal Access Token</h3>
+      {/* 3. MODAL: CONNECT GITHUB / UPLOAD CODE */}
+      {showImportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
+          <div className="relative w-full max-w-lg rounded-2xl bg-white border border-border p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
+              <div className="flex items-center gap-2">
+                <Github className="w-5 h-5 text-green-dark" />
+                <h3 className="text-base font-bold text-green-dark">
+                  {importTab === 'github' ? 'Import from GitHub' : importTab === 'upload' ? 'Upload Code File' : 'Paste Code'}
+                </h3>
+              </div>
               <button
-                onClick={() => {
-                  setShowNewTokenModal(false);
-                  setCreatedTokenSecret(null);
-                }}
+                onClick={() => setShowImportModal(false)}
+                className="p-1 rounded-lg hover:bg-butter-panel text-text-muted hover:text-green-dark"
               >
-                <X className="w-4 h-4 text-text-muted" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            {createdTokenSecret ? (
+            {/* Tab selector */}
+            <div className="flex rounded-lg bg-butter-panel p-1 border border-border text-xs font-semibold">
+              <button
+                onClick={() => setImportTab('github')}
+                className={`flex-1 py-1.5 rounded-md transition-all ${
+                  importTab === 'github' ? 'bg-green-dark text-butter-cream shadow-xs' : 'text-text-muted hover:text-green-dark'
+                }`}
+              >
+                GitHub Repo
+              </button>
+              <button
+                onClick={() => setImportTab('upload')}
+                className={`flex-1 py-1.5 rounded-md transition-all ${
+                  importTab === 'upload' ? 'bg-green-dark text-butter-cream shadow-xs' : 'text-text-muted hover:text-green-dark'
+                }`}
+              >
+                Upload File
+              </button>
+              <button
+                onClick={() => setImportTab('paste')}
+                className={`flex-1 py-1.5 rounded-md transition-all ${
+                  importTab === 'paste' ? 'bg-green-dark text-butter-cream shadow-xs' : 'text-text-muted hover:text-green-dark'
+                }`}
+              >
+                Paste Code
+              </button>
+            </div>
+
+            {/* TAB: GITHUB */}
+            {importTab === 'github' && (
               <div className="space-y-3">
-                <p className="text-xs text-text-muted">
-                  Make sure to copy your personal access token now. You won't be able to see it again!
-                </p>
-                <div className="flex items-center gap-2 bg-surface-2 border border-border p-2 rounded">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-green-dark">GitHub Repository</label>
                   <input
                     type="text"
-                    readOnly
-                    value={createdTokenSecret}
-                    className="w-full bg-transparent font-mono text-xs focus:outline-none"
-                  />
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(createdTokenSecret);
-                      setCopiedToken(true);
-                      setTimeout(() => setCopiedToken(false), 2000);
-                    }}
-                    className="p-1.5 bg-accent text-white rounded text-xs"
-                  >
-                    {copiedToken ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                  </button>
-                </div>
-                <button
-                  onClick={() => {
-                    setShowNewTokenModal(false);
-                    setCreatedTokenSecret(null);
-                  }}
-                  className="w-full py-1.5 bg-surface-2 border border-border rounded text-xs font-semibold"
-                >
-                  Done
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleCreateToken} className="space-y-3">
-                <div>
-                  <label className="text-xs text-text-muted block mb-1">Token Name / Description</label>
-                  <input
-                    type="text"
-                    required
-                    value={newTokenName}
-                    onChange={(e) => setNewTokenName(e.target.value)}
-                    className="w-full bg-surface-2 border border-border px-3 py-1.5 rounded text-xs focus:outline-none focus:ring-1 focus:ring-accent"
+                    placeholder="e.g. subratoghosh/uncharted_shakti_1 or https://github.com/..."
+                    value={githubUrl}
+                    onChange={(e) => setGithubUrl(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg bg-butter-panel border border-border text-xs text-green-dark focus:ring-1 focus:ring-green-mid"
                   />
                 </div>
-                <div className="flex justify-end gap-2 pt-3">
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-green-dark">Branch</label>
+                    <input
+                      type="text"
+                      placeholder="main"
+                      value={githubBranch}
+                      onChange={(e) => setGithubBranch(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-butter-panel border border-border text-xs text-green-dark focus:ring-1 focus:ring-green-mid"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-green-dark">Spec / Route Path</label>
+                    <input
+                      type="text"
+                      placeholder="openapi.yaml (or auto-detect)"
+                      value={githubPath}
+                      onChange={(e) => setGithubPath(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-butter-panel border border-border text-xs text-green-dark focus:ring-1 focus:ring-green-mid"
+                    />
+                  </div>
+                </div>
+
+                {githubImportError && (
+                  <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700">
+                    {githubImportError}
+                  </div>
+                )}
+
+                <div className="pt-2 flex justify-end gap-2">
                   <button
-                    type="button"
-                    onClick={() => setShowNewTokenModal(false)}
-                    className="px-3 py-1.5 border border-border rounded text-xs text-text-muted"
+                    onClick={() => setShowImportModal(false)}
+                    className="px-3.5 py-2 text-xs font-semibold rounded-lg border border-border hover:bg-butter-panel"
                   >
                     Cancel
                   </button>
                   <button
-                    type="submit"
-                    className="px-3 py-1.5 bg-accent text-white rounded text-xs font-semibold hover:bg-accent/90"
+                    onClick={handleImportFromGithub}
+                    disabled={isImportingGithub || !githubUrl.trim()}
+                    className="px-4 py-2 text-xs font-bold rounded-lg bg-green-dark text-butter-cream hover:bg-green-deep transition-all shadow-xs disabled:opacity-50 flex items-center gap-1.5"
                   >
-                    Generate Token
+                    {isImportingGithub ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>Fetching...</span>
+                      </>
+                    ) : (
+                      <span>Import Repository</span>
+                    )}
                   </button>
                 </div>
-              </form>
+              </div>
             )}
+
+            {/* TAB: UPLOAD FILE */}
+            {importTab === 'upload' && (
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-green-dark">Select OpenAPI or Controller file</label>
+                <div className="relative border-2 border-dashed border-border hover:border-green-dark/50 rounded-xl p-8 text-center space-y-2 bg-butter-panel/60 cursor-pointer transition-all">
+                  <Upload className="w-7 h-7 text-green-mid mx-auto" />
+                  <p className="text-xs font-bold text-green-dark">Click or drag file here to upload</p>
+                  <p className="text-[11px] text-text-muted">Supports .yaml, .yml, .json, .ts, .js</p>
+                  <input
+                    type="file"
+                    accept=".yaml,.yml,.json,.ts,.js,.py"
+                    onChange={handleFileUpload}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* TAB: PASTE CODE */}
+            {importTab === 'paste' && (
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-green-dark">Paste OpenAPI YAML/JSON or Controller</label>
+                <textarea
+                  rows={8}
+                  placeholder="openapi: 3.0.0&#10;paths:&#10;  /api/v1/users:&#10;    get:&#10;      summary: ..."
+                  value={pasteInput}
+                  onChange={(e) => setPasteInput(e.target.value)}
+                  className="w-full p-3 rounded-lg bg-butter-panel border border-border text-xs font-mono text-green-dark focus:ring-1 focus:ring-green-mid"
+                />
+                <div className="flex justify-end gap-2">
+                  <button
+                    onClick={() => setShowImportModal(false)}
+                    className="px-3.5 py-2 text-xs font-semibold rounded-lg border border-border hover:bg-butter-panel"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (pasteInput.trim()) {
+                        setCodeContent(pasteInput);
+                        setLoadedFileName('pasted-code.yaml');
+                        setShowImportModal(false);
+                        setPasteInput('');
+                        setSelectedRoute(null);
+                      }
+                    }}
+                    disabled={!pasteInput.trim()}
+                    className="px-4 py-2 text-xs font-bold rounded-lg bg-green-dark text-butter-cream hover:bg-green-deep shadow-xs disabled:opacity-50"
+                  >
+                    Load into Studio
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 4. MODAL: CREATE NEW PROJECT IN DB */}
+      {showNewProjectModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
+          <div className="relative w-full max-w-md rounded-2xl bg-white border border-border p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
+              <h3 className="text-base font-bold text-green-dark">Create Project in Database</h3>
+              <button
+                onClick={() => setShowNewProjectModal(false)}
+                className="p-1 rounded-lg hover:bg-butter-panel text-text-muted hover:text-green-dark"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-green-dark">Project Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Orders & Checkout Service"
+                  value={newProjectName}
+                  onChange={(e) => setNewProjectName(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg bg-butter-panel border border-border text-xs text-green-dark focus:ring-1 focus:ring-green-mid"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-green-dark">Repository URL (optional)</label>
+                <input
+                  type="text"
+                  placeholder="https://github.com/myorg/api"
+                  value={newProjectRepo}
+                  onChange={(e) => setNewProjectRepo(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg bg-butter-panel border border-border text-xs text-green-dark focus:ring-1 focus:ring-green-mid"
+                />
+              </div>
+
+              <div className="pt-2 flex justify-end gap-2">
+                <button
+                  onClick={() => setShowNewProjectModal(false)}
+                  className="px-3.5 py-2 text-xs font-semibold rounded-lg border border-border hover:bg-butter-panel"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateProject}
+                  disabled={isCreatingProject || !newProjectName.trim()}
+                  className="px-4 py-2 text-xs font-bold rounded-lg bg-green-dark text-butter-cream hover:bg-green-deep shadow-xs disabled:opacity-50"
+                >
+                  {isCreatingProject ? 'Saving...' : 'Create Project'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
