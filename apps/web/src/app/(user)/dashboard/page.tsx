@@ -39,6 +39,7 @@ import type {
   StudioCommitMessage,
   StudioCodeFix,
 } from '@/types/index';
+import { OpenApiGuidanceCard } from '@/components/shared/OpenApiGuidanceCard';
 
 // Optional quick presets if the user explicitly wants to test
 const PRESET_OPENAPI = `openapi: 3.0.0
@@ -1220,7 +1221,7 @@ export default function DashboardPage() {
       {/* 3. MODAL: CONNECT GITHUB / UPLOAD CODE */}
       {showImportModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
-          <div className="relative w-full max-w-lg rounded-2xl bg-white border border-border p-6 shadow-2xl space-y-4">
+          <div className="relative w-full max-w-xl max-h-[92vh] overflow-y-auto rounded-2xl bg-white border border-border p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <div className="flex items-center gap-2">
                 <Github className="w-5 h-5 text-green-dark" />
@@ -1300,6 +1301,9 @@ export default function DashboardPage() {
                     />
                   </div>
                 </div>
+
+                {/* OpenAPI & Spec Guidance Card */}
+                <OpenApiGuidanceCard compact />
 
                 {githubImportError && (
                   <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700">

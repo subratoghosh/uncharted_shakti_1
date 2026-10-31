@@ -37,6 +37,7 @@ import type {
   StudioCodeFix,
   StudioCommitLog,
 } from '@/types/index';
+import { OpenApiGuidanceCard } from '@/components/shared/OpenApiGuidanceCard';
 
 // Default presets for instant exploration
 const PRESET_OPENAPI = `openapi: 3.0.0
@@ -1113,7 +1114,7 @@ export function CodeIntelligenceStudio({
       {/* 3. MODAL: CONNECT GITHUB / UPLOAD CODE */}
       {showImportModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-fade-in">
-          <div className="relative w-full max-w-lg rounded-2xl bg-surface border border-border p-6 shadow-2xl space-y-5">
+          <div className="relative w-full max-w-xl max-h-[92vh] overflow-y-auto rounded-2xl bg-surface border border-border p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <div className="flex items-center gap-2">
                 <Github className="w-5 h-5 text-accent" />
@@ -1178,6 +1179,9 @@ export function CodeIntelligenceStudio({
                     className="w-full px-3 py-2 rounded-xl bg-surface-2 border border-border text-xs focus:ring-1 focus:ring-accent"
                   />
                 </div>
+
+                {/* OpenAPI & Spec Guidance Card */}
+                <OpenApiGuidanceCard compact />
 
                 <p className="text-xs text-muted">
                   shaktIQ will clone or fetch the specified branch, parse route definitions, and populate the live route explorer.

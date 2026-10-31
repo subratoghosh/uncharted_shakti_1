@@ -7,6 +7,7 @@ import { apiClient } from '../../../lib/api-client';
 import { FolderGit2, Plus, GitBranch, X } from 'lucide-react';
 import { formatDate } from '../../../lib/format';
 import { Skeleton } from '../../../components/common/Skeleton';
+import { OpenApiGuidanceCard } from '../../../components/shared/OpenApiGuidanceCard';
 
 type Project = {
   id: string;
@@ -144,7 +145,7 @@ export default function ProjectsPage() {
       {/* Modal: New Project */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-surface border border-border rounded-lg max-w-md w-full p-6 space-y-5">
+          <div className="bg-surface border border-border rounded-xl max-w-lg w-full max-h-[92vh] overflow-y-auto p-6 space-y-5 shadow-2xl">
             <div className="flex items-center justify-between">
               <h2 className="font-bold text-lg">Register New Project</h2>
               <button
@@ -207,6 +208,9 @@ export default function ProjectsPage() {
                   />
                 </div>
               </div>
+
+              {/* Guidance Card for OpenAPI spec */}
+              <OpenApiGuidanceCard compact />
 
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button

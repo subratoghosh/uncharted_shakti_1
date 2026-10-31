@@ -73,17 +73,30 @@
       "editor/title": [
         {
           "command": "shaktiq.analyze",
-          "group": "navigation",
-          "when": "resourceExtname =~ /\\.(yaml|yml|json|py|ts|js|go|java)$/"
+          "group": "navigation"
         }
       ],
       "editor/context": [
         {
-          "command": "shaktiq.reviewCode",
+          "command": "shaktiq.analyze",
           "group": "shaktiq@1"
         },
         {
+          "command": "shaktiq.reviewCode",
+          "group": "shaktiq@2"
+        },
+        {
           "command": "shaktiq.suggestFix",
+          "group": "shaktiq@3"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "shaktiq.analyze",
+          "group": "shaktiq@1"
+        },
+        {
+          "command": "shaktiq.reviewCode",
           "group": "shaktiq@2"
         }
       ]

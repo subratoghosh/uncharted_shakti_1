@@ -673,12 +673,149 @@ const suggestFixCmd = vscode.commands.registerCommand('shaktiq.suggestFix', asyn
 });
 
 // --------------------------------------------------------------------------
-// Command: AI Review Code File / Controller
+// Helper: Universal Folder Analysis
 // --------------------------------------------------------------------------
-const reviewCodeCmd = vscode.commands.registerCommand('shaktiq.reviewCode', async () => {
-  const editor = vscode.window.activeTextEditor;
+async function analyzeFolder(folderUri: vscode.Uri) {
+  const folderName = path.basename(folderUri.fsPath) || 'Workspace';
+
+  await vscode.window.withProgress(
+    {
+      location: vscode.ProgressLocation.Notification,
+      title: `shaktIQ: Auditing folder "${folderName}" for API contracts and endpoints...`,
+      cancellable: false,
+    },
+    async (progress) => {
+      progress.report({ message: 'Searching code and spec files...' });
+
+      const relPattern = new vscode.RelativePattern(folderUri, '**/*');
+      const files = await vscode.workspace.findFiles(
+        relPattern,
+        '**/{node_modules,.git,.next,dist,build,out,venv,__pycache__}/**',
+        60,
+      );
+
+      const supportedCodeExts = new Set([
+        '.py', '.ts', '.js', '.jsx', '.tsx', '.go', '.java', '.php', '.rb', '.cs', '.yaml', '.yml', '.json',
+      ]);
+
+      const candidateFiles = files.filter(f => supportedCodeExts.has(path.extname(f.fsPath).toLowerCase()));
+
+      if (candidateFiles.length === 0) {
+        vscode.window.showInformationMessage(`shaktIQ: No source or spec files found in "${folderName}".`);
+        return;
+      }
+
+      progress.report({ message: `Analyzing ${candidateFiles.length} files...` });
+
+      const allRoutes: DetectedRoute[] = [];
+      const allFindings: FindingItem[] = [];
+      let scannedCount = 0;
+
+      for (const fileUri of candidateFiles.slice(0, 30)) {
+        try {
+          const doc = await vscode.workspace.openTextDocument(fileUri);
+          const content = doc.getText();
+          const filePath = fileUri.fsPath;
+          const fileName = path.basename(filePath);
+          const ext = path.extname(filePath).toLowerCase();
+
+          // 1. Detect routes locally
+          const localRoutes = parseRoutesLocally(content, filePath);
+          allRoutes.push(...localRoutes);
+
+          // 2. Detect code review findings locally
+          const localAudit = auditCodeLocally(content, filePath);
+          if (localAudit.criticalFindings && localAudit.criticalFindings.length > 0) {
+            for (let i = 0; i < localAudit.criticalFindings.length; i++) {
+              const cf = localAudit.criticalFindings[i];
+              if (!cf) continue;
+              if (cf.includes('Code structure is compliant') && localAudit.criticalFindings.length > 1) continue;
+              allFindings.push({
+                fingerprint: `fld_${fileName}_${i}`,
+                endpoint: fileName,
+                method: ext.replace('.', '').toUpperCase(),
+                changeType: localAudit.breakingRisk === 'HIGH' ? 'BREAKING_CHANGE' : 'CODE_AUDIT',
+                severity: localAudit.breakingRisk === 'HIGH' ? 'breaking' : localAudit.breakingRisk === 'MEDIUM' ? 'warning' : 'info',
+                ruleId: `FOLDER_${localAudit.breakingRisk}`,
+                description: cf,
+                impact: localAudit.backwardCompatibilityRisk ? 'Potential breaking contract change for clients' : 'Non-breaking code observation',
+                recommendation: localAudit.suggestions[0] || 'Ensure backward-compatible fallback parameters',
+                locationText: `${fileName}`,
+              });
+            }
+          }
+          scannedCount++;
+        } catch {
+          // Ignore unreadable files
+        }
+      }
+
+      // Update tree views
+      if (allRoutes.length > 0) {
+        routesTreeDataProvider.setRoutes(allRoutes);
+      }
+      if (allFindings.length > 0) {
+        findingsTreeDataProvider.setFindings(allFindings);
+      }
+
+      const highRiskCount = allFindings.filter(f => f.severity === 'breaking').length;
+      const statusText = `shaktIQ: Audited ${scannedCount} files in "${folderName}". Found ${allRoutes.length} endpoints, ${highRiskCount} breaking risks.`;
+
+      vscode.window.showInformationMessage(statusText, 'View Findings', 'Open Web Studio').then(c => {
+        if (c === 'Open Web Studio') {
+          vscode.commands.executeCommand('shaktiq.openDashboard');
+        } else if (c === 'View Findings') {
+          vscode.commands.executeCommand('shaktiq.findingsView.focus');
+        }
+      });
+    },
+  );
+}
+
+// --------------------------------------------------------------------------
+// Command: AI Review Code File / Controller (Supports any file & directory)
+// --------------------------------------------------------------------------
+const reviewCodeCmd = vscode.commands.registerCommand('shaktiq.reviewCode', async (targetUri?: vscode.Uri) => {
+  let editor = vscode.window.activeTextEditor;
+
+  if (targetUri) {
+    try {
+      const stat = await vscode.workspace.fs.stat(targetUri);
+      if ((stat.type & vscode.FileType.Directory) !== 0) {
+        await analyzeFolder(targetUri);
+        return;
+      }
+      const doc = await vscode.workspace.openTextDocument(targetUri);
+      editor = await vscode.window.showTextDocument(doc);
+    } catch {
+      // Fallback to active editor
+    }
+  }
+
   if (!editor) {
-    vscode.window.showErrorMessage('Please open a code or controller file to review.');
+    // Check open documents
+    const openDocs = vscode.workspace.textDocuments.filter(d => !d.isUntitled);
+    if (openDocs.length > 0 && openDocs[0]) {
+      editor = await vscode.window.showTextDocument(openDocs[0]);
+    }
+  }
+
+  if (!editor) {
+    // Search workspace for any code file
+    const foundFiles = await vscode.workspace.findFiles('**/*.{py,ts,js,jsx,tsx,go,java,json,yaml}', '**/node_modules/**', 1);
+    if (foundFiles.length > 0 && foundFiles[0]) {
+      const doc = await vscode.workspace.openTextDocument(foundFiles[0]);
+      editor = await vscode.window.showTextDocument(doc);
+    }
+  }
+
+  if (!editor) {
+    const folders = vscode.workspace.workspaceFolders;
+    if (folders && folders.length > 0 && folders[0]) {
+      await analyzeFolder(folders[0].uri);
+      return;
+    }
+    vscode.window.showInformationMessage('Please open a file or folder in your workspace to review.');
     return;
   }
 
@@ -781,28 +918,52 @@ const reviewCodeCmd = vscode.commands.registerCommand('shaktiq.reviewCode', asyn
 });
 
 // --------------------------------------------------------------------------
-// Command: Smart Universal Analyze (Spec + Code Auto-Routing)
+// Command: Smart Universal Analyze (Spec + Code Auto-Routing + Folder Support)
 // --------------------------------------------------------------------------
-const analyzeCmd = vscode.commands.registerCommand('shaktiq.analyze', async () => {
+const analyzeCmd = vscode.commands.registerCommand('shaktiq.analyze', async (targetUri?: vscode.Uri) => {
   const folders = vscode.workspace.workspaceFolders;
-  const activeEditor = vscode.window.activeTextEditor;
 
-  // Check if active editor is a code file (.py, .ts, .js, .go, etc.)
+  // 1. If targetUri provided (e.g. from right-click in file explorer):
+  if (targetUri) {
+    try {
+      const stat = await vscode.workspace.fs.stat(targetUri);
+      if ((stat.type & vscode.FileType.Directory) !== 0) {
+        await analyzeFolder(targetUri);
+        return;
+      }
+
+      const ext = path.extname(targetUri.fsPath).toLowerCase();
+      const doc = await vscode.workspace.openTextDocument(targetUri);
+      const text = doc.getText();
+      const isOpenApiSpec = (['.yaml', '.yml', '.json'].includes(ext)) &&
+        (text.includes('openapi:') || text.includes('swagger:') || text.includes('"openapi"'));
+
+      if (!isOpenApiSpec) {
+        await vscode.window.showTextDocument(doc);
+        await vscode.commands.executeCommand('shaktiq.reviewCode', targetUri);
+        return;
+      }
+    } catch {
+      // Proceed to normal resolution
+    }
+  }
+
+  // 2. Check active editor
+  const activeEditor = vscode.window.activeTextEditor;
   if (activeEditor) {
     const ext = path.extname(activeEditor.document.fileName).toLowerCase();
-    const isCodeFile = ['.py', '.ts', '.js', '.jsx', '.tsx', '.go', '.java', '.php', '.rb', '.cs'].includes(ext);
     const docText = activeEditor.document.getText();
     const hasOpenApiHeader = docText.includes('openapi:') || docText.includes('swagger:') || docText.includes('"openapi"');
 
-    // If active editor is code and not openapi, route directly to intelligent Code Review!
-    if (isCodeFile && !hasOpenApiHeader) {
+    // If active editor is code and not openapi, route directly to Code Review
+    if (!hasOpenApiHeader) {
       await vscode.commands.executeCommand('shaktiq.reviewCode');
       return;
     }
   }
 
   if (!folders || folders.length === 0 || !folders[0]) {
-    vscode.window.showErrorMessage('Please open a workspace folder containing your API spec or code.');
+    vscode.window.showInformationMessage('Please open a workspace folder containing your API spec or code.');
     return;
   }
 
@@ -852,7 +1013,7 @@ const analyzeCmd = vscode.commands.registerCommand('shaktiq.analyze', async () =
     }
   }
 
-  // If still no spec found: If an active editor is open, gracefully fall back to code review!
+  // If still no spec found: NEVER block! Auto-review active editor, open doc, or analyze folder
   if (!targetSpecUri) {
     if (activeEditor) {
       await vscode.commands.executeCommand('shaktiq.reviewCode');
@@ -867,34 +1028,13 @@ const analyzeCmd = vscode.commands.registerCommand('shaktiq.analyze', async () =
       return;
     }
 
-    // Otherwise offer to pick any file or open Web Studio
-    const choice = await vscode.window.showInformationMessage(
-      'shaktIQ: No OpenAPI specification found in workspace. Open a code controller (.py, .ts, .js) or select an API spec file.',
-      'Select Spec File...',
-      'Open Web Studio',
-    );
-    if (choice === 'Select Spec File...') {
-      const picked = await vscode.window.showOpenDialog({
-        canSelectMany: false,
-        filters: { 'API Specifications & Code': ['yaml', 'yml', 'json', 'py', 'ts', 'js'] },
-      });
-      if (picked && picked[0]) {
-        targetSpecUri = picked[0];
-        specRelativePath = path.relative(workspaceRoot, targetSpecUri.fsPath);
-        const ext = path.extname(targetSpecUri.fsPath).toLowerCase();
-        if (['.py', '.ts', '.js', '.jsx', '.tsx', '.go', '.java'].includes(ext)) {
-          const doc = await vscode.workspace.openTextDocument(targetSpecUri);
-          await vscode.window.showTextDocument(doc);
-          await vscode.commands.executeCommand('shaktiq.reviewCode');
-          return;
-        }
-      }
-    } else if (choice === 'Open Web Studio') {
-      await vscode.commands.executeCommand('shaktiq.openDashboard');
+    // Auto-audit workspace folder!
+    if (folders && folders.length > 0 && folders[0]) {
+      await analyzeFolder(folders[0].uri);
       return;
     }
 
-    if (!targetSpecUri) return;
+    return;
   }
 
   // Read Head Spec Content
