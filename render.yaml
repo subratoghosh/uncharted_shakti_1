@@ -1,0 +1,69 @@
+services:
+  # 1. ShaktIQ Fastify Core API Backend
+  - type: web
+    name: shaktiq-api
+    runtime: docker
+    dockerfilePath: infra/Dockerfile.api
+    dockerContext: .
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 4000
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false # Set your MongoDB Atlas connection URI in Render Dashboard
+      - key: MONGODB_DB
+        value: shaktiq
+      - key: JWT_SECRET
+        generateValue: true
+      - key: INTERNAL_API_KEY
+        generateValue: true
+      - key: GITHUB_WEBHOOK_SECRET
+        sync: false
+      - key: N8N_WEBHOOK_URL
+        sync: false # e.g. https://shaktiq-n8n.onrender.com/webhook/shaktiq-analyze-run
+      - key: N8N_WEBHOOK_TOKEN
+        value: shaktiq-n8n-header-token-production
+      - key: WEB_ORIGIN
+        sync: false # e.g. https://shaktiq-web.vercel.app
+      - key: OASDIFF_MODE
+        value: binary
+      - key: MAX_SPEC_BYTES
+        value: "5242880"
+      - key: GEMINI_API_KEY
+        sync: false
+
+  # 2. ShaktIQ n8n Workflow Automation Engine
+  - type: web
+    name: shaktiq-n8n
+    runtime: image
+    image:
+      url: docker.n8n.io/n8nio/n8n:latest
+    plan: starter
+    disk:
+      name: n8n-storage
+      mountPath: /home/node/.n8n
+      sizeGB: 1
+    envVars:
+      - key: N8N_BASIC_AUTH_ACTIVE
+        value: "true"
+      - key: N8N_BASIC_AUTH_USER
+        value: admin
+      - key: N8N_BASIC_AUTH_PASSWORD
+        sync: false # Choose your n8n login password in Render Dashboard
+      - key: N8N_ENCRYPTION_KEY
+        generateValue: true
+      - key: N8N_DEFAULT_BINARY_DATA_MODE
+        value: default
+      - key: EXECUTIONS_DATA_PRUNE
+        value: "true"
+      - key: EXECUTIONS_DATA_MAX_AGE
+        value: "168"
+      - key: WEBHOOK_URL
+        sync: false # e.g. https://shaktiq-n8n.onrender.com
+      - key: SHAKTIQ_API_URL
+        sync: false # e.g. https://shaktiq-api.onrender.com
+      - key: INTERNAL_API_KEY
+        sync: false # Must match the INTERNAL_API_KEY on shaktiq-api
