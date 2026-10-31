@@ -2,6 +2,7 @@
 
 import { ThemeToggle } from '@/components/shared/ThemeToggle';
 import { ConnectionDot } from '@/components/shared/ConnectionDot';
+import { Logo } from '@/components/shared/Logo';
 import { useConnectionStatus } from '@/hooks/use-connection-status';
 import { cn } from '@/lib/utils';
 import { Menu, LogOut, ChevronRight } from 'lucide-react';
@@ -24,14 +25,17 @@ export function Topbar({ breadcrumbs, onMenuToggle, className }: Props) {
         className,
       )}
     >
-      {/* Mobile menu toggle */}
-      <button
-        onClick={onMenuToggle}
-        aria-label="Toggle sidebar"
-        className="flex h-9 w-9 items-center justify-center rounded text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] lg:hidden"
-      >
-        <Menu className="h-4 w-4" aria-hidden />
-      </button>
+      {/* Mobile menu toggle & brand logo */}
+      <div className="flex items-center gap-2 lg:hidden">
+        <button
+          onClick={onMenuToggle}
+          aria-label="Toggle sidebar"
+          className="flex h-9 w-9 items-center justify-center rounded text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)]"
+        >
+          <Menu className="h-4 w-4" aria-hidden />
+        </button>
+        <Logo size="sm" />
+      </div>
 
       {/* Breadcrumbs */}
       {breadcrumbs && breadcrumbs.length > 0 && (

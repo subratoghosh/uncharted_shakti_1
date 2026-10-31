@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { Logo } from '@/components/shared/Logo';
 import {
   LayoutDashboard,
   FolderKanban,
   Play,
   Key,
   Settings,
-  Zap,
 } from 'lucide-react';
 
 type NavItem = { label: string; href: string; Icon: React.ElementType };
@@ -36,13 +36,8 @@ export function UserSidebar({ collapsed = false }: Props) {
       aria-label="User navigation"
     >
       {/* Logo */}
-      <div className="flex items-center gap-2 px-4 h-14 border-b border-[var(--border)] shrink-0">
-        <Zap className="h-5 w-5 text-[var(--accent)] shrink-0" aria-hidden />
-        {!collapsed && (
-          <span className="font-semibold text-base text-[var(--text)] tracking-tight">
-            ShaktIQ
-          </span>
-        )}
+      <div className="flex items-center px-3.5 h-14 border-b border-[var(--border)] shrink-0 overflow-hidden">
+        <Logo href="/dashboard" collapsed={collapsed} />
       </div>
 
       {/* Nav */}

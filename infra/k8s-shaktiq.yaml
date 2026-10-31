@@ -127,3 +127,4 @@ spec:
                 name: shaktiq-web
                 port:
                   number: 3000
+

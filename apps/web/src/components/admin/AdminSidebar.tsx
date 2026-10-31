@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { Logo } from '@/components/shared/Logo';
 import {
   LayoutDashboard,
   FolderKanban,
@@ -10,7 +11,6 @@ import {
   Calendar,
   GitBranch,
   Users,
-  Zap,
   ShieldAlert,
 } from 'lucide-react';
 
@@ -39,18 +39,8 @@ export function AdminSidebar({ collapsed = false }: Props) {
       aria-label="Admin navigation"
     >
       {/* Logo + Admin label */}
-      <div className="flex items-center gap-2 px-4 h-14 border-b border-[var(--border)] shrink-0">
-        <Zap className="h-5 w-5 text-[var(--accent)] shrink-0" aria-hidden />
-        {!collapsed && (
-          <div className="flex flex-col min-w-0">
-            <span className="font-semibold text-base text-[var(--text)] tracking-tight leading-none">
-              ShaktIQ
-            </span>
-            <span className="text-[10px] font-medium text-[var(--sev-breaking)] uppercase tracking-widest mt-0.5 flex items-center gap-1">
-              <ShieldAlert className="h-2.5 w-2.5" aria-hidden /> Admin
-            </span>
-          </div>
-        )}
+      <div className="flex items-center px-3.5 h-14 border-b border-[var(--border)] shrink-0 overflow-hidden">
+        <Logo href="/admin/overview" collapsed={collapsed} subtitle="ADMIN" />
       </div>
 
       {/* Nav */}

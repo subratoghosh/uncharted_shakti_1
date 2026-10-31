@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 import { VerdictBanner } from '@/components/shared/VerdictBanner';
+import { Logo } from '@/components/shared/Logo';
 import { SeverityBadge } from '@/components/shared/SeverityBadge';
 import { EndpointTag } from '@/components/shared/EndpointTag';
 import { ErrorState } from '@/components/shared/ErrorState';
@@ -77,9 +78,7 @@ export default function ReleaseReportPage({
       {/* Header */}
       <div className="border-b border-[var(--border)] pb-6 space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs uppercase tracking-widest text-[var(--text-muted)] font-semibold">
-            ShaktIQ Release Compatibility Report
-          </span>
+          <Logo size="sm" href={`/runs/${runId}`} subtitle="RELEASE REPORT" />
           <span className="text-xs font-mono text-[var(--text-muted)]">
             Run: {shortSha(run.currentVersion)}
           </span>

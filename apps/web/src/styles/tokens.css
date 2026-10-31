@@ -28,7 +28,7 @@ body {
   --border:      #E4E4E0;
   --text:        #18181B;
   --text-muted:  #6B6B73;
-  --accent:      #2B50E6;
+  --accent:      #16A34A; /* Emerald green from ShaktIQ logo */
   --sev-breaking: #DC2626;
   --sev-warning:  #B45309;
   --sev-info:     #0369A1;
@@ -56,7 +56,7 @@ body {
   --border:      #2A2A2E;
   --text:        #ECECEE;
   --text-muted:  #9A9AA3;
-  --accent:      #6C8CFF;
+  --accent:      #22C55E; /* Vibrant emerald green from ShaktIQ logo */
   --sev-breaking: #F87171;
   --sev-warning:  #FBBF24;
   --sev-info:     #38BDF8;

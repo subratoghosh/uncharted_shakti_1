@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { apiClient, ApiError } from '@/lib/api-client';
+import { Logo } from '@/components/shared/Logo';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -28,14 +29,17 @@ export default function LoginPage() {
 
   return (
     <div className="rounded-card border border-[var(--border)] bg-[var(--surface)] p-8 space-y-6">
-      <div>
-        <h1 className="text-h2 font-semibold text-[var(--text)]">Sign in</h1>
-        <p className="text-sm text-[var(--text-muted)] mt-1">
-          Don&apos;t have an account?{' '}
-          <Link href="/register" className="text-[var(--accent)] hover:underline">
-            Register
-          </Link>
-        </p>
+      <div className="flex flex-col items-center text-center space-y-3 pb-2 border-b border-[var(--border)]">
+        <Logo size="lg" href="/" />
+        <div>
+          <h1 className="text-xl font-semibold text-[var(--text)]">Sign in</h1>
+          <p className="text-xs text-[var(--text-muted)] mt-1">
+            Don&apos;t have an account?{' '}
+            <Link href="/register" className="text-[var(--accent)] hover:underline font-medium">
+              Register
+            </Link>
+          </p>
+        </div>
       </div>
 
       {error && (
@@ -56,8 +60,8 @@ export default function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full h-9 rounded border border-[var(--border)] bg-[var(--surface)] px-3 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
-            placeholder="dev@example.com"
+            className="w-full h-10 px-3 rounded border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)] placeholder-[var(--text-muted)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            placeholder="you@company.com"
           />
         </div>
 
@@ -72,14 +76,14 @@ export default function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full h-9 rounded border border-[var(--border)] bg-[var(--surface)] px-3 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
+            className="w-full h-10 px-3 rounded border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-9 rounded bg-[var(--accent)] text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2"
+          className="w-full h-10 rounded bg-[var(--accent)] text-white text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2"
         >
           {loading ? 'Signing in…' : 'Sign in'}
         </button>
@@ -87,4 +91,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

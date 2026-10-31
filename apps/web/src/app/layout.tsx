@@ -9,6 +9,11 @@ import '@/styles/tokens.css';
 export const metadata: Metadata = {
   title: { default: 'ShaktIQ', template: '%s | ShaktIQ' },
   description: 'Deterministic OpenAPI breaking-change detection and release compatibility gating.',
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
