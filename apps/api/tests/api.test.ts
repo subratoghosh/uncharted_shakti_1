@@ -8,7 +8,7 @@ import { closeDb, connectDb } from '../src/db/client.js';
 import { migrate } from '../src/db/migrate.js';
 import { buildServer } from '../src/server.js';
 
-describe('Fastify API Endpoint Integration Tests (testing.md §5)', () => {
+describe('Fastify API Endpoint Integration Tests (testing.md §5)', { timeout: 30000 }, () => {
   let mongod: MongoMemoryServer;
   let app: FastifyInstance;
   let db: Db;

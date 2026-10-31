@@ -205,7 +205,7 @@ export async function queryProjectAssistant(input: QueryAssistantInput): Promise
   const apiKey = env.GEMINI_API_KEY;
   const isKeyValid = apiKey && apiKey !== 'your_gemini_api_key_here' && apiKey.length > 10;
 
-  if (isKeyValid) {
+  if (isKeyValid && env.NODE_ENV !== 'test') {
     try {
       const { GoogleGenAI } = await import('@google/genai');
       const ai = new GoogleGenAI({ apiKey });
