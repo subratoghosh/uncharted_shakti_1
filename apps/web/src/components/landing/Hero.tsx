@@ -1,299 +1,211 @@
 'use client';
 
-import React, { useRef, useState, useCallback } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import {
   ArrowRight,
-  ShieldAlert,
   ShieldCheck,
   CheckCircle2,
   Terminal,
   Cpu,
-  GitCommit,
   Layers,
-  FileCode2,
-  Check,
-  RotateCcw,
+  Network,
+  GitBranch,
+  Lock,
+  Zap,
 } from 'lucide-react';
 
 export const Hero: React.FC = () => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [tilt, setTilt] = useState({
-    rotateX: 0,
-    rotateY: 0,
-    active: false,
-  });
-
-  // Interactive toggle for the hero card: switch between BLOCKED and REMEDIATED
-  const [isRemediated, setIsRemediated] = useState(false);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (typeof window !== 'undefined' && window.innerWidth < 768) return;
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotateX = -((y - centerY) / centerY) * 6;
-    const rotateY = ((x - centerX) / centerX) * 6;
-
-    setTilt({
-      rotateX,
-      rotateY,
-      active: true,
-    });
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setTilt({
-      rotateX: 0,
-      rotateY: 0,
-      active: false,
-    });
-  }, []);
+  const capabilities = [
+    {
+      icon: GitBranch,
+      title: 'Continuous Schema Ingestion',
+      description: 'Intercepts OpenAPI 3.0/3.1 contract changes via GitHub Webhooks, CLI, or CI pre-commit hooks.',
+      tag: 'Real-Time Ingestion',
+    },
+    {
+      icon: Network,
+      title: 'Downstream Blast Radius Matrix',
+      description: 'Maps altered endpoints against registered consumers to pinpoint mobile app and microservice impact.',
+      tag: 'Consumer Matrix',
+    },
+    {
+      icon: Cpu,
+      title: 'Autonomous Gemini AI Remediation',
+      description: 'Synthesizes backward-compatible route shims, field deprecation headers, and migration wrappers.',
+      tag: 'Gemini 3.8 Flash',
+    },
+    {
+      icon: ShieldCheck,
+      title: 'Non-Bypassable Release Gates',
+      description: 'Blocks breaking PRs with cryptographic SAFE, REVIEW, or BLOCKED status and 0–100 confidence scoring.',
+      tag: 'Policy Enforcement',
+    },
+  ];
 
   return (
-    <section
-      id="hero"
-      className="relative min-h-[100svh] lg:min-h-screen flex flex-col justify-start lg:justify-center items-center pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-28 lg:pb-16 bg-green-hero text-butter-cream overflow-hidden rounded-b-[28px] sm:rounded-b-[36px] shadow-2xl px-4 sm:px-8"
-    >
-      {/* Background Organic Butter Blobs (SponFy signature aesthetic) */}
-      <div className="absolute top-[-10%] left-[-10%] w-[320px] sm:w-[500px] h-[320px] sm:h-[500px] rounded-full bg-butter-cream/10 blur-3xl pointer-events-none blob-float" />
-      <div className="absolute top-[20%] right-[-5%] w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] rounded-full bg-green-light/20 blur-3xl pointer-events-none" />
+    <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 bg-[#0C382E] text-butter-cream overflow-hidden">
+      {/* Background radial gradients for ambient glow */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-green-accent/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[450px] h-[450px] bg-butter-cream/10 rounded-full blur-[100px] pointer-events-none" />
 
-      {/* Decorative Vector Motifs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-10">
-        <div className="absolute top-1/4 left-10 w-96 h-96 border border-butter-cream rounded-full" />
-        <div className="absolute bottom-10 right-20 w-80 h-80 border border-green-sage rounded-full" />
-      </div>
+      <div className="max-w-[1240px] mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
+          {/* LEFT COLUMN: Hero Copy & CTA */}
+          <div className="lg:col-span-6 flex flex-col items-start text-left">
+            {/* Pill Tag */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-green-dark border border-green-light/40 text-xs font-mono text-butter-cream mb-6 shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-green-accent animate-pulse" />
+              <span>OPENAPI RELEASE INTELLIGENCE PLATFORM</span>
+            </div>
 
-      {/* Main Container: 2-column layout */}
-      <div className="relative max-w-[1280px] w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center z-10 lg:flex-1 lg:my-auto">
-        {/* LEFT COLUMN: Editorial Typography + Value Proposition */}
-        <div className="lg:col-span-7 flex flex-col items-start text-left pr-0 lg:pr-6">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-butter-cream/10 border border-butter-cream/25 text-butter-cream text-xs font-semibold mb-6">
-            <span className="w-2 h-2 rounded-full bg-green-accent animate-pulse" />
-            <span>OpenAPI 3.0 & 3.1 Contract Intelligence</span>
-          </div>
-
-          {/* Headline in SponFy slab-serif style */}
-          <h1 className="font-slab text-[2.75rem] sm:text-7xl lg:text-[84px] leading-[1.04] font-light text-butter-cream tracking-tight mb-6">
-            <span>API releases</span>
-            <br />
-            <span className="relative inline-block text-butter-cream font-light">
-              worth trusting
-              {/* Paper Plane flight accent */}
-              <span className="absolute -top-3 left-[210px] sm:left-[320px] pointer-events-none select-none animate-plane-hero-loop z-20 hidden sm:inline-block">
-                <svg
-                  width="40"
-                  height="40"
-                  viewBox="0 0 68 68"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="drop-shadow-[0_12px_24px_rgba(0,0,0,0.65)]"
-                >
-                  <path
-                    d="M10 34L58 14L40 54L30 38L10 34Z"
-                    fill="#FFF0B3"
-                    stroke="#0C382E"
-                    strokeWidth="2"
-                  />
-                  <path d="M58 14L30 38" stroke="#0C382E" strokeWidth="2" />
-                </svg>
+            {/* Headline in SponFy slab-serif style */}
+            <h1 className="font-slab text-[2.75rem] sm:text-7xl lg:text-[76px] leading-[1.04] font-light text-butter-cream tracking-tight mb-6">
+              <span>API releases</span>
+              <br />
+              <span className="relative inline-block text-butter-cream font-light">
+                worth trusting
+                {/* Paper Plane flight accent */}
+                <span className="absolute -top-3 left-[210px] sm:left-[320px] pointer-events-none select-none animate-plane-hero-loop z-20 hidden sm:inline-block">
+                  <svg
+                    width="40"
+                    height="40"
+                    viewBox="0 0 68 68"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="drop-shadow-[0_12px_24px_rgba(0,0,0,0.65)]"
+                  >
+                    <path
+                      d="M10 34L58 14L40 54L30 38L10 34Z"
+                      fill="#FFF0B3"
+                      stroke="#0C382E"
+                      strokeWidth="2"
+                    />
+                    <path d="M58 14L30 38" stroke="#0C382E" strokeWidth="2" />
+                  </svg>
+                </span>
               </span>
-            </span>
-          </h1>
+            </h1>
 
-          {/* Subtitle */}
-          <p className="text-text-hero-sub text-base sm:text-lg max-w-xl leading-relaxed mb-8 font-normal">
-            Deterministic OpenAPI breaking change detection, blast radius impact analysis, and
-            autonomous Gemini AI remediation dossiers. Zero unverified contracts shipped to production.
-          </p>
+            {/* Subtitle */}
+            <p className="text-text-hero-sub text-base sm:text-lg max-w-xl leading-relaxed mb-8 font-normal">
+              Deterministic OpenAPI breaking change detection, consumer blast radius assessment, and
+              autonomous Gemini AI remediation dossiers. Zero unverified contracts shipped to production.
+            </p>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 w-full sm:w-auto mb-10">
-            <Link href="/dashboard" className="btn-butter">
-              <Terminal className="w-4 h-4" />
-              <span>Launch Live Console</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-
-            <Link href="/workflow" className="btn-hero-ghost">
-              <Layers className="w-4 h-4" />
-              <span>Explore 5-Step Workflow</span>
-            </Link>
-          </div>
-
-          {/* Social Proof / Capability Badges */}
-          <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-butter-cream/15 w-full text-xs text-text-hero-sub/90">
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-green-accent" />
-              <span>100% Deterministic AST Engine</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-green-accent" />
-              <span>Gemini 3.8 Flash Remediation</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-green-accent" />
-              <span>Automated GitHub PR Gates</span>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT COLUMN: 3D Interactive Tilt Preview Card */}
-        <div className="lg:col-span-5 w-full">
-          <div
-            ref={cardRef}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            style={{
-              transform: tilt.active
-                ? `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`
-                : 'perspective(1000px) rotateX(0deg) rotateY(0deg)',
-              transition: tilt.active ? 'none' : 'transform 0.4s ease-out',
-            }}
-            className="w-full bg-butter-panel text-green-dark rounded-3xl p-6 sm:p-7 border border-butter-cream/40 shadow-hero-card backdrop-blur-sm relative overflow-hidden"
-          >
-            {/* Card Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-green-dark/10 mb-4">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-green-dark text-butter-cream flex items-center justify-center font-mono text-xs font-bold">
-                  IQ
-                </div>
-                <div>
-                  <h3 className="font-heading font-bold text-sm text-green-dark">
-                    Release Verdict Engine
-                  </h3>
-                  <p className="text-[11px] text-text-dim font-mono">
-                    commit: c4f810a • branch: main
-                  </p>
-                </div>
-              </div>
-
-              {/* Interactive Sandbox Toggle */}
-              <button
-                onClick={() => setIsRemediated(!isRemediated)}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-dark/10 text-green-dark hover:bg-green-dark hover:text-butter-cream text-xs font-semibold transition-all"
-                title="Click to toggle simulated Gemini AI Remediation"
-              >
-                <RotateCcw className="w-3 h-3" />
-                <span>{isRemediated ? 'Show Breaking' : 'Apply AI Fix'}</span>
-              </button>
-            </div>
-
-            {/* Verdict Status Banner */}
-            <div
-              className={`p-3.5 rounded-2xl border transition-all duration-300 mb-4 ${
-                isRemediated
-                  ? 'bg-green-50 border-green-300 text-green-900'
-                  : 'bg-red-50 border-red-300 text-red-900'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider">
-                  {isRemediated ? (
-                    <>
-                      <ShieldCheck className="w-4 h-4 text-green-600" />
-                      <span>VERDICT: SAFE (RELEASE APPROVED)</span>
-                    </>
-                  ) : (
-                    <>
-                      <ShieldAlert className="w-4 h-4 text-red-600" />
-                      <span>VERDICT: BLOCKED (4 BREAKING CHANGES)</span>
-                    </>
-                  )}
-                </div>
-                <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-white/80">
-                  {isRemediated ? 'Score: 98/100' : 'Score: 28/100'}
-                </span>
-              </div>
-              <p className="text-xs leading-relaxed opacity-90">
-                {isRemediated
-                  ? 'All consumer contracts preserved with backward-compatible deprecation strategy.'
-                  : 'Critical breaking changes detected in Orders & Payments paths. 2 downstream services impacted.'}
-              </p>
-            </div>
-
-            {/* Diff & AST Inspection View */}
-            <div className="space-y-2.5 mb-4 font-mono text-xs">
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-butter-bg border border-green-dark/8">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`w-2 h-2 rounded-full ${
-                      isRemediated ? 'bg-green-500' : 'bg-red-500'
-                    }`}
-                  />
-                  <span className="text-[11px] font-bold">DELETE /orders/&#123;id&#125;</span>
-                </div>
-                <span
-                  className={`text-[10px] px-2 py-0.5 rounded font-bold ${
-                    isRemediated
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
-                  }`}
-                >
-                  {isRemediated ? 'DEPRECATED (NON-BREAKING)' : 'REMOVED (BREAKING)'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-butter-bg border border-green-dark/8">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`w-2 h-2 rounded-full ${
-                      isRemediated ? 'bg-green-500' : 'bg-amber-500'
-                    }`}
-                  />
-                  <span className="text-[11px] font-bold">POST /orders schema</span>
-                </div>
-                <span
-                  className={`text-[10px] px-2 py-0.5 rounded font-bold ${
-                    isRemediated
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-amber-100 text-amber-800'
-                  }`}
-                >
-                  {isRemediated ? 'OPTIONAL FIELD ADDED' : 'REQUIRED FIELD ADDED'}
-                </span>
-              </div>
-            </div>
-
-            {/* Gemini AI Remediation Snippet */}
-            <div className="p-3.5 bg-green-dark text-butter-cream rounded-2xl border border-butter-cream/20 font-mono text-[11px]">
-              <div className="flex items-center justify-between text-butter-cream/80 text-[10px] pb-2 border-b border-butter-cream/15 mb-2">
-                <span className="flex items-center gap-1.5 font-bold">
-                  <Cpu className="w-3.5 h-3.5 text-butter-cream" />
-                  Gemini 3.8 Flash Remediation
-                </span>
-                <span className="text-green-sage">Synthesized in 240ms</span>
-              </div>
-              <p className="text-text-hero-sub font-sans text-xs mb-2">
-                {isRemediated
-                  ? '✓ Auto-generated non-breaking shim deployed. Existing iOS and Web clients continue uninterrupted.'
-                  : 'Suggested: Preserve endpoint with `deprecated: true` and introduce `/api/v2/orders`.'}
-              </p>
-              <div className="bg-black/30 p-2 rounded-lg text-[10px] text-green-sage overflow-x-auto">
-                <code>
-                  {isRemediated
-                    ? '+  /orders/{id}: { get: ..., delete: { deprecated: true } }'
-                    : '-  /orders/{id}: { delete: ... } // BREAKS 2 CONSUMERS'}
-                </code>
-              </div>
-            </div>
-
-            {/* Card Footer */}
-            <div className="mt-4 pt-3 border-t border-green-dark/10 flex items-center justify-between text-xs">
-              <span className="text-text-dim text-[11px]">Blast Radius: Mobile App, Checkout API</span>
-              <Link
-                href="/dashboard"
-                className="font-bold text-green-dark hover:text-green-mid inline-flex items-center gap-1 group"
-              >
-                <span>Inspect in Console</span>
-                <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 w-full sm:w-auto mb-10">
+              <Link href="/dashboard" className="btn-butter">
+                <Terminal className="w-4 h-4" />
+                <span>Launch Live Console</span>
+                <ArrowRight className="w-4 h-4" />
               </Link>
+
+              <Link href="/workflow" className="btn-hero-ghost">
+                <Layers className="w-4 h-4" />
+                <span>Explore 4-Step Workflow</span>
+              </Link>
+            </div>
+
+            {/* Social Proof / Capability Badges */}
+            <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-butter-cream/15 w-full text-xs text-text-hero-sub/90">
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-green-accent" />
+                <span>100% Deterministic AST Engine</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-green-accent" />
+                <span>Gemini 3.8 Flash Remediation</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-green-accent" />
+                <span>Automated GitHub PR Gates</span>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: Product Information & Architecture Panel */}
+          <div className="lg:col-span-6 w-full">
+            <div className="w-full bg-[#082820]/95 text-butter-cream rounded-3xl p-6 sm:p-8 border border-green-light/40 shadow-[0_20px_50px_rgba(8,38,30,0.6)] backdrop-blur-md relative overflow-hidden">
+              {/* Card Header */}
+              <div className="flex items-center justify-between pb-5 border-b border-green-light/25 mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-butter-cream text-green-dark flex items-center justify-center font-bold shadow-sm">
+                    <ShieldCheck className="w-5 h-5 text-[#0C382E]" />
+                  </div>
+                  <div>
+                    <h3 className="font-heading font-bold text-base text-butter-cream tracking-tight">
+                      ShaktIQ Platform Architecture
+                    </h3>
+                    <p className="text-[11px] text-green-sage font-mono">
+                      Continuous API Contract Reliability Engine
+                    </p>
+                  </div>
+                </div>
+
+                <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-accent/20 border border-green-accent/40 text-[10px] font-mono text-butter-cream">
+                  <Zap className="w-3 h-3 text-butter-gold" />
+                  <span>Sub-50ms AST Speed</span>
+                </div>
+              </div>
+
+              {/* Product Capabilities Grid */}
+              <div className="space-y-3.5 mb-6">
+                {capabilities.map((c, idx) => {
+                  const Icon = c.icon;
+                  return (
+                    <div
+                      key={idx}
+                      className="p-3.5 rounded-2xl bg-[#0C382E]/90 border border-green-light/30 hover:border-butter-cream/40 transition-all duration-200 group"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-green-dark border border-green-light/40 text-butter-cream flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-butter-cream group-hover:text-green-dark transition-colors">
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2 mb-1">
+                            <h4 className="font-bold text-xs text-butter-cream truncate">
+                              {c.title}
+                            </h4>
+                            <span className="text-[9px] font-mono font-semibold px-2 py-0.5 rounded-full bg-green-mid/70 text-butter-cream border border-green-light/30 shrink-0">
+                              {c.tag}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-text-hero-sub/90 leading-relaxed">
+                            {c.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Architecture Guarantee Badges */}
+              <div className="grid grid-cols-2 gap-2.5 pt-4 border-t border-green-light/25 text-[11px] font-mono">
+                <div className="flex items-center gap-2 p-2 rounded-xl bg-black/20 text-green-sage">
+                  <Lock className="w-3.5 h-3.5 text-butter-cream shrink-0" />
+                  <span className="truncate">Zero Telemetry Leakage</span>
+                </div>
+                <div className="flex items-center gap-2 p-2 rounded-xl bg-black/20 text-green-sage">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-butter-cream shrink-0" />
+                  <span className="truncate">OpenAPI 3.0 & 3.1 Strict</span>
+                </div>
+              </div>
+
+              {/* Footer Link */}
+              <div className="mt-5 pt-3 border-t border-green-light/20 flex items-center justify-between text-xs">
+                <span className="text-text-hero-sub/70 text-[11px]">
+                  Engineered for mission-critical platform teams
+                </span>
+                <Link
+                  href="/why-us"
+                  className="font-bold text-butter-cream hover:text-butter-gold inline-flex items-center gap-1 group transition-colors"
+                >
+                  <span>Read Platform Guarantees</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>

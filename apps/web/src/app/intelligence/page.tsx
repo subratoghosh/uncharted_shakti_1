@@ -31,14 +31,6 @@ export default function IntelligencePage() {
       benefit: 'Prevents silent downstream client outages before merging',
     },
     {
-      icon: Activity,
-      title: 'Explainable 0-100 Release Scoring',
-      subtitle: 'Algorithmic evaluation of backward compatibility risk',
-      description:
-        'Rather than a simple binary pass/fail, ShaktIQ calculates an objective release score based on breaking severity (BREAKING = -25 pts, WARNING = -10 pts, critical consumer impacted = -40 pts). Teams establish custom score thresholds for automated merging.',
-      benefit: 'Gives engineering managers actionable release confidence metrics',
-    },
-    {
       icon: Zap,
       title: 'Autonomous Patch Synthesis',
       subtitle: 'Gemini 3.8 Flash writes backward-compatible alternatives',
@@ -134,7 +126,7 @@ export default function IntelligencePage() {
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link href="/workflow" className="btn-glass">
-                  <span>Explore 5-Step Workflow</span>
+                  <span>Explore 4-Step Workflow</span>
                 </Link>
               </div>
             </div>

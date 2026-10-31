@@ -17,9 +17,9 @@ import {
 import { MarketingLayout } from '@/components/landing/MarketingLayout';
 
 export const metadata: Metadata = {
-  title: 'Workflow Engine | ShaktIQ - 5 Disciplined Steps to Zero Breaking Changes',
+  title: 'Workflow Engine | ShaktIQ - 4 Disciplined Steps to Zero Breaking Changes',
   description:
-    'Discover ShaktIQ’s 5-step release intelligence lifecycle: from git push schema ingestion to AST semantic diffing, blast radius calculation, and Gemini AI remediation.',
+    'Discover ShaktIQ’s 4-step release intelligence lifecycle: from git push schema ingestion to blast radius calculation, Gemini AI remediation, and non-bypassable release gates.',
 };
 
 const WORKFLOW_STEPS = [
@@ -33,35 +33,27 @@ const WORKFLOW_STEPS = [
   },
   {
     step: '02',
-    title: 'AST Semantic Diff Engine',
-    subtitle: 'Deep node-by-node Abstract Syntax Tree comparison',
-    description:
-      'ShaktIQ parses both the base branch and candidate branch specs into deep AST hierarchies, isolating semantic modifications (removed params, changed types, required payload fields) from benign formatting noise.',
-    badge: 'Step 2: Semantic Diff',
-  },
-  {
-    step: '03',
     title: 'Blast Radius & Consumer Matrix',
     subtitle: 'Downstream dependency mapping and impact evaluation',
     description:
       'Modified endpoints are mapped against registered consumers. ShaktIQ determines if breaking changes touch core payment gateways, internal microservices, or public mobile SDKs.',
-    badge: 'Step 3: Impact Analysis',
+    badge: 'Step 2: Impact Analysis',
   },
   {
-    step: '04',
+    step: '03',
     title: 'Autonomous Gemini AI Remediation',
     subtitle: 'Gemini 3.8 Flash synthesizes backward-compatible patches',
     description:
       'Rather than stopping at error alerts, ShaktIQ automatically generates non-breaking shims, deprecation headers with RFC 8594 sunset schedules, and sample migration route code.',
-    badge: 'Step 4: AI Synthesis',
+    badge: 'Step 3: AI Synthesis',
   },
   {
-    step: '05',
+    step: '04',
     title: 'Non-Bypassable Release Gate',
     subtitle: 'Cryptographic SAFE / REVIEW / BLOCKED verdict',
     description:
       'The pull request is tagged with an explainable 0-100 release score. If critical breaking changes remain unmitigated, CI status checks prevent merging until remediated.',
-    badge: 'Step 5: Release Gate',
+    badge: 'Step 4: Release Gate',
   },
 ];
 
@@ -74,10 +66,10 @@ export default function WorkflowPage() {
           <div className="max-w-[1240px] mx-auto px-6 text-center">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-green-dark/5 text-green-dark text-xs font-bold uppercase tracking-wider mb-4 border border-green-dark/10">
               <Workflow className="w-3.5 h-3.5 text-green-accent" />
-              THE 5-STEP LIFECYCLE
+              THE 4-STEP LIFECYCLE
             </div>
             <h1 className="font-slab text-3xl sm:text-5xl lg:text-6xl font-bold text-green-dark tracking-tight mb-4 max-w-3xl mx-auto">
-              From git push to verified release in 5 disciplined steps
+              From git push to verified release in 4 disciplined steps
             </h1>
             <p className="text-text-dim text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
               How platform engineering teams achieve continuous API backward compatibility without bottlenecking product velocity.
@@ -191,7 +183,7 @@ export default function WorkflowPage() {
             <div className="p-8 sm:p-12 bg-white rounded-3xl border border-green-dark/12 shadow-sm flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="max-w-2xl">
                 <h3 className="display-font text-2xl sm:text-3xl font-bold text-green-dark mb-2">
-                  Experience the 5-step workflow in action
+                  Experience the 4-step workflow in action
                 </h3>
                 <p className="text-text-dim text-sm sm:text-base leading-relaxed">
                   Open the interactive console to test sample base and head OpenAPI documents, inspect breaking change detections, and review AI-generated release dossiers.

@@ -38,18 +38,6 @@ export default function WhyUsPage() {
       ],
     },
     {
-      icon: Network,
-      title: 'Blast Radius & Downstream Consumer Matrix',
-      subtitle: 'Measure true downstream consumer breakage before code merges',
-      description:
-        'API schemas don’t live in a vacuum. A changed query parameter on a payment endpoint might silently break native iOS apps, merchant checkout integrations, or microservice listeners. ShaktIQ maps every altered endpoint to registered consumers to calculate objective blast radius severity.',
-      bullets: [
-        'Categorizes impact across Core Microservices, Mobile Apps, and Public SDKs',
-        'Automatic severity classification: BREAKING, WARNING, and INFO',
-        'Prevents unexpected outages and customer-facing integration churn',
-      ],
-    },
-    {
       icon: Cpu,
       title: 'Autonomous Gemini 3.8 Flash Remediation',
       subtitle: 'AI that writes production-grade backward-compatible schema patches',

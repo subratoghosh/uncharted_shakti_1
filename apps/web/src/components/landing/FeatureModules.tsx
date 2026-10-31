@@ -12,7 +12,7 @@ import {
 
 const FEATURE_MODULES = [
   {
-    title: '5-Step Workflow Engine',
+    title: '4-Step Workflow Engine',
     href: '/workflow',
     icon: Workflow,
     tag: 'Contract Governance',
