@@ -15,11 +15,13 @@ import {
   Webhook,
   Workflow,
   Lock,
+  FileCode,
 } from 'lucide-react';
 import { ShaktiqLogoIcon } from '../shared/ShaktiqLogoIcon';
 
 const userNav = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Code Studio', href: '/dashboard', icon: FileCode },
   { name: 'Projects', href: '/projects', icon: FolderGit2 },
   { name: 'Access Tokens', href: '/tokens', icon: KeyRound },
 ];

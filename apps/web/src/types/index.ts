@@ -137,3 +137,56 @@ export type MultiLayerDossier = {
   generatedBy: string;
 };
 
+export type DetectedRoute = {
+  path: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  summary?: string;
+  line?: number;
+};
+
+export type StudioCodeReview = {
+  score: number;
+  verdict: 'SAFE' | 'WARNING' | 'CRITICAL';
+  summary: string;
+  issues: Array<{
+    line?: number;
+    severity: 'critical' | 'warning' | 'info';
+    category: 'breaking-contract' | 'security' | 'performance' | 'best-practice';
+    title: string;
+    description: string;
+    suggestion: string;
+  }>;
+  suggestedPatch?: string;
+  generatedBy: string;
+};
+
+export type StudioCommitMessage = {
+  title: string;
+  scope?: string;
+  body?: string;
+  conventionalMessage: string;
+  alternativeSuggestions: string[];
+  explanation: string;
+  generatedBy: string;
+};
+
+export type StudioCodeFix = {
+  originalSnippet: string;
+  fixedSnippet: string;
+  diff: string;
+  explanation: string;
+  steps: string[];
+  generatedBy: string;
+};
+
+export type StudioCommitLog = {
+  sha: string;
+  message: string;
+  author: string;
+  date: string;
+  filesChanged?: number;
+  insertions?: number;
+  deletions?: number;
+};
+
+

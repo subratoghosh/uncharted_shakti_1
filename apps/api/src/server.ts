@@ -19,6 +19,7 @@ import { projectRoutes } from './modules/projects/routes.js';
 import { runRoutes } from './modules/runs/routes.js';
 import { hub } from './modules/stream/hub.js';
 import { streamRoutes } from './modules/stream/routes.js';
+import { studioRoutes } from './modules/studio/routes.js';
 
 export const serverPlaceholder = 'apps/api bootstrap';
 
@@ -164,6 +165,7 @@ export async function buildServer(): Promise<FastifyInstance> {
       await api.register(adminRoutes);
       await api.register(cliRoutes);
       await api.register(streamRoutes);
+      await api.register(studioRoutes);
     },
     { prefix: API_PREFIX },
   );
