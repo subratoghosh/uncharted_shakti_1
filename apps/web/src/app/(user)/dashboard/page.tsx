@@ -472,9 +472,72 @@ export default function DashboardPage() {
         }
       }
 
+      // If direct candidates didn't match, auto-discover spec or backend controller via GitHub Tree API
+      if (!fetchedContent) {
+        try {
+          const treeRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`);
+          if (treeRes.ok) {
+            const treeData = (await treeRes.json()) as { tree?: Array<{ path: string; type: string }> };
+            const items = treeData.tree || [];
+
+            // 1. Any OpenAPI/Swagger spec anywhere in repo
+            const specItem = items.find(
+              (i) =>
+                i.type === 'blob' &&
+                (i.path.toLowerCase().includes('openapi') || i.path.toLowerCase().includes('swagger')) &&
+                (i.path.endsWith('.yaml') || i.path.endsWith('.yml') || i.path.endsWith('.json'))
+            );
+
+            // 2. Any route controller or API file
+            const controllerItem =
+              specItem ||
+              items.find(
+                (i) =>
+                  i.type === 'blob' &&
+                  (i.path.endsWith('routes.ts') ||
+                    i.path.endsWith('routes.js') ||
+                    i.path.endsWith('routes.py') ||
+                    i.path.endsWith('app.py') ||
+                    i.path.endsWith('main.py') ||
+                    i.path.endsWith('api.py') ||
+                    i.path.endsWith('server.js') ||
+                    i.path.endsWith('server.ts') ||
+                    i.path.includes('/routes/') ||
+                    i.path.includes('/controllers/') ||
+                    i.path.includes('/routers/'))
+              );
+
+            // 3. Fallback: Any primary source code file
+            const selected =
+              controllerItem ||
+              items.find(
+                (i) =>
+                  i.type === 'blob' &&
+                  !i.path.includes('node_modules') &&
+                  !i.path.includes('test') &&
+                  ['.py', '.ts', '.js', '.go', '.java'].some((ext) => i.path.endsWith(ext))
+              );
+
+            if (selected) {
+              const discoveredUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${selected.path}`;
+              const discRes = await fetch(discoveredUrl);
+              if (discRes.ok) {
+                const text = await discRes.text();
+                if (text && !text.includes('404: Not Found')) {
+                  fetchedContent = text;
+                  successfulFile = selected.path;
+                }
+              }
+            }
+          }
+        } catch {
+          // Fall through to error
+        }
+      }
+
       if (!fetchedContent) {
         throw new Error(
-          `Could not locate a service spec or route file in ${owner}/${repo} on branch "${branch}". Please verify the repository is public and contains a valid specification or route file, or specify the exact file path.`
+          `Could not locate a service spec or route file in ${owner}/${repo} on branch "${branch}". Please verify the repository is public and contains code, or specify the exact file path.`
         );
       }
 

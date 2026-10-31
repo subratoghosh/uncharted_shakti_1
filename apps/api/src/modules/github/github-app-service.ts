@@ -166,7 +166,73 @@ export async function fetchRepositorySpec(
     }
   }
 
-  logger.warn({ repoFullName, ref, tried: pathsToTry }, 'Could not locate OpenAPI spec in repository at git ref');
+  // If direct paths fail, use GitHub Git Trees API to auto-discover spec or controller files anywhere in repo
+  try {
+    const headers: Record<string, string> = {
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'User-Agent': 'ShaktIQ-Bot/1.0',
+    };
+    if (token) headers.Authorization = `Bearer ${token}`;
+
+    const treeUrl = `https://api.github.com/repos/${repoFullName}/git/trees/${encodeURIComponent(ref)}?recursive=1`;
+    const treeRes = await fetch(treeUrl, { headers });
+    if (treeRes.ok) {
+      const treeData = (await treeRes.json()) as { tree?: Array<{ path: string; type: string }> };
+      const items = treeData.tree || [];
+
+      // 1. Look for any OpenAPI/Swagger spec anywhere in repo
+      const specItem = items.find(
+        i =>
+          i.type === 'blob' &&
+          (i.path.toLowerCase().includes('openapi') || i.path.toLowerCase().includes('swagger')) &&
+          (i.path.endsWith('.yaml') || i.path.endsWith('.yml') || i.path.endsWith('.json')),
+      );
+
+      // 2. If no spec, look for backend route / controller files
+      const controllerItem = specItem || items.find(
+        i =>
+          i.type === 'blob' &&
+          (i.path.endsWith('routes.ts') ||
+            i.path.endsWith('routes.js') ||
+            i.path.endsWith('routes.py') ||
+            i.path.endsWith('app.py') ||
+            i.path.endsWith('main.py') ||
+            i.path.endsWith('api.py') ||
+            i.path.endsWith('server.js') ||
+            i.path.endsWith('server.ts') ||
+            i.path.includes('/routes/') ||
+            i.path.includes('/controllers/') ||
+            i.path.includes('/routers/')),
+      );
+
+      // 3. Fallback: any code file
+      const selected = controllerItem || items.find(
+        i =>
+          i.type === 'blob' &&
+          !i.path.includes('node_modules') &&
+          !i.path.includes('test') &&
+          ['.py', '.ts', '.js', '.go', '.java'].some(ext => i.path.endsWith(ext)),
+      );
+
+      if (selected) {
+        const fileUrl = `https://api.github.com/repos/${repoFullName}/contents/${selected.path}?ref=${encodeURIComponent(ref)}`;
+        const fileRes = await fetch(fileUrl, { headers });
+        if (fileRes.ok) {
+          const fileData = (await fileRes.json()) as { content?: string; encoding?: string };
+          if (fileData.content) {
+            const rawContent = Buffer.from(fileData.content, 'base64').toString('utf8');
+            logger.info({ repoFullName, ref, autoDiscoveredPath: selected.path }, 'Auto-discovered API file from GitHub repo tree');
+            return { content: rawContent, path: selected.path };
+          }
+        }
+      }
+    }
+  } catch (err) {
+    logger.warn({ err, repoFullName, ref }, 'Error discovering files via GitHub tree API');
+  }
+
+  logger.warn({ repoFullName, ref, tried: pathsToTry }, 'Could not locate OpenAPI spec or controller code in repository at git ref');
   return null;
 }
 

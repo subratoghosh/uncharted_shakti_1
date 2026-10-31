@@ -198,10 +198,13 @@ export default function ProjectsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-text">Spec Path</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-text">Spec / Route Path</label>
+                    <span className="text-[10px] text-muted">Auto-detected if blank</span>
+                  </div>
                   <input
                     type="text"
-                    required
+                    placeholder="openapi.yaml (or auto-detect)"
                     value={specPath}
                     onChange={e => setSpecPath(e.target.value)}
                     className="w-full h-9 px-3 text-sm bg-surface-2 border border-border rounded-sm focus:outline-none focus:border-accent"

@@ -228,6 +228,135 @@ export function CodeIntelligenceStudio({
   const [githubRepoUrl, setGithubRepoUrl] = useState<string>('https://github.com/shaktiq/checkout-service');
   const [githubBranch, setGithubBranch] = useState<string>('main');
   const [uploadText, setUploadText] = useState<string>('');
+  const [isImportingGithub, setIsImportingGithub] = useState<boolean>(false);
+  const [githubImportError, setGithubImportError] = useState<string | null>(null);
+
+  const handleImportGithub = async () => {
+    if (!githubRepoUrl.trim()) return;
+    setIsImportingGithub(true);
+    setGithubImportError(null);
+
+    try {
+      let cleanUrl = githubRepoUrl.trim().replace(/\/$/, '');
+      cleanUrl = cleanUrl.replace(/^https?:\/\/github\.com\//, '');
+      const parts = cleanUrl.split('/');
+      if (parts.length < 2) {
+        throw new Error('Please enter a valid GitHub repository in "owner/repo" or full URL format.');
+      }
+      const owner = parts[0];
+      const repo = parts[1];
+      const branch = githubBranch.trim() || 'main';
+
+      const candidates = [
+        'openapi.yaml',
+        'openapi.json',
+        'openapi.yml',
+        'swagger.yaml',
+        'swagger.json',
+        'src/routes.ts',
+        'src/index.ts',
+        'routes.ts',
+        'app.py',
+        'main.py',
+        'api.py',
+        'server.js',
+      ];
+
+      let fetchedContent = '';
+      let successfulFile = '';
+
+      for (const file of candidates) {
+        const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file}`;
+        try {
+          const res = await fetch(rawUrl);
+          if (res.ok) {
+            const text = await res.text();
+            if (text && !text.includes('404: Not Found')) {
+              fetchedContent = text;
+              successfulFile = file;
+              break;
+            }
+          }
+        } catch {
+          // Continue to next candidate
+        }
+      }
+
+      if (!fetchedContent) {
+        try {
+          const treeRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`);
+          if (treeRes.ok) {
+            const treeData = (await treeRes.json()) as { tree?: Array<{ path: string; type: string }> };
+            const items = treeData.tree || [];
+
+            const specItem = items.find(
+              (i) =>
+                i.type === 'blob' &&
+                (i.path.toLowerCase().includes('openapi') || i.path.toLowerCase().includes('swagger')) &&
+                (i.path.endsWith('.yaml') || i.path.endsWith('.yml') || i.path.endsWith('.json'))
+            );
+
+            const controllerItem =
+              specItem ||
+              items.find(
+                (i) =>
+                  i.type === 'blob' &&
+                  (i.path.endsWith('routes.ts') ||
+                    i.path.endsWith('routes.js') ||
+                    i.path.endsWith('routes.py') ||
+                    i.path.endsWith('app.py') ||
+                    i.path.endsWith('main.py') ||
+                    i.path.endsWith('api.py') ||
+                    i.path.endsWith('server.js') ||
+                    i.path.endsWith('server.ts') ||
+                    i.path.includes('/routes/') ||
+                    i.path.includes('/controllers/') ||
+                    i.path.includes('/routers/'))
+              );
+
+            const selected =
+              controllerItem ||
+              items.find(
+                (i) =>
+                  i.type === 'blob' &&
+                  !i.path.includes('node_modules') &&
+                  !i.path.includes('test') &&
+                  ['.py', '.ts', '.js', '.go', '.java'].some((ext) => i.path.endsWith(ext))
+              );
+
+            if (selected) {
+              const discoveredUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${selected.path}`;
+              const discRes = await fetch(discoveredUrl);
+              if (discRes.ok) {
+                const text = await discRes.text();
+                if (text && !text.includes('404: Not Found')) {
+                  fetchedContent = text;
+                  successfulFile = selected.path;
+                }
+              }
+            }
+          }
+        } catch {
+          // Fall through
+        }
+      }
+
+      if (!fetchedContent) {
+        throw new Error(
+          `Could not locate an API spec or controller file in ${owner}/${repo} on branch "${branch}". Please verify the repository is public and contains code.`
+        );
+      }
+
+      setCodeContent(fetchedContent);
+      setSelectedFile('openapi.yaml');
+      setShowImportModal(false);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to import from GitHub.';
+      setGithubImportError(msg);
+    } finally {
+      setIsImportingGithub(false);
+    }
+  };
 
   // Results State
   const [isReviewing, setIsReviewing] = useState<boolean>(false);
@@ -1183,8 +1312,14 @@ export function CodeIntelligenceStudio({
                 {/* OpenAPI & Spec Guidance Card */}
                 <OpenApiGuidanceCard compact />
 
+                {githubImportError && (
+                  <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700">
+                    {githubImportError}
+                  </div>
+                )}
+
                 <p className="text-xs text-muted">
-                  shaktIQ will clone or fetch the specified branch, parse route definitions, and populate the live route explorer.
+                  shaktIQ will fetch the specified branch, auto-discover API specs or route controllers, and populate the live route explorer.
                 </p>
               </div>
             )}
@@ -1244,15 +1379,27 @@ export function CodeIntelligenceStudio({
               </button>
               <button
                 type="button"
+                disabled={isImportingGithub}
                 onClick={() => {
-                  if (importType === 'paste' && uploadText.trim()) {
+                  if (importType === 'github') {
+                    handleImportGithub();
+                  } else if (importType === 'paste' && uploadText.trim()) {
                     setCodeContent(uploadText);
+                    setShowImportModal(false);
+                  } else {
+                    setShowImportModal(false);
                   }
-                  setShowImportModal(false);
                 }}
-                className="px-4 py-2 text-xs font-bold rounded-xl bg-accent text-white hover:opacity-90 shadow-xs"
+                className="px-4 py-2 text-xs font-bold rounded-xl bg-accent text-white hover:opacity-90 shadow-xs flex items-center gap-1.5 disabled:opacity-50"
               >
-                Import & Analyze
+                {isImportingGithub ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Importing...</span>
+                  </>
+                ) : (
+                  <span>Import & Analyze</span>
+                )}
               </button>
             </div>
           </div>
