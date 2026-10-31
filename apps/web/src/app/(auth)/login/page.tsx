@@ -3,9 +3,10 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, useSession, getSession } from 'next-auth/react';
 import { CheckCircle2, AlertTriangle, ArrowRight, ShieldCheck, Mail, KeyRound } from 'lucide-react';
 import { ShaktiqBrand } from '../../../components/landing/ShaktiqBrand';
+import { api } from '@/lib/api';
 
 function LoginForm() {
   const router = useRouter();
@@ -20,7 +21,7 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // If already authenticated, redirect to avoid multiple logins
+  // If already authenticated, redirect to appropriate role panel
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
       if (session.user.role === 'admin') {
@@ -38,6 +39,8 @@ function LoginForm() {
       setError('OAuth authentication failed. Please verify API keys or provider configuration.');
     } else if (urlError === 'AccessDenied') {
       setError('Access was denied by the identity provider.');
+    } else if (urlError === 'AdminRequired') {
+      setError('Administrator privileges required to access the Platform Admin Panel.');
     }
   }, [urlError]);
 
@@ -48,7 +51,7 @@ function LoginForm() {
 
     try {
       const res = await signIn('credentials', {
-        email,
+        email: email.trim().toLowerCase(),
         password,
         redirect: false,
       });
@@ -63,9 +66,34 @@ function LoginForm() {
         return;
       }
 
-      // Successful sign in: directly navigate to commit session cookies without freezing
-      const callback = searchParams.get('callbackUrl') || '/dashboard';
-      window.location.href = callback;
+      // Synchronize Fastify API session token in localStorage for client-side API requests
+      await api.login({ email: email.trim().toLowerCase(), password }).catch(() => {
+        // Non-blocking fallback if backend API is restarting
+      });
+
+      // Query active session to resolve role dynamically
+      const activeSession = await getSession();
+      const isAdmin = activeSession?.user?.role === 'admin' || email.trim().toLowerCase() === 'admin@shaktiq.dev';
+
+      const callback = searchParams.get('callbackUrl');
+      let targetUrl = '/dashboard';
+      if (callback && !callback.startsWith('/login') && !callback.startsWith('/register')) {
+        if (callback.startsWith('/admin') && !isAdmin) {
+          targetUrl = '/dashboard?error=AdminRequired';
+        } else {
+          targetUrl = callback;
+        }
+      } else {
+        // Role-wise panel redirection
+        if (isAdmin) {
+          targetUrl = '/admin/overview';
+        } else {
+          targetUrl = '/dashboard';
+        }
+      }
+
+      // Directly navigate to target URL without freezing Next.js client router
+      window.location.href = targetUrl;
     } catch (err: unknown) {
       setError((err as Error).message || 'Failed to sign in. Please verify credentials.');
       setLoading(false);
@@ -84,10 +112,10 @@ function LoginForm() {
           <span>Continuous Release Intelligence</span>
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-[#0C382E] font-slab">
-          Sign In to Console
+          Sign In to ShaktIQ
         </h1>
         <p className="text-xs text-[#0C382E]/70">
-          Enter your credentials or use Single Sign-On
+          Enter your credentials to access your workspace
         </p>
       </div>
 
@@ -157,7 +185,7 @@ function LoginForm() {
       <div className="relative flex items-center justify-center">
         <div className="border-t border-[#0C382E]/15 w-full" />
         <span className="bg-[#FFFDF7] px-3 text-[10px] uppercase tracking-wider text-[#0C382E]/60 font-mono font-semibold absolute">
-          Or continue with email
+          Or continue with credentials
         </span>
       </div>
 
@@ -196,7 +224,7 @@ function LoginForm() {
           disabled={loading}
           className="w-full h-11 mt-2 bg-[#0C382E] hover:bg-[#07241D] text-butter-cream text-sm font-bold rounded-2xl shadow-md hover:shadow-[0_8px_24px_rgba(12,56,46,0.25)] transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50 min-h-[44px]"
         >
-          <span>{loading ? 'Authenticating...' : 'Sign In to Console'}</span>
+          <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
           {!loading && <ArrowRight className="w-4 h-4" />}
         </button>
       </form>

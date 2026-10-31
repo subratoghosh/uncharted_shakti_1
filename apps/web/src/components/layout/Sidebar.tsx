@@ -14,10 +14,10 @@ import {
   Users,
   Webhook,
   Workflow,
-  FileCode,
   HelpCircle,
-  ChevronLeft,
-  ChevronRight,
+  Layers,
+  ArrowRight,
+  ShieldAlert,
   Pin,
   PinOff,
 } from 'lucide-react';
@@ -31,7 +31,7 @@ const userNav = [
 
 const adminNav = [
   { name: 'Platform Overview', href: '/admin/overview', icon: Activity },
-  { name: 'All Projects', href: '/admin/projects', icon: FolderGit2 },
+  { name: 'All Projects', href: '/admin/projects', icon: Layers },
   { name: 'All Runs', href: '/admin/runs', icon: GitCompare },
   { name: 'Events & Webhooks', href: '/admin/events', icon: Webhook },
   { name: 'Workflow Health', href: '/admin/workflows', icon: Workflow },
@@ -79,13 +79,13 @@ export function Sidebar() {
 
         {isExpanded && (
           <div className="flex items-center gap-1">
-            {isAdmin ? (
+            {isCurrentAdminPath ? (
               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 uppercase tracking-wider">
                 Admin
               </span>
             ) : (
               <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-butter-warm text-green-dark border border-green-dark/15">
-                v1.0
+                Workspace
               </span>
             )}
             <button
@@ -101,48 +101,15 @@ export function Sidebar() {
 
       {/* Navigation Sections */}
       <div className="flex-1 overflow-y-auto px-2 py-4 space-y-6 overflow-x-hidden">
-        {/* Workspace Section (Visible to all users) */}
-        <div>
-          {isExpanded && (
-            <div className="text-[11px] font-bold text-text-muted uppercase tracking-wider px-2.5 mb-2">
-              Workspace
-            </div>
-          )}
-          <nav className="space-y-1">
-            {userNav.map((item) => {
-              const active =
-                pathname === item.href ||
-                (item.href !== '/dashboard' && pathname.startsWith(item.href));
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  title={!isExpanded ? item.name : undefined}
-                  prefetch={true}
-                  className={`flex items-center gap-3 px-2.5 py-2 rounded-xl text-sm transition-all ${
-                    active
-                      ? 'bg-green-dark text-butter-cream font-bold shadow-xs'
-                      : 'text-green-dark hover:bg-butter-warm hover:text-green-dark font-medium'
-                  } ${!isExpanded ? 'justify-center px-0' : ''}`}
-                >
-                  <Icon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-butter-gold' : 'text-green-mid'}`} />
-                  {isExpanded && <span className="truncate">{item.name}</span>}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Administration Section: ONLY VISIBLE IF ISADMIN IS TRUE */}
-        {isAdmin && (
-          <div className="pt-2 border-t border-green-dark/10">
+        {isCurrentAdminPath ? (
+          /* ================= ADMIN CONSOLE PANEL ================= */
+          <div>
             {isExpanded && (
               <div className="flex items-center justify-between px-2.5 mb-2">
-                <span className="text-[11px] font-bold text-green-dark uppercase tracking-wider">
-                  Administration
+                <span className="text-[11px] font-bold text-green-dark uppercase tracking-wider flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 text-emerald-600" />
+                  Admin Console
                 </span>
-                <Shield className="w-3.5 h-3.5 text-emerald-600" />
               </div>
             )}
             <nav className="space-y-1">
@@ -157,7 +124,7 @@ export function Sidebar() {
                     prefetch={true}
                     className={`flex items-center gap-3 px-2.5 py-2 rounded-xl text-sm transition-all ${
                       active
-                        ? 'bg-green-mid text-butter-cream font-bold shadow-xs'
+                        ? 'bg-green-dark text-butter-cream font-bold shadow-xs'
                         : 'text-green-dark hover:bg-butter-warm hover:text-green-dark font-medium'
                     } ${!isExpanded ? 'justify-center px-0' : ''}`}
                   >
@@ -167,6 +134,77 @@ export function Sidebar() {
                 );
               })}
             </nav>
+
+            {/* Quick Switch to User Workspace */}
+            {isExpanded && (
+              <div className="mt-8 pt-4 border-t border-green-dark/10">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-green-mid px-2 mb-2">
+                  Developer Panel
+                </div>
+                <Link
+                  href="/dashboard"
+                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl border border-green-dark/15 bg-white hover:bg-butter-warm text-xs font-bold text-green-dark transition-all group shadow-xs"
+                >
+                  <div className="flex items-center gap-2">
+                    <LayoutDashboard className="w-4 h-4 text-emerald-600" />
+                    <span>User Workspace</span>
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
+              </div>
+            )}
+          </div>
+        ) : (
+          /* ================= USER WORKSPACE PANEL ================= */
+          <div>
+            {isExpanded && (
+              <div className="text-[11px] font-bold text-text-muted uppercase tracking-wider px-2.5 mb-2">
+                Workspace
+              </div>
+            )}
+            <nav className="space-y-1">
+              {userNav.map((item) => {
+                const active =
+                  pathname === item.href ||
+                  (item.href !== '/dashboard' && pathname.startsWith(item.href));
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    title={!isExpanded ? item.name : undefined}
+                    prefetch={true}
+                    className={`flex items-center gap-3 px-2.5 py-2 rounded-xl text-sm transition-all ${
+                      active
+                        ? 'bg-green-dark text-butter-cream font-bold shadow-xs'
+                        : 'text-green-dark hover:bg-butter-warm hover:text-green-dark font-medium'
+                    } ${!isExpanded ? 'justify-center px-0' : ''}`}
+                  >
+                    <Icon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-butter-gold' : 'text-green-mid'}`} />
+                    {isExpanded && <span className="truncate">{item.name}</span>}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* If admin is viewing user workspace, provide clear button to switch to Admin Console */}
+            {isAdmin && isExpanded && (
+              <div className="mt-8 pt-4 border-t border-green-dark/10">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-green-mid px-2 mb-2">
+                  Platform Privileges
+                </div>
+                <Link
+                  href="/admin/overview"
+                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl border border-emerald-500/30 bg-emerald-50 hover:bg-emerald-100/70 text-xs font-bold text-emerald-900 transition-all group shadow-xs"
+                >
+                  <div className="flex items-center gap-2">
+                    <ShieldAlert className="w-4 h-4 text-emerald-600" />
+                    <span>Admin Console</span>
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
+              </div>
+            )}
           </div>
         )}
       </div>

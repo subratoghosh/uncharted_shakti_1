@@ -4,12 +4,15 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { LogOut, Shield, User } from 'lucide-react';
+import { LogOut, Shield, User, ExternalLink, ShieldAlert } from 'lucide-react';
 import { ShaktiqLogoIcon } from '../shared/ShaktiqLogoIcon';
 
 export function TopNav() {
   const pathname = usePathname();
   const { data: session } = useSession();
+
+  const isAdmin = session?.user?.role === 'admin';
+  const isAdminRoute = pathname.startsWith('/admin');
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: '/login' });
@@ -42,6 +45,30 @@ export function TopNav() {
 
       {/* Right controls */}
       <div className="flex items-center gap-3.5 sm:gap-5">
+        {/* Panel Switcher for Admins */}
+        {isAdmin && (
+          <div>
+            {isAdminRoute ? (
+              <Link
+                href="/dashboard"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/30 transition-all shadow-xs"
+                title="Switch to User Workspace"
+              >
+                <span>User Workspace</span>
+                <ExternalLink className="w-3 h-3" />
+              </Link>
+            ) : (
+              <Link
+                href="/admin/overview"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-400/20 text-amber-200 hover:bg-amber-400/30 border border-amber-400/40 transition-all shadow-xs"
+                title="Switch to Admin Console"
+              >
+                <ShieldAlert className="w-3.5 h-3.5 text-amber-300" />
+                <span>Admin Console</span>
+              </Link>
+            )}
+          </div>
+        )}
 
         {/* User Profile Pill */}
         {session?.user && (
