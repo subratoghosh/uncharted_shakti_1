@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { name: 'Workflow', href: '/workflow' },
   { name: 'Why Us', href: '/why-us' },
   { name: 'Intelligence', href: '/intelligence' },
+  { name: 'FAQ', href: '/faq' },
 ];
 
 export const Header: React.FC = () => {

@@ -4,14 +4,12 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { useRunStream } from '../../hooks/useRunStream';
 import { LogOut, Shield, User } from 'lucide-react';
 import { ShaktiqLogoIcon } from '../shared/ShaktiqLogoIcon';
 
 export function TopNav() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const { status } = useRunStream();
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: '/login' });
@@ -44,25 +42,6 @@ export function TopNav() {
 
       {/* Right controls */}
       <div className="flex items-center gap-3.5 sm:gap-5">
-        {/* Live SSE Status Dot */}
-        <div className="flex items-center gap-2 text-xs sm:text-sm bg-green-deep/70 border border-green-light/40 px-3 py-1.5 rounded-full">
-          {status === 'connected' ? (
-            <>
-              <span className="w-2.5 h-2.5 rounded-full bg-green-accent animate-pulse" />
-              <span className="text-text-hero-sub font-mono font-medium hidden sm:inline text-xs sm:text-sm">Live Sync</span>
-            </>
-          ) : status === 'reconnecting' ? (
-            <>
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping" />
-              <span className="text-amber-300 font-mono font-medium text-xs sm:text-sm">Reconnecting...</span>
-            </>
-          ) : (
-            <>
-              <span className="w-2.5 h-2.5 rounded-full bg-stone-400" />
-              <span className="text-text-hero-sub/70 font-mono font-medium text-xs sm:text-sm">Offline</span>
-            </>
-          )}
-        </div>
 
         {/* User Profile Pill */}
         {session?.user && (

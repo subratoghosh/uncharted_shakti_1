@@ -25,10 +25,8 @@ import { ShaktiqLogoIcon } from '../shared/ShaktiqLogoIcon';
 
 const userNav = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Code Studio', href: '/dashboard', icon: FileCode },
   { name: 'Projects', href: '/projects', icon: FolderGit2 },
   { name: 'Access Tokens', href: '/tokens', icon: KeyRound },
-  { name: 'Knowledge FAQ', href: '/faq', icon: HelpCircle },
 ];
 
 const adminNav = [
@@ -170,25 +168,6 @@ export function Sidebar() {
               })}
             </nav>
           </div>
-        )}
-      </div>
-
-      {/* Footer Info */}
-      <div className={`p-3 border-t border-green-dark/12 text-xs text-text-muted flex items-center justify-between ${!isExpanded ? 'justify-center p-2' : ''}`}>
-        {isExpanded ? (
-          <>
-            <div>
-              <div className="font-semibold text-green-dark">shaktIQ Platform</div>
-              <div className="text-[10px] text-text-muted">MongoDB 7.0 WiredTiger</div>
-            </div>
-            {session?.user && (
-              <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-butter-warm border border-green-dark/15 text-green-dark font-bold">
-                {session.user.role}
-              </span>
-            )}
-          </>
-        ) : (
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="System Online" />
         )}
       </div>
     </aside>

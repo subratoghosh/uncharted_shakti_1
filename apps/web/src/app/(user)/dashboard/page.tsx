@@ -614,13 +614,8 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* Right: MongoDB Status & Reset */}
+        {/* Right: Reset Action */}
         <div className="flex items-center gap-3 self-end md:self-auto">
-          <div className="flex items-center gap-1.5 text-xs bg-butter-panel border border-border px-2.5 py-1 rounded-full text-green-mid">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="font-medium text-[11px]">MongoDB 7.0 Atlas</span>
-          </div>
-
           {codeContent && (
             <button
               onClick={handleClearWorkspace}
@@ -645,9 +640,6 @@ export default function DashboardPage() {
             <h2 className="text-2xl font-extrabold tracking-tight text-green-dark">
               API Release & Contract Studio
             </h2>
-            <p className="text-sm text-text-muted leading-relaxed">
-              Import your OpenAPI contract or backend route controller. We will extract every endpoint on the left, let you inspect routes, and audit breaking changes with instant AI code reviews.
-            </p>
           </div>
 
           {/* Two Hero Choice Cards */}
@@ -666,9 +658,6 @@ export default function DashboardPage() {
               <h3 className="text-base font-bold text-green-dark group-hover:text-green-mid">
                 Connect GitHub & Import Repo
               </h3>
-              <p className="text-xs text-text-muted leading-relaxed">
-                Enter your public repo URL or organization repository to auto-discover OpenAPI specs, fastify, or express routers.
-              </p>
               <span className="inline-flex items-center gap-1 text-xs font-bold text-green-mid group-hover:underline pt-1">
                 Import from GitHub &rarr;
               </span>
@@ -688,9 +677,6 @@ export default function DashboardPage() {
               <h3 className="text-base font-bold text-green-dark group-hover:text-green-mid">
                 Upload or Paste Your Code
               </h3>
-              <p className="text-xs text-text-muted leading-relaxed">
-                Upload an OpenAPI `.yaml` / `.json` or paste your route controller to inspect your endpoints in real time.
-              </p>
               <span className="inline-flex items-center gap-1 text-xs font-bold text-green-mid group-hover:underline pt-1">
                 Upload file or paste &rarr;
               </span>
@@ -698,24 +684,23 @@ export default function DashboardPage() {
           </div>
 
           {/* Quick Demo Option */}
-          <div className="pt-2 border-t border-border/60 text-xs text-text-muted flex items-center justify-center gap-3">
-            <span>Want to test the studio right away?</span>
+          <div className="pt-2 border-t border-border/60 flex items-center justify-center gap-3">
             <button
               onClick={() => {
                 setCodeContent(PRESET_OPENAPI);
                 setLoadedFileName('openapi.yaml');
               }}
-              className="font-bold text-green-dark hover:underline"
+              className="text-xs font-bold text-green-dark hover:underline"
             >
               Load Sample OpenAPI Spec
             </button>
-            <span>•</span>
+            <span className="text-border">•</span>
             <button
               onClick={() => {
                 setCodeContent(PRESET_CONTROLLER);
                 setLoadedFileName('order-controller.ts');
               }}
-              className="font-bold text-green-dark hover:underline"
+              className="text-xs font-bold text-green-dark hover:underline"
             >
               Load Sample Fastify Controller
             </button>

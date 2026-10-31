@@ -65,10 +65,7 @@ export default function TokensPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Personal Access Tokens</h1>
-        <p className="text-sm text-muted">
-          Manage tokens used by the shaktIQ VS Code extension and CLI integrations
-        </p>
+        <h1 className="text-2xl font-extrabold tracking-tight text-green-dark">Personal Access Tokens</h1>
       </div>
 
       {/* Token Generation Form */}
@@ -129,7 +126,7 @@ export default function TokensPage() {
           <button
             type="submit"
             disabled={createMutation.isPending}
-            className="px-4 h-9 bg-accent text-white rounded-sm text-xs font-semibold hover:opacity-90 disabled:opacity-50 inline-flex items-center gap-1.5"
+            className="px-4 h-9 bg-green-dark text-butter-cream rounded-xl text-xs font-bold hover:bg-green-deep disabled:opacity-50 inline-flex items-center gap-1.5 transition-all shadow-xs"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>{createMutation.isPending ? 'Generating...' : 'Generate Token'}</span>
