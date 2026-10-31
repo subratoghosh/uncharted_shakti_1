@@ -72,64 +72,68 @@ The fastest way to experience shaktIQ without installing any software or extensi
 
 ---
 
-### 2. Visual Studio Code Extension
+### 2. Visual Studio Code Extension (v0.2.0)
 
-Catch breaking API changes in real-time as you type, right inside your editor:
+Catch breaking API changes, contract flaws, and runtime bugs in real-time as you write code, right inside your editor:
 
-1. **Install from Marketplace:**
-   - In VS Code, press `Ctrl+Shift+X` (or `Cmd+Shift+X` on macOS).
-   - Search for **`shaktIQ`**.
-   - Click **Install** (or install directly from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=shaktIQ.shaktiq-vscode)).
-2. **Analyze an OpenAPI File:**
-   - Open any workspace containing an `openapi.yaml`, `openapi.json`, or `swagger.json` file.
-   - Press `Ctrl+Shift+P` ➔ run **`shaktIQ: Analyze API changes`**.
-3. **Inspect Diagnostics:**
-   - Breaking changes are highlighted directly in your code with red squiggly error diagnostics.
-   - Hover over any flagged line to see the rule violation, client blast radius, and remediation advice.
-   - Open the **Problems** tab (`Ctrl+Shift+M`) for a complete grouped checklist of all API issues.
-4. *(Optional)* **Connect to Your Team Backend:**
-   - Open VS Code Settings (`Ctrl+,`) and search for `shaktiq`.
-   - Set `shaktiq.apiUrl` to your live API (default: `https://uncharted-shakti-1.onrender.com/api/v1`).
-   - Paste your Personal Access Token (`shaktiq.apiToken`) generated from your Web Dashboard profile.
+1. **Install in 1 Click:**
+   - From the repository root, install the packaged extension:
+     ```bash
+     code --install-extension shaktiq.vsix --force
+     ```
+   - Or install from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=shaktIQ.shaktiq-vscode).
+2. **Multi-Language Code & API Auto-Routing:**
+   - Open any backend code file (`database.py`, `routers/*.py`, `server.ts`, `routes.js`, etc.) or OpenAPI spec (`openapi.yaml`).
+   - Click the **shaktIQ icon $(zap)$** in the editor top title bar, or press `Cmd+Shift+P` (macOS) / `Ctrl+Shift+P` (Windows) ➔ run **`shaktIQ: AI Review Active Code & Contract`** or **`shaktIQ: Analyze API changes & Review Code`**.
+3. **Editor Diagnostics & Error Detection:**
+   - ShaktIQ performs an AST and contract sweep across your file.
+   - Contract breaking risks, unhandled exceptions, and missing default parameter fallbacks are flagged with red and yellow squiggly lines on the exact line.
+4. **1-Click AI Quick Fix (Lightbulb 💡):**
+   - Click the lightbulb or press `Cmd + .` (or `Ctrl + .`) on any flagged code line.
+   - Select **⚡ "shaktIQ: Apply backward-compatible code fix"** to automatically apply the fix!
+   - Or select **📖 "shaktIQ: Explain client compatibility impact"** for a full impact breakdown.
+5. **Sidebar Intelligence:**
+   - Open the **shaktIQ** activity bar icon on the left to see:
+     * **Breaking Changes & Issues**: Detailed tree of findings with severity levels.
+     * **Detected API Endpoints**: Auto-parsed Python FastAPI/Flask, Node.js, and OpenAPI routes with 1-click jump to code line.
+     * **AI Remediation & Fixes**: Contract risk verdict, suggestions, and 1-click **⚡ Apply AI Suggested Fix** button.
+6. **Zero-Crash Local Fallback Engine:**
+   - Even without an `openapi.yaml` file, and even if offline or on network disconnect, the extension seamlessly falls back to its local heuristic engine and never crashes.
 
 ---
 
-### 3. Google Antigravity (AI Coding Agent Skill)
+### 3. Coding Agent Gateway & AI Skill (`/shaktiq`)
 
-Equip your AI coding agent with the `shaktIQ` skill so it automatically verifies API contracts and catches breaking changes **in-between code writing and controller refactoring**:
+Equip your AI coding agent (Google Antigravity, Cursor, Windsurf, Claude Code) with the `shaktIQ` skill so it automatically audits code contracts, detects breaking changes, and generates safe fixes **in-between code writing steps (similar to `graphify` for knowledge graphs, `shaktiq` provides the contract safety gateway)**:
 
-#### Option A: In Your Current Project (Recommended)
-Run this single command inside your project root:
-
+#### 1-Step Fast Install:
+Run the provided installer script from your project root:
 ```bash
-# macOS / Linux / Git Bash:
-mkdir -p .agents/skills/shaktiq
-curl -sSL https://raw.githubusercontent.com/subratoghosh/uncharted_shakti_1/main/.agents/skills/shaktiq/SKILL.md -o .agents/skills/shaktiq/SKILL.md
-
-# Windows PowerShell:
-New-Item -ItemType Directory -Force .agents\skills\shaktiq
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/subratoghosh/uncharted_shakti_1/main/.agents/skills/shaktiq/SKILL.md" -OutFile ".agents\skills\shaktiq\SKILL.md"
+./scripts/install-agent-skill.sh
 ```
+This script automatically:
+1. Compiles `@shaktiq/analyzer`.
+2. Symlinks the global CLI binary `shaktiq` and MCP server `shaktiq-mcp` to `~/.local/bin/`.
+3. Installs the workspace agent skill at `.agents/skills/shaktiq/SKILL.md`.
+4. Installs the global Antigravity skill at `~/.gemini/config/skills/shaktiq/SKILL.md`.
 
-#### Option B: Globally Across All Projects
-Make `shaktIQ` available to Antigravity across all your workspaces:
-
+#### Manual Skill Installation:
+- **macOS / Linux:**
+  ```bash
+  mkdir -p ~/.gemini/config/skills/shaktiq .agents/skills/shaktiq
+  cp skills/shaktiq/SKILL.md ~/.gemini/config/skills/shaktiq/SKILL.md
+  cp skills/shaktiq/SKILL.md .agents/skills/shaktiq/SKILL.md
+  ```
 - **Windows PowerShell:**
   ```powershell
   New-Item -ItemType Directory -Force "$env:USERPROFILE\.gemini\config\skills\shaktiq"
-  Invoke-WebRequest -Uri "https://raw.githubusercontent.com/subratoghosh/uncharted_shakti_1/main/.agents/skills/shaktiq/SKILL.md" -OutFile "$env:USERPROFILE\.gemini\config\skills\shaktiq\SKILL.md"
-  ```
-- **macOS / Linux:**
-  ```bash
-  mkdir -p ~/.gemini/config/skills/shaktiq
-  curl -sSL https://raw.githubusercontent.com/subratoghosh/uncharted_shakti_1/main/.agents/skills/shaktiq/SKILL.md -o ~/.gemini/config/skills/shaktiq/SKILL.md
+  Copy-Item "skills\shaktiq\SKILL.md" "$env:USERPROFILE\.gemini\config\skills\shaktiq\SKILL.md"
   ```
 
-#### How to Use It in Agent Chat:
-Whenever you or your agent edits routes, controllers, or schemas, prompt your agent:
-> *"Run shaktIQ to check if my changes to the users API introduce any breaking changes against main."*
-
-The agent will execute the in-flight check, review the deterministic findings, and automatically apply non-breaking AST remedies.
+#### How Coding Agents Use `shaktiq`:
+Prompt your agent in chat:
+> *"Audit `apps/api/src/server.ts` or `backend/database.py` with shaktIQ before committing."*
+> *"Run `shaktiq fix <file> --apply` to automatically remediate any contract breaking changes."*
 
 ---
 
@@ -151,6 +155,9 @@ Add the following to your agent configuration (`mcp_config.json` or Cursor Setti
 ```
 
 Exposed native tools:
+- `shaktiq_review_code({ file_path, language, project_name })`: Audits code files (`.py`, `.ts`, `.js`, etc.) for breaking contract flaws and returns risk ratings and remediation steps.
+- `shaktiq_fix_code({ file_path, code, issues, apply })`: Generates unified diffs and backward-compatible remediations, with optional direct file rewriting.
+- `shaktiq_scan_routes({ target_path })`: Automatically extracts all API endpoints across Python FastAPI/Flask, Node.js Express/Fastify/Next.js, and OpenAPI files.
 - `shaktiq_analyze({ base_spec, head_spec })`: Analyzes two OpenAPI files directly.
 - `shaktiq_git_diff({ spec_path, base_ref })`: Compares your working spec against git `HEAD` or any branch.
 
@@ -158,14 +165,25 @@ Exposed native tools:
 
 ### 5. CLI (Command Line & Terminal)
 
-Run deterministic OpenAPI checks directly from your terminal or shell scripts:
+Run deterministic OpenAPI checks and intelligent code audits directly from your terminal:
 
 ```bash
-# 1. Compare your current working spec against git main branch:
-npm run shaktiq -- git-diff --spec ./openapi.yaml --base-ref main --markdown
+# 1. Review any backend code file (.py, .ts, .js) for breaking API flaws:
+shaktiq review apps/api/src/server.ts
+shaktiq review backend/database.py --markdown
 
-# 2. Compare two OpenAPI specification files directly:
-npm run shaktiq -- analyze --base fixtures/openapi/v1-base.yaml --head fixtures/openapi/v2-breaking.yaml --markdown
+# 2. Automatically generate and apply AI backward-compatible code remediation:
+shaktiq fix apps/api/src/server.ts --apply
+
+# 3. Scan and list all API routes in a file or directory:
+shaktiq routes apps/api/src/modules/studio/routes.ts
+shaktiq routes backend/routers/
+
+# 4. Compare your current working spec against git main branch:
+shaktiq git-diff --spec ./openapi.yaml --base-ref main --markdown
+
+# 5. Compare two OpenAPI specification files directly:
+shaktiq analyze --base fixtures/openapi/v1-base.yaml --head fixtures/openapi/v2-breaking.yaml --markdown
 
 # 3. Output machine-readable JSON (ideal for custom scripts and agents):
 npm run shaktiq -- analyze --base ./base.yaml --head ./head.yaml --json
