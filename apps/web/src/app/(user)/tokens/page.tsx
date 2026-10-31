@@ -67,7 +67,7 @@ export default function TokensPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Personal Access Tokens</h1>
         <p className="text-sm text-muted">
-          Manage tokens used by the ShaktIQ VS Code extension and CLI integrations
+          Manage tokens used by the shaktIQ VS Code extension and CLI integrations
         </p>
       </div>
 
@@ -153,10 +153,10 @@ export default function TokensPage() {
           or{' '}
           <code className="bg-surface-2 px-1 py-0.5 rounded border border-border">Cmd+Shift+P</code>
           ). <br />
-          3. Run command: <strong className="text-text">ShaktIQ: Sign in with token</strong> and
+          3. Run command: <strong className="text-text">shaktIQ: Sign in with token</strong> and
           paste your PAT. <br />
           4. Open any OpenAPI specification and run{' '}
-          <strong className="text-text">ShaktIQ: Analyze API changes</strong> to see instant
+          <strong className="text-text">shaktIQ: Analyze API changes</strong> to see instant
           breaking change diagnostics!
         </p>
       </div>

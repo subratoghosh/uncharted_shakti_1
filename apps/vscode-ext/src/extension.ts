@@ -113,7 +113,7 @@ export function activate(context: vscode.ExtensionContext) {
   // Command: Sign in with token
   const signInCmd = vscode.commands.registerCommand('shaktiq.signIn', async () => {
     const token = await vscode.window.showInputBox({
-      prompt: 'Enter your ShaktIQ Personal Access Token (PAT)',
+      prompt: 'Enter your shaktIQ Personal Access Token (PAT)',
       password: true,
       ignoreFocusOut: true,
       placeHolder: 'sq_...',
@@ -138,9 +138,9 @@ export function activate(context: vscode.ExtensionContext) {
       }
 
       await context.secrets.store('shaktiq.pat', token);
-      vscode.window.showInformationMessage('Successfully signed in to ShaktIQ!');
+      vscode.window.showInformationMessage('Successfully signed in to shaktIQ!');
     } catch (err: unknown) {
-      vscode.window.showErrorMessage(`ShaktIQ sign in failed: ${(err as Error).message}`);
+      vscode.window.showErrorMessage(`shaktIQ sign in failed: ${(err as Error).message}`);
     }
   });
 
@@ -191,7 +191,7 @@ export function activate(context: vscode.ExtensionContext) {
     await vscode.window.withProgress(
       {
         location: vscode.ProgressLocation.Notification,
-        title: 'ShaktIQ: Analyzing OpenAPI changes...',
+        title: 'shaktIQ: Analyzing OpenAPI changes...',
         cancellable: false,
       },
       async () => {
@@ -220,7 +220,7 @@ export function activate(context: vscode.ExtensionContext) {
 
           if (!res.ok || !json.ok || !json.data) {
             const msg = json.error?.message || `Server returned status ${res.status}`;
-            vscode.window.showErrorMessage(`ShaktIQ Analysis error: ${msg}`);
+            vscode.window.showErrorMessage(`shaktIQ Analysis error: ${msg}`);
             return;
           }
 
@@ -266,7 +266,7 @@ export function activate(context: vscode.ExtensionContext) {
               `[${f.changeType}] ${f.description}\nImpact: ${f.impact}\nRecommendation: ${f.recommendation}`,
               sev,
             );
-            d.source = 'ShaktIQ';
+            d.source = 'shaktIQ';
             d.code = f.ruleId;
             diagnostics.push(d);
           }

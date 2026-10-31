@@ -8,7 +8,7 @@ import { WhyShaktiq } from '@/components/landing/WhyShaktiq';
 import { CallToAction } from '@/components/landing/CallToAction';
 
 export const metadata: Metadata = {
-  title: 'ShaktIQ — OpenAPI Compatibility & Release Intelligence',
+  title: 'shaktIQ — OpenAPI Compatibility & Release Intelligence',
   description:
     'Deterministic OpenAPI breaking change detection, blast radius assessment, and autonomous Gemini AI remediation dossiers for high-velocity API platform teams.',
 };

@@ -274,7 +274,7 @@ export function buildPrCommentMarkdown(params: {
 
   const dashboardUrl = `${env.WEB_ORIGIN}/runs/${runId}`;
 
-  let markdown = `## 🛡️ ShaktIQ — API Release Intelligence
+  let markdown = `## 🛡️ shaktIQ — API Release Intelligence
 
 ### Verdict: ${verdictBadge} (Compatibility Score: **${releaseScore}/100**)
 
@@ -283,7 +283,7 @@ export function buildPrCommentMarkdown(params: {
 | **Breaking Changes** | \`${breakingCount}\` |
 | **Warnings** | \`${warningCount}\` |
 | **Additive / Info** | \`${infoCount}\` |
-| **Full Dossier** | [View in ShaktIQ Dashboard](${dashboardUrl}) |
+| **Full Dossier** | [View in shaktIQ Dashboard](${dashboardUrl}) |
 
 `;
 
@@ -316,13 +316,13 @@ export function buildPrCommentMarkdown(params: {
     });
 
     if (findings.length > 5) {
-      markdown += `_...and ${findings.length - 5} more finding(s). [See all on ShaktIQ](${dashboardUrl})_\n\n`;
+      markdown += `_...and ${findings.length - 5} more finding(s). [See all on shaktIQ](${dashboardUrl})_\n\n`;
     }
   } else {
     markdown += `🎉 **Zero breaking changes detected!** All API contract modifications remain backward-compatible with existing consumers.\n\n`;
   }
 
-  markdown += `---\n*Powered by [ShaktIQ](https://shaktiq.dev) • Autonomous API Release Governance & Gemini AI Engine*`;
+  markdown += `---\n*Powered by [shaktIQ](https://shaktiq.dev) • Autonomous API Release Governance & Gemini AI Engine*`;
 
   return markdown;
 }

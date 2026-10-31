@@ -23,6 +23,7 @@ import {
   Cpu,
 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { ShaktiqLogoIcon } from '@/components/shared/ShaktiqLogoIcon';
 import { AiReleaseDossier } from '@/components/AiReleaseDossier';
 import type {
   Project,
@@ -410,10 +411,13 @@ export default function ShaktIQDashboard() {
           <div className="px-5 py-4 border-b border-border flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded bg-accent flex items-center justify-center font-bold text-white text-xs">
-                  S
+                <div className="w-6 h-6 rounded-md bg-[#0A382C] flex items-center justify-center p-1 border border-emerald-500/20 shadow-xs">
+                  <ShaktiqLogoIcon className="w-4 h-4" theme="dark" />
                 </div>
-                <span className="font-semibold tracking-tight text-base">ShaktIQ</span>
+                <span className="font-extrabold tracking-tight text-base">
+                  <span className="text-foreground">shakt</span>
+                  <span className="text-[#52B143]">IQ</span>
+                </span>
               </div>
               <p className="text-[11px] text-text-muted mt-0.5">API Release Intelligence</p>
             </div>

@@ -1,6 +1,6 @@
 {
   "name": "shaktiq-vscode",
-  "displayName": "ShaktIQ – OpenAPI Breaking Change Detection",
+  "displayName": "shaktIQ – OpenAPI Breaking Change Detection",
   "description": "Deterministic OpenAPI Breaking Change Detection & Release Impact Intelligence in VS Code",
   "version": "0.1.0",
   "publisher": "shaktiq",
@@ -41,22 +41,22 @@
     "commands": [
       {
         "command": "shaktiq.signIn",
-        "title": "ShaktIQ: Sign in with token"
+        "title": "shaktIQ: Sign in with token"
       },
       {
         "command": "shaktiq.analyze",
-        "title": "ShaktIQ: Analyze API changes"
+        "title": "shaktIQ: Analyze API changes"
       },
       {
         "command": "shaktiq.openDashboard",
-        "title": "ShaktIQ: Open last run in dashboard"
+        "title": "shaktIQ: Open last run in dashboard"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
           "id": "shaktiq-sidebar",
-          "title": "ShaktIQ",
+          "title": "shaktIQ",
           "icon": "resources/icon.svg"
         }
       ]
@@ -70,17 +70,17 @@
       ]
     },
     "configuration": {
-      "title": "ShaktIQ",
+      "title": "shaktIQ",
       "properties": {
         "shaktiq.apiUrl": {
           "type": "string",
           "default": "https://uncharted-shakti-1.onrender.com/api/v1",
-          "description": "ShaktIQ API base URL"
+          "description": "shaktIQ API base URL"
         },
         "shaktiq.webUrl": {
           "type": "string",
           "default": "https://shaktiq.vercel.app",
-          "description": "ShaktIQ Web Dashboard URL"
+          "description": "shaktIQ Web Dashboard URL"
         },
         "shaktiq.specPath": {
           "type": "string",

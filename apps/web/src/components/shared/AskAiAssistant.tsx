@@ -60,7 +60,7 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
     {
       id: 'welcome',
       sender: 'assistant',
-      content: `Hello! I'm **ShaktIQ AI**, powered by **Google Gemini 3.8 Flash**.\n\nAsk me any natural language question about **${
+      content: `Hello! I'm **shaktIQ AI**, powered by **Google Gemini 3.8 Flash**.\n\nAsk me any natural language question about **${
         projectName || 'this project'
       }** — breaking changes, downstream consumer impact, or backward-compatible code fixes!`,
       timestamp: new Date(),
@@ -144,7 +144,7 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
           className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-slate-950 font-semibold text-sm rounded-full shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/20"
         >
           <Sparkles className="w-4 h-4 text-slate-950 animate-pulse" />
-          <span>Ask ShaktIQ AI</span>
+          <span>Ask <strong>shakt<span className="text-emerald-950">IQ</span></strong> AI</span>
         </button>
       )}
 
@@ -159,7 +159,9 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
               </div>
               <div>
                 <h3 className="font-semibold text-sm text-white flex items-center gap-2">
-                  ShaktIQ AI Architect
+                  <span>
+                    shakt<span className="text-[#52B143]">IQ</span> AI Architect
+                  </span>
                   <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
                     <span className="relative flex h-1.5 w-1.5">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>

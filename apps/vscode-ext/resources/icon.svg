@@ -1,5 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-  <path d="M2 17l10 5 10-5"/>
-  <path d="M2 12l10 5 10-5"/>
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer Circle Segments -->
+  <path d="M 33 24 A 36 36 0 0 0 25 66 A 36 36 0 0 0 42 85" stroke="#52B143" stroke-width="6.5" stroke-linecap="round"/>
+  <path d="M 68 25 A 36 36 0 0 1 75 66 A 36 36 0 0 1 58 85" stroke="#52B143" stroke-width="6.5" stroke-linecap="round"/>
+  <!-- Code bracket left < -->
+  <path d="M 23 42 L 13 50 L 23 58" stroke="#52B143" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Code bracket right > -->
+  <path d="M 77 42 L 87 50 L 77 58" stroke="#52B143" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Speed lines on top-right -->
+  <path d="M 64 15 L 86 15" stroke="#52B143" stroke-width="5.5" stroke-linecap="round"/>
+  <path d="M 69 23 L 90 23" stroke="#52B143" stroke-width="5.5" stroke-linecap="round"/>
+  <path d="M 74 31 L 94 31" stroke="#52B143" stroke-width="5.5" stroke-linecap="round"/>
+  <!-- Central Lightning Bolt -->
+  <path d="M 58 7 L 38 46 L 53 46 L 43 93 L 68 41 L 52 41 Z" fill="#1A3826"/>
 </svg>

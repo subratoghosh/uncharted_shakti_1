@@ -15,7 +15,7 @@ import {
 import { MarketingLayout } from '@/components/landing/MarketingLayout';
 
 export const metadata: Metadata = {
-  title: 'Blast Radius & Contract Intelligence | ShaktIQ',
+  title: 'Blast Radius & Contract Intelligence | shaktIQ',
   description:
     'Deep downstream consumer dependency mapping, explainable release scoring, and non-bypassable CI contract governance for modern API platforms.',
 };
@@ -27,7 +27,7 @@ export default function IntelligencePage() {
       title: 'Consumer Dependency Graph',
       subtitle: 'Mapping altered endpoints to registered microservice consumers',
       description:
-        'When an endpoint schema changes, ShaktIQ traces consumer contracts across your organization. If an internal billing service or external iOS client relies on a modified parameter, ShaktIQ highlights the exact breaking path.',
+        'When an endpoint schema changes, shaktIQ traces consumer contracts across your organization. If an internal billing service or external iOS client relies on a modified parameter, shaktIQ highlights the exact breaking path.',
       benefit: 'Prevents silent downstream client outages before merging',
     },
     {
@@ -35,7 +35,7 @@ export default function IntelligencePage() {
       title: 'Explainable 0-100 Release Scoring',
       subtitle: 'Algorithmic evaluation of backward compatibility risk',
       description:
-        'Rather than a simple binary pass/fail, ShaktIQ calculates an objective release score based on breaking severity (BREAKING = -25 pts, WARNING = -10 pts, critical consumer impacted = -40 pts). Teams establish custom score thresholds for automated merging.',
+        'Rather than a simple binary pass/fail, shaktIQ calculates an objective release score based on breaking severity (BREAKING = -25 pts, WARNING = -10 pts, critical consumer impacted = -40 pts). Teams establish custom score thresholds for automated merging.',
       benefit: 'Gives engineering managers actionable release confidence metrics',
     },
     {
@@ -43,7 +43,7 @@ export default function IntelligencePage() {
       title: 'Autonomous Patch Synthesis',
       subtitle: 'Gemini 3.8 Flash writes backward-compatible alternatives',
       description:
-        'When a breaking change is flagged, ShaktIQ uses Gemini 3.8 Flash to synthesize backward-compatible alternatives: parameter deprecation wrappers, route shims, and RFC 8594 sunset schedules.',
+        'When a breaking change is flagged, shaktIQ uses Gemini 3.8 Flash to synthesize backward-compatible alternatives: parameter deprecation wrappers, route shims, and RFC 8594 sunset schedules.',
       benefit: 'Turns blockers into immediate 1-click refactoring steps',
     },
     {

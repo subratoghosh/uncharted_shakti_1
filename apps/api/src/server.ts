@@ -178,7 +178,7 @@ export async function startServer(): Promise<void> {
 
     const app = await buildServer();
     await app.listen({ port: env.PORT, host: '0.0.0.0' });
-    logger.info(`⚡ ShaktIQ API server listening on http://localhost:${env.PORT}`);
+    logger.info(`⚡ shaktIQ API server listening on http://localhost:${env.PORT}`);
 
     // Graceful shutdown
     const shutdown = async () => {

@@ -16,6 +16,7 @@ import {
   Workflow,
   Lock,
 } from 'lucide-react';
+import { ShaktiqLogoIcon } from '../shared/ShaktiqLogoIcon';
 
 const userNav = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -44,12 +45,15 @@ export function Sidebar() {
       <div className="h-14 border-b border-border flex items-center justify-between px-4">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 font-semibold text-lg tracking-tight"
+          className="flex items-center gap-2.5 font-bold tracking-tight text-lg group"
         >
-          <div className="w-6 h-6 rounded bg-accent flex items-center justify-center text-white text-xs font-bold">
-            S
+          <div className="w-7 h-7 rounded-lg bg-[#0A382C] flex items-center justify-center p-1 shadow-xs border border-emerald-500/20">
+            <ShaktiqLogoIcon className="w-5 h-5" theme="dark" />
           </div>
-          <span>ShaktIQ</span>
+          <span className="font-extrabold text-lg tracking-tight">
+            <span className="text-foreground">shakt</span>
+            <span className="text-[#52B143]">IQ</span>
+          </span>
         </Link>
         {isCurrentAdminPath || isAdmin ? (
           <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 uppercase tracking-wider">

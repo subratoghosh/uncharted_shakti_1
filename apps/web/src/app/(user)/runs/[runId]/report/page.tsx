@@ -83,7 +83,7 @@ export default function ReleaseReportPage() {
       <div className="border-b border-border pb-6 space-y-2">
         <div className="flex items-center justify-between">
           <div className="text-xl font-bold tracking-tight">
-            ShaktIQ Release Compatibility Report
+            shakt<span className="text-[#52B143]">IQ</span> Release Compatibility Report
           </div>
           <span className="font-mono text-xs text-muted">ID: {formatShortSha(run.id)}</span>
         </div>

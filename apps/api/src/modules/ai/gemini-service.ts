@@ -173,7 +173,7 @@ Return ONLY valid JSON matching this exact structure:
     },
     generatedBy: isKeyValid
       ? 'Google Gemini 3.8 Flash'
-      : 'ShaktIQ Multi-Layer Deterministic Intelligence Engine (Add GEMINI_API_KEY in .env for Live Gemini AI)',
+      : 'shaktIQ Multi-Layer Deterministic Intelligence Engine (Add GEMINI_API_KEY in .env for Live Gemini AI)',
   };
 }
 
@@ -208,7 +208,7 @@ export async function queryProjectAssistant(input: QueryAssistantInput): Promise
     try {
       const ai = new GoogleGenAI({ apiKey });
 
-      const prompt = `You are ShaktIQ AI — an elite Principal API Architect and Release Governance Specialist for the project "${input.projectName}".
+      const prompt = `You are shaktIQ AI — an elite Principal API Architect and Release Governance Specialist for the project "${input.projectName}".
 You help developers, tech leads, and QA engineers assess API compatibility, prevent production downtime, and write backward-compatible fixes.
 
 Context of "${input.projectName}":
@@ -274,7 +274,7 @@ Respond ONLY with valid JSON matching this schema:
     relatedEndpoints: Array.from(new Set(relatedEndpoints)),
     generatedBy: isKeyValid
       ? 'Google Gemini 3.8 Flash'
-      : 'ShaktIQ Deterministic Intelligence (Configure GEMINI_API_KEY for live AI responses)',
+      : 'shaktIQ Deterministic Intelligence (Configure GEMINI_API_KEY for live AI responses)',
   };
 }
 

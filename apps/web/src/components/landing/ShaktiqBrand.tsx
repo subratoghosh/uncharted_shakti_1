@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ShieldCheck } from 'lucide-react';
+import { ShaktiqLogoIcon } from '../shared/ShaktiqLogoIcon';
 
 type ShaktiqBrandProps = {
   href?: string;
@@ -16,42 +16,32 @@ export const ShaktiqBrand: React.FC<ShaktiqBrandProps> = ({
   const isDark = theme === 'dark';
 
   const iconSizes = {
-    sm: 'w-4 h-4',
-    md: 'w-5 h-5',
-    lg: 'w-6 h-6',
+    sm: 'w-7 h-7',
+    md: 'w-8 h-8',
+    lg: 'w-10 h-10',
   };
 
   const textSizes = {
-    sm: 'text-lg',
-    md: 'text-xl',
-    lg: 'text-2xl',
+    sm: 'text-xl',
+    md: 'text-2xl',
+    lg: 'text-3xl',
   };
 
   const content = (
     <div className="inline-flex items-center gap-2.5 group cursor-pointer select-none">
-      <div
-        className={`relative flex items-center justify-center rounded-xl transition-transform duration-200 group-hover:scale-105 ${
-          size === 'sm' ? 'w-8 h-8' : size === 'lg' ? 'w-11 h-11' : 'w-9 h-9'
-        } ${
-          isDark
-            ? 'bg-butter-cream text-green-dark shadow-sm'
-            : 'bg-green-dark text-butter-cream shadow-sm'
-        }`}
-      >
-        <ShieldCheck className={iconSizes[size]} />
-        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-green-accent ring-2 ring-white" />
+      <div className="flex items-center justify-center transition-transform duration-200 group-hover:scale-105 flex-shrink-0">
+        <ShaktiqLogoIcon className={iconSizes[size]} theme={theme} />
       </div>
 
       <div className="flex flex-col">
         <span
-          className={`font-slab font-bold tracking-tight leading-none ${textSizes[size]} ${
-            isDark ? 'text-butter-cream' : 'text-green-dark'
-          }`}
+          className={`font-black tracking-tight leading-none ${textSizes[size]}`}
         >
-          Shakt<span className={isDark ? 'text-green-sage' : 'text-green-mid'}>IQ</span>
+          <span className={isDark ? 'text-butter-cream' : 'text-[#1A3826]'}>shakt</span>
+          <span className="text-[#52B143]">IQ</span>
         </span>
         <span
-          className={`text-[9px] tracking-wider uppercase font-mono font-semibold ${
+          className={`text-[9px] tracking-wider uppercase font-mono font-bold ${
             isDark ? 'text-text-hero-sub/70' : 'text-text-dim'
           }`}
         >

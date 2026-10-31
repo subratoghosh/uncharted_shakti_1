@@ -18,9 +18,9 @@ import {
 import { MarketingLayout } from '@/components/landing/MarketingLayout';
 
 export const metadata: Metadata = {
-  title: 'Why Us | ShaktIQ - Deterministic OpenAPI Governance & Release Intelligence',
+  title: 'Why Us | shaktIQ - Deterministic OpenAPI Governance & Release Intelligence',
   description:
-    'Learn how ShaktIQ prevents breaking downstream API consumers, eliminates false alarms with deterministic AST diffing, and automates non-breaking patches with Gemini AI.',
+    'Learn how shaktIQ prevents breaking downstream API consumers, eliminates false alarms with deterministic AST diffing, and automates non-breaking patches with Gemini AI.',
 };
 
 export default function WhyUsPage() {
@@ -30,7 +30,7 @@ export default function WhyUsPage() {
       title: 'Deterministic AST Semantic Engine',
       subtitle: 'Abstract Syntax Tree comparison across endpoints, types, and constraints',
       description:
-        'Line-by-line git diffs and regex linters trigger false alarms on reordered keys or formatting changes. ShaktIQ parses both base and candidate OpenAPI documents into formal Abstract Syntax Trees, comparing types, default values, validations, and response schemas with mathematical certainty.',
+        'Line-by-line git diffs and regex linters trigger false alarms on reordered keys or formatting changes. shaktIQ parses both base and candidate OpenAPI documents into formal Abstract Syntax Trees, comparing types, default values, validations, and response schemas with mathematical certainty.',
       bullets: [
         'Full support for OpenAPI 3.0.x, 3.1.x, and Swagger 2.0 (YAML & JSON)',
         'Resolves nested $ref pointers, polymorphs (oneOf, anyOf), and complex schemas',
@@ -42,7 +42,7 @@ export default function WhyUsPage() {
       title: 'Blast Radius & Downstream Consumer Matrix',
       subtitle: 'Measure true downstream consumer breakage before code merges',
       description:
-        'API schemas don’t live in a vacuum. A changed query parameter on a payment endpoint might silently break native iOS apps, merchant checkout integrations, or microservice listeners. ShaktIQ maps every altered endpoint to registered consumers to calculate objective blast radius severity.',
+        'API schemas don’t live in a vacuum. A changed query parameter on a payment endpoint might silently break native iOS apps, merchant checkout integrations, or microservice listeners. shaktIQ maps every altered endpoint to registered consumers to calculate objective blast radius severity.',
       bullets: [
         'Categorizes impact across Core Microservices, Mobile Apps, and Public SDKs',
         'Automatic severity classification: BREAKING, WARNING, and INFO',
@@ -54,7 +54,7 @@ export default function WhyUsPage() {
       title: 'Autonomous Gemini 3.8 Flash Remediation',
       subtitle: 'AI that writes production-grade backward-compatible schema patches',
       description:
-        'Detecting a breaking change is only half the battle. ShaktIQ harnesses Gemini 3.8 Flash to synthesize a complete Release Dossier containing root-cause analysis, deprecation roadmaps, and copy-paste ready non-breaking patches in milliseconds.',
+        'Detecting a breaking change is only half the battle. shaktIQ harnesses Gemini 3.8 Flash to synthesize a complete Release Dossier containing root-cause analysis, deprecation roadmaps, and copy-paste ready non-breaking patches in milliseconds.',
       bullets: [
         'Instant backward-compatible shim generation and route alias code',
         'Deprecation tagging with Sunset and Link headers per IETF RFC 8594',
@@ -66,7 +66,7 @@ export default function WhyUsPage() {
       title: 'Strict Non-Bypassable CI/CD Release Gate',
       subtitle: 'Enforce SAFE, REVIEW, or BLOCKED release verdicts automatically',
       description:
-        'Eliminate human oversight from your API release process. ShaktIQ integrates into GitHub Actions, GitLab CI, and custom webhooks to evaluate schema pull requests against your organizational breaking change policy.',
+        'Eliminate human oversight from your API release process. shaktIQ integrates into GitHub Actions, GitLab CI, and custom webhooks to evaluate schema pull requests against your organizational breaking change policy.',
       bullets: [
         'Calculates objective 0-100 release confidence score per run',
         'Blocks pull requests automatically when critical breaking changes exist',
@@ -119,7 +119,7 @@ export default function WhyUsPage() {
               ENGINEERING RELIABILITY SPECIFICATION
             </div>
             <h1 className="font-slab text-3xl sm:text-5xl lg:text-6xl font-bold text-green-dark tracking-tight mb-4 max-w-3xl mx-auto">
-              Why leading platform teams standardize on ShaktIQ
+              Why leading platform teams standardize on <span>shakt<span className="text-[#52B143]">IQ</span></span>
             </h1>
             <p className="text-text-dim text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
               Eliminate breaking API changes before they reach staging, protect downstream consumer contracts, and accelerate release cycles with deterministic AST intelligence.
@@ -184,7 +184,7 @@ export default function WhyUsPage() {
           <div className="max-w-[1240px] mx-auto px-6">
             <div className="text-center max-w-2xl mx-auto mb-14">
               <h2 className="heading-font text-3xl font-bold text-green-dark mb-3">
-                How ShaktIQ compares
+                How <span>shakt<span className="text-[#52B143]">IQ</span></span> compares
               </h2>
               <p className="text-text-dim text-sm sm:text-base">
                 A technical comparison against traditional linters and manual code reviews.
@@ -200,7 +200,7 @@ export default function WhyUsPage() {
                         Feature Dimension
                       </th>
                       <th className="p-5 font-bold text-green-dark text-xs uppercase tracking-wider bg-butter-cream/60">
-                        ShaktIQ Intelligence
+                        shaktIQ Intelligence
                       </th>
                       <th className="p-5 font-bold text-text-dim text-xs uppercase tracking-wider">
                         Traditional Linters (oasdiff)

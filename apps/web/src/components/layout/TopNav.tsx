@@ -1,10 +1,12 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { useRunStream } from '../../hooks/useRunStream';
 import { LogOut, Shield, User } from 'lucide-react';
+import { ShaktiqLogoIcon } from '../shared/ShaktiqLogoIcon';
 
 export function TopNav() {
   const pathname = usePathname();
@@ -21,7 +23,13 @@ export function TopNav() {
     <header className="h-14 border-b border-green-mid/50 bg-[#0A382C] text-butter-cream px-3 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
       {/* Breadcrumbs */}
       <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm truncate max-w-[200px] sm:max-w-none">
-        <span className="text-butter-cream font-bold">ShaktIQ</span>
+        <Link href="/dashboard" className="flex items-center gap-1.5 hover:opacity-90 transition-opacity flex-shrink-0">
+          <ShaktiqLogoIcon className="w-5 h-5" theme="dark" />
+          <span className="font-extrabold tracking-tight">
+            <span className="text-butter-cream">shakt</span>
+            <span className="text-[#52B143]">IQ</span>
+          </span>
+        </Link>
         {segments.map((seg, i) => (
           <React.Fragment key={seg + i}>
             <span className="text-green-sage/60">/</span>

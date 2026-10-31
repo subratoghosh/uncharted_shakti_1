@@ -24,7 +24,7 @@ export async function processRunAutonomously(runId: ObjectId, project: any): Pro
   const installationId = project.installationId || null;
   const currentSha = run.commitId || run.currentVersion;
 
-  logger.info({ runId, repoFullName, branch: run.branch }, 'Starting autonomous ShaktIQ analysis for run');
+  logger.info({ runId, repoFullName, branch: run.branch }, 'Starting autonomous shaktIQ analysis for run');
 
   // 1. Set run status to running
   await runs.updateOne(
@@ -39,7 +39,7 @@ export async function processRunAutonomously(runId: ObjectId, project: any): Pro
       currentSha,
       {
         state: 'pending',
-        description: 'ShaktIQ is analyzing OpenAPI breaking changes...',
+        description: 'shaktIQ is analyzing OpenAPI breaking changes...',
         targetUrl: `${env.WEB_ORIGIN}/runs/${run._id.toHexString()}`,
       },
       installationId,
@@ -209,7 +209,7 @@ export async function processRunAutonomously(runId: ObjectId, project: any): Pro
 
     logger.info(
       { runId, releaseStatus, breaking, warning },
-      'Autonomous ShaktIQ analysis successfully completed',
+      'Autonomous shaktIQ analysis successfully completed',
     );
 
     // 9. Post final GitHub Commit Status (green or red)
@@ -256,7 +256,7 @@ export async function processRunAutonomously(runId: ObjectId, project: any): Pro
       );
     }
   } catch (err: any) {
-    logger.error({ err, runId }, 'Error running autonomous ShaktIQ analysis');
+    logger.error({ err, runId }, 'Error running autonomous shaktIQ analysis');
 
     await runs.updateOne(
       { _id: run._id },
@@ -276,7 +276,7 @@ export async function processRunAutonomously(runId: ObjectId, project: any): Pro
         currentSha,
         {
           state: 'error',
-          description: 'ShaktIQ analysis failed',
+          description: 'shaktIQ analysis failed',
           targetUrl: `${env.WEB_ORIGIN}/runs/${run._id.toHexString()}`,
         },
         installationId,

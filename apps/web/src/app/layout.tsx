@@ -6,9 +6,13 @@ import { Providers } from '../components/Providers';
 import { AppShell } from '../components/layout/AppShell';
 
 export const metadata: Metadata = {
-  title: 'ShaktIQ – OpenAPI Compatibility & Release Intelligence',
+  title: 'shaktIQ – OpenAPI Compatibility & Release Intelligence',
   description:
     'Deterministic OpenAPI breaking change detection, history tracking, and release impact assessment.',
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
