@@ -29,6 +29,7 @@ import {
   FileText,
   Filter,
   CheckCheck,
+  Trash2,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import type {
@@ -160,6 +161,165 @@ export async function orderRoutes(app: RouteService) {
   });
 };`;
 
+
+const SUPPORTED_LANGUAGES = [
+  { id: 'auto', name: 'Auto-Detect', ext: '' },
+  { id: 'typescript', name: 'TypeScript (.ts, .tsx)', ext: '.ts' },
+  { id: 'javascript', name: 'JavaScript (.js, .jsx)', ext: '.js' },
+  { id: 'python', name: 'Python (.py)', ext: '.py' },
+  { id: 'go', name: 'Go (.go)', ext: '.go' },
+  { id: 'java', name: 'Java (.java)', ext: '.java' },
+  { id: 'rust', name: 'Rust (.rs)', ext: '.rs' },
+  { id: 'csharp', name: 'C# (.cs)', ext: '.cs' },
+  { id: 'cpp', name: 'C / C++ (.cpp, .c)', ext: '.cpp' },
+  { id: 'ruby', name: 'Ruby (.rb)', ext: '.rb' },
+  { id: 'php', name: 'PHP (.php)', ext: '.php' },
+  { id: 'kotlin', name: 'Kotlin (.kt)', ext: '.kt' },
+  { id: 'yaml', name: 'OpenAPI / YAML (.yaml)', ext: '.yaml' },
+  { id: 'json', name: 'OpenAPI / JSON (.json)', ext: '.json' },
+  { id: 'graphql', name: 'GraphQL (.graphql)', ext: '.graphql' },
+  { id: 'sql', name: 'SQL (.sql)', ext: '.sql' },
+  { id: 'plaintext', name: 'Plain Code / Text', ext: '.txt' },
+];
+
+function detectLanguageFromCode(code: string, fileName?: string): string {
+  if (fileName) {
+    const dotIdx = fileName.lastIndexOf('.');
+    if (dotIdx !== -1) {
+      const ext = fileName.slice(dotIdx).toLowerCase();
+      switch (ext) {
+        case '.ts':
+        case '.tsx':
+          return 'typescript';
+        case '.js':
+        case '.jsx':
+        case '.mjs':
+        case '.cjs':
+          return 'javascript';
+        case '.py':
+        case '.pyw':
+          return 'python';
+        case '.go':
+          return 'go';
+        case '.java':
+          return 'java';
+        case '.rs':
+          return 'rust';
+        case '.cs':
+          return 'csharp';
+        case '.rb':
+          return 'ruby';
+        case '.php':
+          return 'php';
+        case '.kt':
+        case '.kts':
+          return 'kotlin';
+        case '.cpp':
+        case '.cc':
+        case '.cxx':
+        case '.c':
+        case '.h':
+        case '.hpp':
+          return 'cpp';
+        case '.json':
+          return 'json';
+        case '.yaml':
+        case '.yml':
+          return 'yaml';
+        case '.graphql':
+        case '.gql':
+          return 'graphql';
+        case '.sql':
+          return 'sql';
+        case '.proto':
+          return 'proto';
+      }
+    }
+  }
+
+  const trimmed = code.trim();
+  if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+    try {
+      JSON.parse(trimmed);
+      return 'json';
+    } catch {}
+  }
+
+  if (
+    trimmed.startsWith('openapi:') ||
+    trimmed.startsWith('swagger:') ||
+    /^paths:\s*$/m.test(trimmed) ||
+    /^info:\s*$/m.test(trimmed)
+  ) {
+    return 'yaml';
+  }
+
+  if (
+    /^(import\s+def\s+|from\s+\w+\s+import|def\s+\w+\(|@app\.|@router\.|class\s+\w+:)/m.test(trimmed) ||
+    /print\s*\(/.test(trimmed)
+  ) {
+    return 'python';
+  }
+
+  if (/^package\s+\w+/m.test(trimmed) || /func\s+\w+\(/.test(trimmed)) {
+    return 'go';
+  }
+
+  if (/public\s+class\s+\w+/m.test(trimmed) || /@GetMapping|@PostMapping|@RestController/m.test(trimmed)) {
+    return 'java';
+  }
+
+  if (/fn\s+main\(|use\s+std::/m.test(trimmed)) {
+    return 'rust';
+  }
+
+  if (/<\?php/i.test(trimmed)) {
+    return 'php';
+  }
+
+  if (
+    /import\s+.*\s+from\s+['"]|export\s+(async\s+)?function|interface\s+\w+|type\s+\w+\s*=|const\s+\w+:\s*/m.test(trimmed)
+  ) {
+    return 'typescript';
+  }
+
+  if (/const\s+\w+\s*=\s*require\(|module\.exports\s*=|function\s+\w+\(/.test(trimmed)) {
+    return 'javascript';
+  }
+
+  return 'typescript';
+}
+
+const PRESET_PYTHON = `from fastapi import FastAPI, HTTPException, Query, status
+from pydantic import BaseModel, Field
+from typing import Optional, List
+
+app = FastAPI(title="Payment & Order Service", version="1.0.0")
+
+class OrderItem(BaseModel):
+    sku: str
+    quantity: int = Field(gt=0)
+    price: float
+
+class CreateOrderRequest(BaseModel):
+    customer_id: str
+    items: List[OrderItem]
+    total_amount: float
+    currency: Optional[str] = "USD"  # Backward-compatible default
+
+@app.get("/api/v1/orders")
+def get_orders(status: Optional[str] = Query(None, enum=["pending", "shipped", "delivered"])):
+    return {"orders": [], "count": 0}
+
+@app.post("/api/v1/orders", status_code=status.HTTP_201_CREATED)
+def create_order(payload: CreateOrderRequest):
+    return {"order_id": "ord_1001", "status": "created", "total": payload.total_amount}
+
+@app.delete("/api/v1/orders/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
+def cancel_order(order_id: str):
+    return None
+`;
+
 export default function DashboardPage() {
   // Database Projects state
   const [projects, setProjects] = useState<Project[]>([]);
@@ -170,6 +330,7 @@ export default function DashboardPage() {
   // Workspace Code state (EMPTY by default - NO mock data unless imported)
   const [codeContent, setCodeContent] = useState<string>('');
   const [loadedFileName, setLoadedFileName] = useState<string>('');
+  const [codeLanguage, setCodeLanguage] = useState<string>('typescript');
   const [selectedRoute, setSelectedRoute] = useState<DetectedRoute | null>(null);
   const [selectedText, setSelectedText] = useState<string>('');
   const [selectedLineRange, setSelectedLineRange] = useState<string>('');
@@ -187,12 +348,15 @@ export default function DashboardPage() {
   const [isImportingGithub, setIsImportingGithub] = useState<boolean>(false);
   const [githubImportError, setGithubImportError] = useState<string | null>(null);
   const [pasteInput, setPasteInput] = useState<string>('');
+  const [pasteLanguage, setPasteLanguage] = useState<string>('auto');
+  const [pasteFileName, setPasteFileName] = useState<string>('');
 
   // New Project modal state
   const [showNewProjectModal, setShowNewProjectModal] = useState<boolean>(false);
   const [newProjectName, setNewProjectName] = useState<string>('');
   const [newProjectRepo, setNewProjectRepo] = useState<string>('');
   const [isCreatingProject, setIsCreatingProject] = useState<boolean>(false);
+  const [isDeletingProject, setIsDeletingProject] = useState<boolean>(false);
 
   // Results State
   const [isReviewing, setIsReviewing] = useState<boolean>(false);
@@ -311,8 +475,79 @@ export default function DashboardPage() {
       }
     }
 
+    // 2. Python FastAPI / Flask / Django
+    const pythonRegex = /@(?:app|router|api|bp)\.(get|post|put|delete|patch|route)\s*\(\s*['"`]([^'"`]+)['"`]/gi;
+    let pyMatch: RegExpExecArray | null;
+    while ((pyMatch = pythonRegex.exec(codeContent)) !== null) {
+      let rawMethod = pyMatch[1].toUpperCase();
+      if (rawMethod === 'ROUTE') rawMethod = 'GET';
+      const path = pyMatch[2];
+      if (!routes.some((r) => r.path === path && r.method === rawMethod)) {
+        routes.push({
+          path,
+          method: rawMethod as DetectedRoute['method'],
+          summary: `Python ${rawMethod} ${path} handler`,
+        });
+      }
+    }
+
+    // 3. Next.js App Router (export async function GET / POST)
+    const nextRegex = /export\s+async\s+function\s+(GET|POST|PUT|DELETE|PATCH)\s*\(/gi;
+    let nextMatch: RegExpExecArray | null;
+    while ((nextMatch = nextRegex.exec(codeContent)) !== null) {
+      const method = nextMatch[1].toUpperCase() as DetectedRoute['method'];
+      const inferredPath = loadedFileName ? `/${loadedFileName.replace(/^.*[\/\\]|\.[^.]+$/g, '')}` : '/api/handler';
+      if (!routes.some((r) => r.path === inferredPath && r.method === method)) {
+        routes.push({
+          path: inferredPath,
+          method,
+          summary: `Next.js App Router ${method} handler`,
+        });
+      }
+    }
+
+    // 4. Go: Gin / Echo / Fiber / net/http
+    const goRegex = /(?:r|router|app|e)\.(GET|POST|PUT|DELETE|PATCH)\s*\(\s*['"`]([^'"`]+)['"`]|http\.HandleFunc\s*\(\s*['"`]([^'"`]+)['"`]/gi;
+    let goMatch: RegExpExecArray | null;
+    while ((goMatch = goRegex.exec(codeContent)) !== null) {
+      const method = (goMatch[1] ? goMatch[1].toUpperCase() : 'GET') as DetectedRoute['method'];
+      const path = goMatch[2] || goMatch[3];
+      if (path && !routes.some((r) => r.path === path && r.method === method)) {
+        routes.push({
+          path,
+          method,
+          summary: `Go ${method} ${path} handler`,
+        });
+      }
+    }
+
+    // 5. Java Spring Boot (@GetMapping, @PostMapping)
+    const javaRegex = /@(Get|Post|Put|Delete|Patch)Mapping\s*\(\s*(?:value\s*=\s*)?['"`]([^'"`]+)['"`]/gi;
+    let javaMatch: RegExpExecArray | null;
+    while ((javaMatch = javaRegex.exec(codeContent)) !== null) {
+      const method = javaMatch[1].toUpperCase() as DetectedRoute['method'];
+      const path = javaMatch[2];
+      if (path && !routes.some((r) => r.path === path && r.method === method)) {
+        routes.push({
+          path,
+          method,
+          summary: `Spring Boot ${method} ${path} controller`,
+        });
+      }
+    }
+
+    // 6. Fallback: If no routes detected but code exists, provide whole file scope
+    if (routes.length === 0 && codeContent.trim().length > 0) {
+      routes.push({
+        path: loadedFileName || 'Active Code File',
+        method: 'GET',
+        summary: 'Entire file scope contract & code review',
+        line: 1,
+      });
+    }
+
     return routes;
-  }, [codeContent]);
+  }, [codeContent, loadedFileName]);
 
   // Filtered routes by search query
   const filteredRoutes = useMemo(() => {
@@ -362,8 +597,8 @@ export default function DashboardPage() {
       const res = await api.reviewStudioCode({
         code: selectedText || codeContent,
         selection: selectedText || undefined,
-        language: loadedFileName.endsWith('.ts') ? 'typescript' : 'yaml',
-        filePath: loadedFileName || 'spec.yaml',
+        language: codeLanguage !== 'auto' ? codeLanguage : detectLanguageFromCode(codeContent, loadedFileName),
+        filePath: loadedFileName || (codeLanguage === 'python' ? 'code.py' : codeLanguage === 'yaml' ? 'spec.yaml' : 'code.ts'),
         projectName: projects.find((p) => (p._id || p.id) === selectedProjectId)?.name || 'Custom Workspace',
       });
       setReviewResult(res);
@@ -541,6 +776,8 @@ export default function DashboardPage() {
         );
       }
 
+      const detected = detectLanguageFromCode(fetchedContent, successfulFile);
+      setCodeLanguage(detected);
       setCodeContent(fetchedContent);
       setLoadedFileName(successfulFile);
       setShowImportModal(false);
@@ -561,7 +798,9 @@ export default function DashboardPage() {
       const reader = new FileReader();
       reader.onload = (ev) => {
         const text = ev.target?.result as string;
-        if (text) {
+        if (typeof text === 'string') {
+          const detected = detectLanguageFromCode(text, file.name);
+          setCodeLanguage(detected);
           setCodeContent(text);
           setLoadedFileName(file.name);
           setShowImportModal(false);
@@ -594,10 +833,59 @@ export default function DashboardPage() {
     }
   };
 
+  // Handle load pasted code with language selection / detection
+  const handleLoadPastedCode = () => {
+    if (!pasteInput.trim()) return;
+    const detected = pasteLanguage === 'auto' ? detectLanguageFromCode(pasteInput, pasteFileName) : pasteLanguage;
+    let fileName = pasteFileName.trim();
+    if (!fileName) {
+      const ext = SUPPORTED_LANGUAGES.find((l) => l.id === detected)?.ext || '.ts';
+      fileName = `snippet${ext}`;
+    }
+    setCodeLanguage(detected);
+    setCodeContent(pasteInput);
+    setLoadedFileName(fileName);
+    setShowImportModal(false);
+    setPasteInput('');
+    setPasteFileName('');
+    setPasteLanguage('auto');
+    setSelectedRoute(null);
+  };
+
+  // Delete project from database
+  const handleDeleteProject = async () => {
+    if (!selectedProjectId) return;
+    const project = projects.find((p) => (p._id || p.id) === selectedProjectId);
+    const projName = project?.name || 'this project';
+
+    if (!window.confirm(`Are you sure you want to remove project "${projName}" and all its historical runs from the database?`)) {
+      return;
+    }
+
+    setIsDeletingProject(true);
+    try {
+      await api.deleteProject(selectedProjectId);
+      const updated = projects.filter((p) => (p._id || p.id) !== selectedProjectId);
+      setProjects(updated);
+      if (updated.length > 0) {
+        setSelectedProjectId(updated[0]._id || updated[0].id || '');
+      } else {
+        setSelectedProjectId('');
+      }
+      setRecentRuns([]);
+    } catch (err) {
+      console.error('Failed to delete project:', err);
+    } finally {
+      setIsDeletingProject(false);
+    }
+  };
+
   // Reset workspace
   const handleClearWorkspace = () => {
     setCodeContent('');
     setLoadedFileName('');
+    setCodeLanguage('typescript');
+    setSelectedLineRange('');
     setSelectedRoute(null);
     setSelectedText('');
     setReviewResult(null);
@@ -638,6 +926,16 @@ export default function DashboardPage() {
             >
               <Plus className="w-3.5 h-3.5" />
             </button>
+            {selectedProjectId && (
+              <button
+                onClick={handleDeleteProject}
+                disabled={isDeletingProject}
+                title="Remove / Delete this project from database"
+                className="p-1.5 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors disabled:opacity-50"
+              >
+                <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+              </button>
+            )}
           </div>
 
           <div className="h-5 w-px bg-border hidden sm:block" />
@@ -683,11 +981,11 @@ export default function DashboardPage() {
           {codeContent && (
             <button
               onClick={handleClearWorkspace}
-              title="Clear workspace"
-              className="inline-flex items-center gap-1 text-xs text-text-muted hover:text-green-dark px-2 py-1 rounded hover:bg-butter-panel transition-colors"
+              title="Remove code and reset workspace"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 px-3 py-1.5 rounded-lg transition-colors shadow-xs"
             >
-              <RotateCcw className="w-3 h-3" />
-              <span>Clear</span>
+              <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+              <span>Remove Code</span>
             </button>
           )}
         </div>
@@ -753,20 +1051,33 @@ export default function DashboardPage() {
               onClick={() => {
                 setCodeContent(PRESET_OPENAPI);
                 setLoadedFileName('openapi.yaml');
+                setCodeLanguage('yaml');
               }}
               className="text-xs font-bold text-green-dark hover:underline"
             >
-              Load Sample Service Spec
+              Load Sample Service Spec (OpenAPI)
             </button>
             <span className="text-border">•</span>
             <button
               onClick={() => {
                 setCodeContent(PRESET_CONTROLLER);
                 setLoadedFileName('order-controller.ts');
+                setCodeLanguage('typescript');
               }}
               className="text-xs font-bold text-green-dark hover:underline"
             >
-              Load Sample Route Controller
+              Load Sample Route Controller (TypeScript)
+            </button>
+            <span className="text-border">•</span>
+            <button
+              onClick={() => {
+                setCodeContent(PRESET_PYTHON);
+                setLoadedFileName('payment_service.py');
+                setCodeLanguage('python');
+              }}
+              className="text-xs font-bold text-green-dark hover:underline"
+            >
+              Load Sample Python Controller (FastAPI)
             </button>
           </div>
         </div>
@@ -970,14 +1281,38 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 gap-4 items-start">
               {/* THE CODE EDITOR: Simple White / Butter Background */}
               <div className="bg-white rounded-xl border border-border shadow-xs overflow-hidden">
-                <div className="bg-butter-panel px-4 py-2.5 border-b border-border flex items-center justify-between text-xs text-green-dark">
+                <div className="bg-butter-panel px-4 py-2.5 border-b border-border flex flex-wrap items-center justify-between gap-2 text-xs text-green-dark">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                    <span className="font-mono font-bold text-green-dark">{loadedFileName || 'spec.yaml'}</span>
+                    <span className="font-mono font-bold text-green-dark">{loadedFileName || 'code.ts'}</span>
+                    <div className="flex items-center gap-1.5 ml-2">
+                      <span className="text-[10px] uppercase font-bold text-text-muted">Lang:</span>
+                      <select
+                        value={codeLanguage}
+                        onChange={(e) => setCodeLanguage(e.target.value)}
+                        className="bg-white border border-border text-[11px] rounded-md px-2 py-0.5 font-bold text-green-dark focus:ring-1 focus:ring-green-mid"
+                      >
+                        {SUPPORTED_LANGUAGES.filter((l) => l.id !== 'auto').map((l) => (
+                          <option key={l.id} value={l.id}>
+                            {l.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
-                  <span className="text-[11px] text-text-muted">
-                    {selectedText ? `${selectedLineRange} selected` : 'Select code with mouse to audit specific lines'}
-                  </span>
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-[11px] text-text-muted hidden sm:inline">
+                      {selectedText ? `${selectedLineRange} selected` : 'Select code with mouse to audit specific lines'}
+                    </span>
+                    <button
+                      onClick={handleClearWorkspace}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors shadow-xs"
+                      title="Remove file and clear editor"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                      <span>Remove File</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div className="p-3 bg-white">
@@ -1402,14 +1737,14 @@ export default function DashboardPage() {
             {/* TAB: UPLOAD FILE */}
             {importTab === 'upload' && (
               <div className="space-y-3">
-                <label className="text-xs font-bold text-green-dark">Select Service Spec or Route file</label>
+                <label className="text-xs font-bold text-green-dark">Select any code file or service spec</label>
                 <div className="relative border-2 border-dashed border-border hover:border-green-dark/50 rounded-xl p-8 text-center space-y-2 bg-butter-panel/60 cursor-pointer transition-all">
                   <Upload className="w-7 h-7 text-green-mid mx-auto" />
                   <p className="text-xs font-bold text-green-dark">Click or drag file here to upload</p>
-                  <p className="text-[11px] text-text-muted">Supports .yaml, .yml, .json, .ts, .js</p>
+                  <p className="text-[11px] text-text-muted">Supports any language: Python (.py), TypeScript (.ts), JavaScript (.js), Go (.go), Java (.java), Rust (.rs), C# (.cs), YAML, JSON, and more</p>
                   <input
                     type="file"
-                    accept=".yaml,.yml,.json,.ts,.js,.py"
+                    
                     onChange={handleFileUpload}
                     className="absolute inset-0 opacity-0 cursor-pointer"
                   />
@@ -1420,10 +1755,35 @@ export default function DashboardPage() {
             {/* TAB: PASTE CODE */}
             {importTab === 'paste' && (
               <div className="space-y-3">
-                <label className="text-xs font-bold text-green-dark">Paste Service Spec or Route Code</label>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <label className="text-xs font-bold text-green-dark">Paste Code or Service Spec</label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] text-text-muted font-semibold">Language:</span>
+                    <select
+                      value={pasteLanguage}
+                      onChange={(e) => setPasteLanguage(e.target.value)}
+                      className="bg-butter-panel border border-border text-xs rounded-md px-2 py-1 font-semibold text-green-dark focus:ring-1 focus:ring-green-mid"
+                    >
+                      {SUPPORTED_LANGUAGES.map((lang) => (
+                        <option key={lang.id} value={lang.id}>
+                          {lang.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <input
+                  type="text"
+                  placeholder="Custom file name (e.g. routes.py, order-service.ts, api.go) - optional"
+                  value={pasteFileName}
+                  onChange={(e) => setPasteFileName(e.target.value)}
+                  className="w-full px-3 py-1.5 rounded-lg bg-butter-panel border border-border text-xs text-green-dark focus:ring-1 focus:ring-green-mid"
+                />
+
                 <textarea
-                  rows={8}
-                  placeholder="paths:&#10;  /users:&#10;    get:&#10;      summary: ..."
+                  rows={9}
+                  placeholder="// Paste any code in any language (Python, TypeScript, JavaScript, Go, Java, Rust, YAML, JSON, etc.)&#10;// e.g.:&#10;// @app.get('/api/v1/orders')&#10;// def list_orders(): ...&#10;// or:&#10;// export async function GET(req) { ... }"
                   value={pasteInput}
                   onChange={(e) => setPasteInput(e.target.value)}
                   className="w-full p-3 rounded-lg bg-butter-panel border border-border text-xs font-mono text-green-dark focus:ring-1 focus:ring-green-mid"
@@ -1436,15 +1796,7 @@ export default function DashboardPage() {
                     Cancel
                   </button>
                   <button
-                    onClick={() => {
-                      if (pasteInput.trim()) {
-                        setCodeContent(pasteInput);
-                        setLoadedFileName('pasted-code.yaml');
-                        setShowImportModal(false);
-                        setPasteInput('');
-                        setSelectedRoute(null);
-                      }
-                    }}
+                    onClick={handleLoadPastedCode}
                     disabled={!pasteInput.trim()}
                     className="px-4 py-2 text-xs font-bold rounded-lg bg-green-dark text-butter-cream hover:bg-green-deep shadow-xs disabled:opacity-50"
                   >

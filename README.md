@@ -1,4 +1,4 @@
-# shaktIQ ⚡ — Autonomous API Release Intelligence & Breaking Change Governance Platform
+# shaktIQ — Autonomous API Release Intelligence & Breaking Change Governance Platform
 
 <p align="center">
   <img src="apps/web/public/logo.png" alt="shaktIQ Logo" width="220" />
@@ -25,14 +25,14 @@ shaktIQ is an enterprise-grade API release intelligence platform and autonomous 
 > [!IMPORTANT]
 > **Platform Scope & Primary Deliverables:**  
 > shaktIQ is **not** a mobile or Android application. shaktIQ is a developer platform composed of three core developer deliverables:
-> 1. **🌐 Web Application & Intelligence Studio (`apps/web`):** Full-stack Next.js 15 platform with an interactive API comparison studio, real-time Server-Sent Events (SSE) telemetry, MongoDB Atlas recurring hotspot radar, and AI Release Dossier generator.
-> 2. **💻 Visual Studio Code Extension (`apps/vscode-ext`):** Native IDE extension (v0.2.1) providing real-time in-editor AST squiggly diagnostics, universal file and folder auditing (supports Python, TypeScript, JavaScript, Go, Java, and OpenAPI without requiring an `openapi.yaml`), and 1-click backward-compatible AI remediations.
-> 3. **🤖 In-Flight AI Coding Agent Skill & MCP Server (`.agents/skills/shaktiq` & `packages/analyzer`):** Standard Model Context Protocol (MCP) server and agent skill for Google Antigravity, Cursor, Windsurf, and Claude Code to verify contracts during automated code refactoring.
+> - **Web Application & Intelligence Studio (`apps/web`):** Full-stack Next.js 15 platform with an interactive API comparison studio, real-time Server-Sent Events (SSE) telemetry, MongoDB Atlas recurring hotspot radar, and AI Release Dossier generator.
+> - **Visual Studio Code Extension (`apps/vscode-ext`):** Native IDE extension (v0.2.1) providing real-time in-editor AST squiggly diagnostics, universal file and folder auditing (supports Python, TypeScript, JavaScript, Go, Java, and OpenAPI without requiring an `openapi.yaml`), and 1-click backward-compatible AI remediations.
+> - **In-Flight AI Coding Agent Skill & MCP Server (`.agents/skills/shaktiq` & `packages/analyzer`):** Standard Model Context Protocol (MCP) server and agent skill for Google Antigravity, Cursor, Windsurf, and Claude Code to verify contracts during automated code refactoring.
 > *(Supported by a standalone Terminal CLI and an automated GitHub Actions CI/CD PR blocking gate).*
 
 ---
 
-## 📑 Visual Table of Contents
+## Visual Table of Contents
 
 | Section | Visual Type | Focus Area |
 | :--- | :--- | :--- |
@@ -164,7 +164,7 @@ Software engineering organizations build microservices, public APIs, and mobile 
 
 ### Feature & Architectural Differentiation Matrix
 
-| Evaluation Dimension | Manual PR Review | Raw LLM Bots (ChatGPT / Claude) | Static Linters (Spectral / Vacuum) | Basic Git Diff | shaktIQ Platform ⚡ |
+| Evaluation Dimension | Manual PR Review | Raw LLM Bots (ChatGPT / Claude) | Static Linters (Spectral / Vacuum) | Basic Git Diff | shaktIQ Platform |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **Deterministic Rule Evaluation** | ❌ Fatigue-prone | ❌ Hallucination risk | ✅ Deterministic | ❌ Text-only | **✅ 100% Deterministic (300+ Rules)** |
 | **CI/CD Hard Blocking Exit Code** | ❌ Manual | ❌ Non-deterministic | ⚠️ Style only | ❌ Unreliable | **✅ Non-Bypassable (Code 1 on BREAKING)** |
@@ -541,7 +541,7 @@ Choose the environment where you work. You can be up and running in **under 2 mi
                                           │
          ┌───────────────┬────────────────┼───────────────┬───────────────┐
          ▼               ▼                ▼               ▼               ▼
-   🌐 Web Console   💻 VS Code Ext   🤖 Antigravity  🖥️ Terminal/CLI  🚀 GitHub Actions
+    Web Console      VS Code Ext     Antigravity     Terminal/CLI   GitHub Actions
   (Instant Trial)  (In-Editor Lint) (AI Agent Skill) (DevOps/Scripts)  (PR Block Gate)
 ```
 
@@ -575,15 +575,15 @@ Catch breaking API changes, contract flaws, and runtime bugs in real-time as you
 3. **Editor Diagnostics & Error Detection:**
    - ShaktIQ performs an AST and contract sweep across your file.
    - Contract breaking risks, unhandled exceptions, and missing default parameter fallbacks are flagged with red and yellow squiggly lines on the exact line.
-4. **1-Click AI Quick Fix (Lightbulb 💡):**
+4. **1-Click AI Quick Fix (Lightbulb):**
    - Click the lightbulb or press `Cmd + .` (or `Ctrl + .`) on any flagged code line.
-   - Select **⚡ "shaktIQ: Apply backward-compatible code fix"** to automatically apply the fix!
-   - Or select **📖 "shaktIQ: Explain client compatibility impact"** for a full impact breakdown.
+   - Select **"shaktIQ: Apply backward-compatible code fix"** to automatically apply the fix!
+   - Or select **"shaktIQ: Explain client compatibility impact"** for a full impact breakdown.
 5. **Sidebar Intelligence:**
    - Open the **shaktIQ** activity bar icon on the left to see:
      * **Breaking Changes & Issues**: Detailed tree of findings with severity levels.
      * **Detected API Endpoints**: Auto-parsed Python FastAPI/Flask, Node.js, and OpenAPI routes with 1-click jump to code line.
-     * **AI Remediation & Fixes**: Contract risk verdict, suggestions, and 1-click **⚡ Apply AI Suggested Fix** button.
+     * **AI Remediation & Fixes**: Contract risk verdict, suggestions, and 1-click **Apply AI Suggested Fix** button.
 6. **Zero-Crash Local Fallback Engine:**
    - Even without an `openapi.yaml` file, and even if offline or on network disconnect, the extension seamlessly falls back to its local heuristic engine and never crashes.
 
@@ -816,7 +816,7 @@ npm test              # Run unit & integration test suites
 
 ## 17. Team & Ownership
 
-Built with ❤️ for modern software engineering teams and the **MongoDB Student Hackathon**:
+Built for modern software engineering teams and the **MongoDB Student Hackathon**:
 
 | Member | Focus Area | Owned Codebases & Modules |
 | :--- | :--- | :--- |
@@ -829,14 +829,14 @@ Built with ❤️ for modern software engineering teams and the **MongoDB Studen
 ## 18. Technical Documentation Directory
 
 Comprehensive engineering specifications are maintained in the [`docs/`](docs/) directory:
-- 📄 [Product Requirements Document (`docs/prd.md`)](docs/prd.md)
-- 🏛️ [System Architecture & Lifecycle (`docs/architecture.md`)](docs/architecture.md)
-- 💾 [MongoDB Schema, Indexes & Aggregations (`docs/database.md`)](docs/database.md)
-- 🛡️ [Security, Threat Models & Redaction (`docs/security.md`)](docs/security.md)
-- 🧪 [Testing Strategy & Acceptance Criteria (`docs/testing.md`)](docs/testing.md)
-- 🎨 [Design System & UI Tokens (`docs/design_system.md`)](docs/design_system.md)
-- 📐 [Code Style & Response Envelopes (`docs/code_style.md`)](docs/code_style.md)
-- 🤝 [Team Responsibilities & Workspaces (`docs/agents.md`)](docs/agents.md)
+- [Product Requirements Document (`docs/prd.md`)](docs/prd.md)
+- [System Architecture & Lifecycle (`docs/architecture.md`)](docs/architecture.md)
+- [MongoDB Schema, Indexes & Aggregations (`docs/database.md`)](docs/database.md)
+- [Security, Threat Models & Redaction (`docs/security.md`)](docs/security.md)
+- [Testing Strategy & Acceptance Criteria (`docs/testing.md`)](docs/testing.md)
+- [Design System & UI Tokens (`docs/design_system.md`)](docs/design_system.md)
+- [Code Style & Response Envelopes (`docs/code_style.md`)](docs/code_style.md)
+- [Team Responsibilities & Workspaces (`docs/agents.md`)](docs/agents.md)
 
 ---
 
