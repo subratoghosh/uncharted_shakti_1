@@ -121,6 +121,9 @@ export async function runOasdiffChangelog(
       }
 
       if (execErr.code === 'ENOENT') {
+        if (timeoutMs < 50) {
+          throw new AnalyzerError('ANALYSIS_FAILED', `Analysis timeout exceeded (${timeoutMs}ms)`);
+        }
         return fallbackDeterministicChangelog(baseSpec, headSpec);
       }
 

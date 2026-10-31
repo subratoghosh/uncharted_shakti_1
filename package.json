@@ -24,6 +24,7 @@
     "dev:web": "npm run dev -w apps/web"
   },
   "devDependencies": {
+    "@next/swc-darwin-arm64": "^16.4.3",
     "@types/node": "^20.14.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
@@ -31,5 +32,9 @@
     "prettier": "^3.3.3",
     "typescript": "^5.7.3",
     "vitest": "^2.1.8"
+  },
+  "dependencies": {
+    "@upstash/ratelimit": "^2.2.0",
+    "@upstash/redis": "^1.40.0"
   }
 }

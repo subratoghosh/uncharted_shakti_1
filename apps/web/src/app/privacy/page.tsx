@@ -10,6 +10,8 @@ export const metadata: Metadata = {
     'Learn how shaktIQ protects your OpenAPI specifications, git repositories, and schema payload data with zero telemetry leakage and strict tenant isolation.',
 };
 
+export const revalidate = 3600; // Cache static page for ultra-fast, zero-lag delivery
+
 export default function PrivacyPolicyPage() {
   const lastUpdated = 'October 31, 2026';
 
@@ -170,3 +172,4 @@ export default function PrivacyPolicyPage() {
     </MarketingLayout>
   );
 }
+

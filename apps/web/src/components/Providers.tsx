@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SessionProvider } from 'next-auth/react';
+import { PageCacheProvider } from './common/PageCache';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -11,8 +12,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         defaultOptions: {
           queries: {
             refetchOnWindowFocus: false,
+            refetchOnMount: false,
+            refetchOnReconnect: false,
             retry: 1,
-            staleTime: 5000,
+            staleTime: 1000 * 60 * 10, // 10 minutes: fast instantaneous navigation
+            gcTime: 1000 * 60 * 60,    // 1 hour memory persistence for already loaded views
           },
         },
       }),
@@ -20,7 +24,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <SessionProvider>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <PageCacheProvider>{children}</PageCacheProvider>
+      </QueryClientProvider>
     </SessionProvider>
   );
 }

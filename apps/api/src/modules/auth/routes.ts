@@ -14,10 +14,11 @@ import { getCollections } from '../../db/collections.js';
 import { sha256 } from '../../lib/hash.js';
 import { sendSuccess } from '../../lib/response.js';
 import { authenticate, signJwtToken } from '../../plugins/auth.js';
+import { authRateLimiter, rateLimitGuard } from '../../lib/redis.js';
 
 export const authRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
   // POST /auth/register
-  app.post(ROUTES.AUTH.REGISTER, async (request, reply) => {
+  app.post(ROUTES.AUTH.REGISTER, { preHandler: [rateLimitGuard(authRateLimiter)] }, async (request, reply) => {
     const body = registerRequestSchema.parse(request.body);
     const { users } = getCollections();
 
@@ -85,7 +86,7 @@ export const authRoutes: FastifyPluginAsync = async (app: FastifyInstance) => {
   });
 
   // POST /auth/login
-  app.post(ROUTES.AUTH.LOGIN, async (request, reply) => {
+  app.post(ROUTES.AUTH.LOGIN, { preHandler: [rateLimitGuard(authRateLimiter)] }, async (request, reply) => {
     const body = loginRequestSchema.parse(request.body);
     const { users } = getCollections();
 

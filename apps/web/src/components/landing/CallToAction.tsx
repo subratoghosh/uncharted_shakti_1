@@ -31,7 +31,7 @@ export const CallToAction: React.FC = () => {
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link href="/workflow" className="btn-hero-ghost">
-              <span>Explore 5-Step Workflow</span>
+              <span>Explore 4-Step Workflow</span>
             </Link>
           </div>
         </div>

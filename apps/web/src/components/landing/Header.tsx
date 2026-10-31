@@ -52,6 +52,7 @@ export const Header: React.FC = () => {
                 <Link
                   key={item.name}
                   href={item.href}
+                  prefetch={true}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 ${
                     isActive
                       ? 'bg-butter-cream text-green-dark shadow-sm font-bold'
@@ -68,6 +69,7 @@ export const Header: React.FC = () => {
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/dashboard"
+              prefetch={true}
               className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-butter-cream text-green-dark font-bold text-xs hover:bg-butter-gold hover:shadow-[0_0_20px_rgba(255,240,179,0.35)] transition-all active:translate-y-0.5 shrink-0"
             >
               <Terminal className="w-3.5 h-3.5" />
@@ -96,6 +98,7 @@ export const Header: React.FC = () => {
               <Link
                 key={item.name}
                 href={item.href}
+                prefetch={true}
                 className="px-4 py-2.5 rounded-xl text-sm font-semibold text-text-hero-sub hover:text-white hover:bg-green-mid/60 transition-colors"
               >
                 {item.name}
@@ -104,6 +107,7 @@ export const Header: React.FC = () => {
             <div className="pt-2 border-t border-green-mid/60 mt-1">
               <Link
                 href="/dashboard"
+                prefetch={true}
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-butter-cream text-green-dark font-bold text-sm shadow-md hover:bg-butter-gold transition-colors"
               >
                 <Terminal className="w-4 h-4" />

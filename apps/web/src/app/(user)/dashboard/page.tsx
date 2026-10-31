@@ -22,9 +22,30 @@ import {
   Check,
   Cpu,
 } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { api } from '@/lib/api';
 import { ShaktiqLogoIcon } from '@/components/shared/ShaktiqLogoIcon';
-import { AiReleaseDossier } from '@/components/AiReleaseDossier';
+import { Skeleton } from '@/components/common/Skeleton';
+
+const AiReleaseDossier = dynamic(
+  () => import('@/components/AiReleaseDossier').then((mod) => mod.AiReleaseDossier),
+  {
+    loading: () => (
+      <div className="rounded-3xl p-6 bg-[#082820] text-butter-cream space-y-4 border border-[#0C382E]/40 animate-fade-in">
+        <div className="flex items-center justify-between">
+          <Skeleton variant="dark" className="h-5 w-48" rounded="md" />
+          <Skeleton variant="dark" className="h-4 w-28" rounded="full" />
+        </div>
+        <div className="p-4 rounded-2xl bg-black/30 space-y-2">
+          <Skeleton variant="dark" className="h-4 w-3/4" rounded="sm" />
+          <Skeleton variant="dark" className="h-4 w-1/2" rounded="sm" />
+          <Skeleton variant="dark" className="h-4 w-5/6" rounded="sm" />
+        </div>
+      </div>
+    ),
+    ssr: false,
+  }
+);
 import type {
   Project,
   Run,

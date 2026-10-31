@@ -22,6 +22,8 @@ export const metadata: Metadata = {
     'Discover shaktIQ’s 5-step release intelligence lifecycle: from git push schema ingestion to AST semantic diffing, blast radius calculation, and Gemini AI remediation.',
 };
 
+export const revalidate = 3600; // Cache static page for ultra-fast, zero-lag delivery
+
 const WORKFLOW_STEPS = [
   {
     step: '01',
@@ -74,10 +76,10 @@ export default function WorkflowPage() {
           <div className="max-w-[1240px] mx-auto px-6 text-center">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-green-dark/5 text-green-dark text-xs font-bold uppercase tracking-wider mb-4 border border-green-dark/10">
               <Workflow className="w-3.5 h-3.5 text-green-accent" />
-              THE 5-STEP LIFECYCLE
+              THE 4-STEP LIFECYCLE
             </div>
             <h1 className="font-slab text-3xl sm:text-5xl lg:text-6xl font-bold text-green-dark tracking-tight mb-4 max-w-3xl mx-auto">
-              From git push to verified release in 5 disciplined steps
+              From git push to verified release in 4 disciplined steps
             </h1>
             <p className="text-text-dim text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
               How platform engineering teams achieve continuous API backward compatibility without bottlenecking product velocity.
@@ -191,7 +193,7 @@ export default function WorkflowPage() {
             <div className="p-8 sm:p-12 bg-white rounded-3xl border border-green-dark/12 shadow-sm flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="max-w-2xl">
                 <h3 className="display-font text-2xl sm:text-3xl font-bold text-green-dark mb-2">
-                  Experience the 5-step workflow in action
+                  Experience the 4-step workflow in action
                 </h3>
                 <p className="text-text-dim text-sm sm:text-base leading-relaxed">
                   Open the interactive console to test sample base and head OpenAPI documents, inspect breaking change detections, and review AI-generated release dossiers.

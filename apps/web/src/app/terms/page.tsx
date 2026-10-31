@@ -10,6 +10,8 @@ export const metadata: Metadata = {
     'Review the terms of service governing access to shaktIQ OpenAPI breaking change detection, blast radius assessment, and release intelligence infrastructure.',
 };
 
+export const revalidate = 3600; // Cache static page for ultra-fast, zero-lag delivery
+
 export default function TermsOfServicePage() {
   const lastUpdated = 'October 31, 2026';
 
@@ -153,3 +155,4 @@ export default function TermsOfServicePage() {
     </MarketingLayout>
   );
 }
+

@@ -34,6 +34,9 @@ const envSchema = z.object({
   GITHUB_APP_PRIVATE_KEY: z.string().optional(),
   GITHUB_APP_SLUG: z.string().optional(),
   GITHUB_TOKEN: z.string().optional(),
+  UPSTASH_REDIS_REST_URL: z.string().optional(),
+  UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
+  REDIS_URL: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

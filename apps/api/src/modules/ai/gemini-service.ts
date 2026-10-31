@@ -1,4 +1,3 @@
-import { GoogleGenAI } from '@google/genai';
 import { env } from '../../config/env.js';
 import { logger } from '../../lib/logger.js';
 
@@ -49,8 +48,10 @@ export async function generateMultiLayerDossier(
   const apiKey = env.GEMINI_API_KEY;
   const isKeyValid = apiKey && apiKey !== 'your_gemini_api_key_here' && apiKey.length > 10;
 
-  if (isKeyValid) {
+  if (isKeyValid && env.NODE_ENV !== 'test') {
     try {
+      // Dynamic import so lack of @google/genai module or offline dev does not break module loading
+      const { GoogleGenAI } = await import('@google/genai');
       const ai = new GoogleGenAI({ apiKey });
 
       const prompt = `You are the Lead API Architecture Auditor for "${projectName}".
@@ -206,6 +207,7 @@ export async function queryProjectAssistant(input: QueryAssistantInput): Promise
 
   if (isKeyValid) {
     try {
+      const { GoogleGenAI } = await import('@google/genai');
       const ai = new GoogleGenAI({ apiKey });
 
       const prompt = `You are shaktIQ AI — an elite Principal API Architect and Release Governance Specialist for the project "${input.projectName}".

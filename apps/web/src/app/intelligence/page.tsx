@@ -20,6 +20,8 @@ export const metadata: Metadata = {
     'Deep downstream consumer dependency mapping, explainable release scoring, and non-bypassable CI contract governance for modern API platforms.',
 };
 
+export const revalidate = 3600; // Cache static page for ultra-fast, zero-lag delivery
+
 export default function IntelligencePage() {
   const pillars = [
     {
@@ -134,7 +136,7 @@ export default function IntelligencePage() {
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link href="/workflow" className="btn-glass">
-                  <span>Explore 5-Step Workflow</span>
+                  <span>Explore 4-Step Workflow</span>
                 </Link>
               </div>
             </div>

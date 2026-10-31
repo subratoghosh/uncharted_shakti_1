@@ -9,6 +9,7 @@ import { SeverityBadge } from '../../../../../components/shared/SeverityBadge';
 import { EndpointTag } from '../../../../../components/shared/EndpointTag';
 import { formatShortSha } from '../../../../../lib/format';
 import { ArrowLeft, GitCompare } from 'lucide-react';
+import { Skeleton } from '../../../../../components/common/Skeleton';
 
 type Run = {
   id: string;
@@ -171,8 +172,19 @@ export default function CompareRunsPage() {
         {/* Findings List */}
         <div className="p-4">
           {isLoading ? (
-            <div className="p-8 text-center text-sm text-muted">
-              Calculating diff aggregation...
+            <div className="space-y-3 p-2">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-surface-2/40">
+                  <div className="space-y-2 w-3/4">
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-5 w-16" rounded="full" />
+                      <Skeleton className="h-5 w-40" rounded="md" />
+                    </div>
+                    <Skeleton className="h-3.5 w-5/6" rounded="sm" />
+                  </div>
+                  <Skeleton className="h-5 w-20" rounded="md" />
+                </div>
+              ))}
             </div>
           ) : !baseRunId || !headRunId ? (
             <div className="p-8 text-center text-sm text-muted">
