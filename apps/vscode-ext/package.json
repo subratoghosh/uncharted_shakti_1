@@ -1,8 +1,8 @@
 {
   "name": "shaktiq-vscode",
-  "displayName": "shaktIQ – OpenAPI Breaking Change Detection",
-  "description": "Deterministic OpenAPI Breaking Change Detection & Release Impact Intelligence in VS Code",
-  "version": "0.1.1",
+  "displayName": "shaktIQ – AI Code Audit & Contract Intelligence",
+  "description": "Deterministic OpenAPI Breaking Change Detection & AI Code Audit, Remediation, and Fixes in VS Code",
+  "version": "0.2.0",
   "publisher": "shaktIQ",
   "icon": "resources/icon.png",
   "license": "MIT",

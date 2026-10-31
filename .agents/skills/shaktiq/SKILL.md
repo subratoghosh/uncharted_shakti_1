@@ -1,158 +1,128 @@
 ---
 name: shaktiq
-description: "Detect OpenAPI breaking changes, compare API specifications, and generate release verdicts (SAFE/REVIEW/BLOCKED) with remediation steps between code execution. Use whenever editing API schemas, modifying endpoints, refactoring controllers, or validating backward compatibility."
+description: "Detect breaking API changes, audit backend code (.py, .ts, .js) for contract flaws and bugs, suggest backward-compatible fixes, and generate release verdicts (SAFE/REVIEW/BLOCKED). Use whenever modifying routes, refactoring controllers, or validating backward compatibility."
 ---
 
-# /shaktiq - API Breaking Change & Release Intelligence
+# /shaktiq - Coding Agent Gateway: API Breaking Change Detection & Automated Remediation
 
-shaktIQ provides deterministic, rule-based OpenAPI contract diffing, breaking change detection, and release safety verdicts (`SAFE`, `REVIEW`, `BLOCKED`) for AI coding agents (Antigravity, Claude Code, Cursor, Windsurf) and developer CI/CD workflows.
+shaktIQ is the automated API contract guardian and code flaw auditor for AI coding agents (Antigravity, Cursor, Claude Code, Windsurf, Roo) and CI/CD pipelines.
 
----
-
-## What shaktIQ Does for AI Agents
-
-During active coding, an AI agent modifying backend controllers, route schemas, or OpenAPI specifications can inadvertently introduce breaking changes that crash downstream consumers, mobile apps, or partner integrations.
-
-Activating **shaktIQ** allows agents to:
-1. **Compare Specs In-Flight:** Compare the working-tree OpenAPI spec against `main` (or previous snapshots) before committing or pushing.
-2. **Deterministic Classification:** Categorize changes as `breaking` (level 3), `warning` (level 2), or `info` (level 1) using deterministic AST rule mapping.
-3. **Generate Release Verdicts:**
-   - 🔴 **BLOCKED:** Contains 1+ breaking changes. The release or PR should NOT proceed without remediation.
-   - 🟡 **REVIEW:** Contains contract warnings requiring manual engineering verification.
-   - 🟢 **SAFE:** Purely additive or non-breaking modifications.
-4. **Actionable Remediation Guidance:** Surface exact rules, locations, impacts, and remediation recipes directly into the agent's context.
+Just like `graphify` provides structural codebase intelligence, **shaktIQ** provides contract integrity intelligence: it detects API bugs, flags breaking changes in real time, and generates backward-compatible code patches before changes hit production.
 
 ---
 
-## When You (the AI Agent) Must Trigger shaktIQ
+## Capabilities for AI Coding Agents
+
+1. **Active Code & Controller Review:**
+   Audit backend code files (Python FastAPI/Flask, Node.js Fastify/Express/Next.js, Go, Java) for contract drift, removed parameters without fallbacks, and unhandled runtime exceptions:
+   ```bash
+   shaktiq review <file-path> [--json] [--markdown]
+   ```
+2. **Automated Code Fix & Remediation:**
+   Generate backward-compatible code patches and unified diffs. With `--apply`, the agent can automatically rewrite the file with the fix:
+   ```bash
+   shaktiq fix <file-path> --apply
+   ```
+3. **Route Discovery & Inventory:**
+   Scan any file or project directory to inventory all active API routes and HTTP methods:
+   ```bash
+   shaktiq routes <path>
+   ```
+4. **Deterministic OpenAPI Breaking Change Detection:**
+   Compare specifications in-flight or against git history:
+   ```bash
+   shaktiq analyze --base ./base.yaml --head ./head.yaml [--json]
+   shaktiq git-diff --spec ./openapi.yaml --base-ref main [--markdown]
+   ```
+5. **Deterministic Release Safety Verdicts:**
+   - 🔴 **BLOCKED:** Contains 1+ breaking changes that will crash downstream consumers or mobile clients.
+   - 🟡 **REVIEW:** Contains contract warnings requiring review.
+   - 🟢 **SAFE:** Purely additive or fully backward-compatible modifications.
+
+---
+
+## When to Trigger shaktIQ
 
 Activate this skill whenever:
-- The user requests to "check API changes", "verify release safety", "run shaktiq", or "/shaktiq".
-- You have edited an OpenAPI / Swagger file (`openapi.yaml`, `swagger.json`, `docs/openapi.yaml`).
-- You have modified backend API routes, request parameters, or response payloads in Fastify, Express, Next.js, Flask, FastAPI, Go, etc.
-- Before generating a pull request or committing changes on an API service branch.
+- The user asks to "check API changes", "find contract bugs", "audit code flaws", "run shaktiq", or "/shaktiq".
+- Modifying backend route handlers, controllers, or database schema adapters in `.py`, `.ts`, `.js`.
+- Adding or modifying request parameters, body schemas, or response payloads.
+- Editing an OpenAPI / Swagger specification (`openapi.yaml`, `swagger.json`).
+- Before finalizing a git commit or submitting a pull request.
 
 ---
 
 ## Command Reference
 
-### 1. In-Between Code Writing Verification (Git Diff)
-
-Run between code edits or controller refactoring to verify whether recent changes broke backward compatibility against `main`:
-
+### 1. Audit Code for Contract Bugs & Flaws
 ```bash
-# Markdown summary for human/agent review:
-node packages/analyzer/dist/cli.js git-diff --spec path/to/openapi.yaml --base-ref main --markdown
+# Review a Python FastAPI controller
+shaktiq review backend/database.py
 
-# Or via npm script:
-npm run shaktiq -- git-diff --spec path/to/openapi.yaml --base-ref main --markdown
+# Review a TypeScript route handler with structured JSON for agent parsing
+shaktiq review apps/api/src/server.ts --json
 
-# For agent-parsable structured JSON:
-node packages/analyzer/dist/cli.js git-diff --spec path/to/openapi.yaml --base-ref main --json
+# Markdown format for PR reviews
+shaktiq review src/routes/orders.ts --markdown
 ```
 
-### 2. Compare Two Specification Files Directly
-
+### 2. Auto-Remediate Code Flaws (Generate & Apply Fix)
 ```bash
-node packages/analyzer/dist/cli.js analyze --base fixtures/v1.yaml --head fixtures/v2.yaml --markdown
+# View suggested backward-compatible fix and diff:
+shaktiq fix backend/database.py
+
+# Automatically apply the fix to the file on disk:
+shaktiq fix backend/database.py --apply
 ```
 
-Or with failure exit code for automated pre-commit / agent verification loops:
+### 3. Extract API Routes
 ```bash
-node packages/analyzer/dist/cli.js analyze --base ./openapi-base.yaml --head ./openapi-head.yaml --fail-on-breaking
+shaktiq routes backend/routers/
+```
+
+### 4. Deterministic OpenAPI Specification Comparison
+```bash
+# In-flight git diff against main:
+shaktiq git-diff --spec openapi.yaml --base-ref main --markdown
+
+# Compare two spec files directly:
+shaktiq analyze --base fixtures/openapi/orders-v1.yaml --head fixtures/openapi/orders-v2-required-field.yaml --fail-on-breaking
 ```
 
 ---
 
-## Output Schema & How to Interpret Results
+## MCP Server Integration (Model Context Protocol)
 
-When invoked with `--json`, ShaktIQ outputs:
+ShaktIQ provides a native MCP server for AI coding agents.
 
-```json
-{
-  "releaseVerdict": "blocked" | "review" | "safe",
-  "summary": {
-    "total": 3,
-    "breaking": 1,
-    "warning": 1,
-    "info": 1
-  },
-  "base": "orders-v1.yaml",
-  "head": "orders-v2.yaml",
-  "findings": [
-    {
-      "fingerprint": "d73cc284d318b6ebcb0b0fef998aceea00eb9f5ccce7ef61c0329d5b0ca3b058",
-      "endpoint": "/users/{id}",
-      "method": "GET",
-      "changeType": "ENDPOINT_REMOVED",
-      "severity": "breaking",
-      "ruleId": "api-path-removed-without-deprecation",
-      "description": "api path removed without deprecation",
-      "impact": "Clients calling this endpoint will receive 404 Not Found or 405 Method Not Allowed.",
-      "recommendation": "Restore the endpoint or deprecate first and communicate a sunset date to consumers.",
-      "locationText": "85:5"
-    }
-  ]
-}
-```
-
----
-
-## Agent Remediation Playbook
-
-When `releaseVerdict` is **`blocked`**, inspect `findings` and apply these standard remediation patterns:
-
-| Detected Change Type | Severity | Common Cause | Recommended Agent Remediation |
-| :--- | :--- | :--- | :--- |
-| `ENDPOINT_REMOVED` | 🔴 Breaking | Controller or path deleted | Re-add endpoint with `deprecated: true` and sunset header/notice. |
-| `METHOD_REMOVED` | 🔴 Breaking | HTTP method handler deleted | Restore handler or route to alias method. |
-| `REQUIRED_REQUEST_FIELD_ADDED` | 🔴 Breaking | Added required field to request body | Make property optional with a sane default value. |
-| `REQUIRED_PARAMETER_ADDED` | 🔴 Breaking | Added required query/header/path param | Change to optional parameter with fallback logic. |
-| `RESPONSE_FIELD_REMOVED` | 🔴 Breaking | Removed response payload property | Keep property in response schema marked deprecated. |
-| `FIELD_TYPE_CHANGED` | 🔴 Breaking | Changed string to integer or object | Introduce a new versioned property name or support union types. |
-| `FIELD_MADE_REQUIRED` | 🔴 Breaking | Changed optional property to required | Keep property optional in schema validation. |
-
----
-
-## MCP Server Integration
-
-ShaktIQ includes a built-in Model Context Protocol (MCP) server. To connect it directly to your agent's MCP tool suite:
-
+### Add to your Agent's MCP Configuration:
 Add to your `mcp_config.json` (or Antigravity / Claude Desktop / Cursor MCP settings):
 
 ```json
 {
   "mcpServers": {
     "shaktiq": {
-      "command": "node",
-      "args": ["/path/to/ShaktIQ/packages/analyzer/dist/mcp.js"]
+      "command": "shaktiq-mcp"
     }
   }
 }
 ```
 
-Exposed MCP Tools:
-- `shaktiq_analyze({ base_spec: string, head_spec: string })`
-- `shaktiq_git_diff({ spec_path: string, base_ref?: string })`
+### Available MCP Tools:
+- `shaktiq_review_code({ file_path: string, code?: string })`: Audits code or OpenAPI specs for contract flaws, breaking risks, and compatibility bugs.
+- `shaktiq_fix_code({ file_path: string, code?: string, issues?: string[], apply?: boolean })`: Generates a backward-compatible code remediation and unified diff.
+- `shaktiq_scan_routes({ path: string })`: Extracts all API endpoints from a code file or folder.
+- `shaktiq_analyze({ base_spec: string, head_spec: string })`: Deterministic OpenAPI diffing with release verdict.
+- `shaktiq_git_diff({ spec_path: string, base_ref?: string })`: Compare working-tree spec against git revision.
 
 ---
 
-## 5. Natural Language AI Assistant (Powered by Gemini 3.8 Flash)
+## Agent Remediation Playbook
 
-ShaktIQ provides interactive, conversational API architecture intelligence via Google Gemini 3.8 Flash:
-
-- **Web Dashboard:** Interactive **Ask ShaktIQ AI** slide-over drawer on project and run detail pages (`/projects/:id` and `/runs/:id`).
-- **REST API Endpoint:** `POST /api/v1/projects/:projectId/ai/query`
-  - **Body:** `{ "question": "Are there breaking changes affecting our iOS or Android clients?" }`
-  - **Response:**
-    ```json
-    {
-      "answer": "string (formatted markdown analysis)",
-      "suggestedFix": "string (backward-compatible code snippet)",
-      "riskLevel": "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | "SAFE",
-      "relatedEndpoints": ["/v1/orders"],
-      "generatedBy": "Google Gemini 3.8 Flash (Project Architecture Intelligence)"
-    }
-    ```
-- **Fallback Guarantee:** Deterministic analysis engine executes automatically if `GEMINI_API_KEY` is unavailable, ensuring 100% operational uptime.
-
+| Detected Change Type | Severity | Common Cause | Recommended Agent Remediation |
+| :--- | :--- | :--- | :--- |
+| `REQUIRED_REQUEST_FIELD_ADDED` | 🔴 Breaking | Added required field to request body | Make property optional with a sane default fallback. |
+| `REQUIRED_PARAMETER_ADDED` | 🔴 Breaking | Added required query/header/path param | Supply default value (`param: Optional[str] = None`). |
+| `ENDPOINT_REMOVED` | 🔴 Breaking | Controller or path deleted | Restore endpoint with `deprecated: true` and sunset header. |
+| `FIELD_TYPE_CHANGED` | 🔴 Breaking | Changed string to integer or object | Introduce versioned property name or support union types. |
+| `RESPONSE_FIELD_REMOVED` | 🔴 Breaking | Removed response payload property | Keep property in response schema marked deprecated. |

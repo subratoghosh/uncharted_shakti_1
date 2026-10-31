@@ -150,10 +150,11 @@ export const studioRoutes: FastifyPluginAsync = async (app: FastifyInstance) => 
       const pythonRegex = /@(?:app|router|api|bp)\.(get|post|put|delete|patch|route)\s*\(\s*['"`]([^'"`]+)['"`]/gi;
       let pyMatch: RegExpExecArray | null;
       while ((pyMatch = pythonRegex.exec(content)) !== null) {
-        let m = pyMatch[1].toUpperCase();
-        if (m === 'ROUTE') m = 'GET';
+        const rawMethod = pyMatch[1];
         const p = pyMatch[2];
-        if (m && p) {
+        if (rawMethod && p) {
+          let m = rawMethod.toUpperCase();
+          if (m === 'ROUTE') m = 'GET';
           routes.push({
             method: m as any,
             path: p,

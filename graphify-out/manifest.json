@@ -174,15 +174,15 @@
     "semantic_hash": "6761bf21446877ef56029050e4da529e"
   },
   "apps/vscode-ext/package.json": {
-    "mtime": 1793442619.9927945,
-    "seen": 1793442800.633759,
-    "ast_hash": "60af1a26b90b1101a491983c0fc1dba7",
+    "mtime": 1793444175.3626256,
+    "seen": 1793444704.1469738,
+    "ast_hash": "763e4df6312874c3a25149e953345ebd",
     "semantic_hash": ""
   },
   "apps/vscode-ext/src/extension.ts": {
-    "mtime": 1793442620.122355,
-    "seen": 1793442800.6337621,
-    "ast_hash": "c22684bad436e9483e93e9efaa70726c",
+    "mtime": 1793444245.3481293,
+    "seen": 1793444704.146977,
+    "ast_hash": "e3f609a0cd152a2e7fcf8cb6943ba67f",
     "semantic_hash": ""
   },
   "apps/vscode-ext/tsconfig.json": {
@@ -696,9 +696,9 @@
     "semantic_hash": "464376fb11ebfc3cea6135b38563dbba"
   },
   "README.md": {
-    "mtime": 1793438021.493276,
-    "seen": 1793439663.80301,
-    "ast_hash": "938c6121aaf765ba4a1f0e95649ca2af",
+    "mtime": 1793444604.993513,
+    "seen": 1793444704.153825,
+    "ast_hash": "6eab467e8c7225277a195e8716625af6",
     "semantic_hash": ""
   },
   "apps/api/README.md": {
@@ -882,15 +882,15 @@
     "semantic_hash": ""
   },
   "packages/analyzer/src/cli.ts": {
-    "mtime": 1793392921.1299975,
-    "seen": 1793394595.377183,
-    "ast_hash": "324186fd8bc0cd597fd80bb10e3a5e39",
+    "mtime": 1793443692.5751429,
+    "seen": 1793444704.1522539,
+    "ast_hash": "aa9c9e0d2cfa194e31cb118000f6bfa1",
     "semantic_hash": ""
   },
   "packages/analyzer/src/mcp.ts": {
-    "mtime": 1793392785.9248836,
-    "seen": 1793394595.3772979,
-    "ast_hash": "fdebb1eb8973c63cabb1189f2f19b43e",
+    "mtime": 1793443723.035721,
+    "seen": 1793444704.1523788,
+    "ast_hash": "3a1252b407556b517411a7f32263fedf",
     "semantic_hash": ""
   },
   "plugin.json": {
@@ -924,9 +924,9 @@
     "semantic_hash": ""
   },
   ".agents/skills/shaktiq/SKILL.md": {
-    "mtime": 1793432269.4604785,
-    "seen": 1793437823.028068,
-    "ast_hash": "f870dc6533198dfc6559cf580753dd82",
+    "mtime": 1793443832.4484532,
+    "seen": 1793444704.153794,
+    "ast_hash": "c0a81a22d7ed87d6818be419875e0a56",
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
@@ -942,9 +942,9 @@
     "semantic_hash": ""
   },
   "skills/shaktiq/SKILL.md": {
-    "mtime": 1793432269.477244,
-    "seen": 1793437823.028372,
-    "ast_hash": "f870dc6533198dfc6559cf580753dd82",
+    "mtime": 1793443806.4949162,
+    "seen": 1793444704.154233,
+    "ast_hash": "c0a81a22d7ed87d6818be419875e0a56",
     "semantic_hash": ""
   },
   "apps/web/next.config.js": {
