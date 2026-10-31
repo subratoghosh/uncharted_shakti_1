@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import argon2 from 'argon2';
 import { ObjectId } from 'mongodb';
 import { getDb } from '../../../../lib/mongodb';
 import { checkRateLimit } from '../../../../lib/ratelimit';
+import { hashPassword } from '../../../../lib/password';
 
 export async function POST(request: Request) {
   try {
@@ -76,12 +76,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const passwordHash = await argon2.hash(password, {
-      type: argon2.argon2id,
-      memoryCost: 65536,
-      timeCost: 3,
-      parallelism: 4,
-    });
+    const passwordHash = await hashPassword(password);
 
     const now = new Date();
     const adminEmail = (process.env.ADMIN_EMAIL || 'admin@shaktiq.dev').toLowerCase().trim();
