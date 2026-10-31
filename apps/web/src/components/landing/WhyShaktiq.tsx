@@ -5,9 +5,9 @@ export const WhyShaktiq: React.FC = () => {
   const differentiators = [
     {
       icon: GitBranch,
-      title: 'AST Semantics vs Naive Text Diffing',
+      title: 'Semantic Code Analysis vs Shallow Line Diffing',
       description:
-        'Line-by-line diffs fail on reordered keys or comment changes. shaktIQ parses specs into Abstract Syntax Trees, isolating true schema disruptions from harmless formatting.',
+        'Line-by-line diffs fail on whitespace, formatting changes, or reordered keys. shaktIQ performs deep structural analysis, isolating genuine breaking regressions from harmless changes.',
     },
     {
       icon: ShieldCheck,
@@ -17,15 +17,15 @@ export const WhyShaktiq: React.FC = () => {
     },
     {
       icon: Zap,
-      title: 'Autonomous Gemini 3.8 Flash Remediation',
+      title: 'Automated Patch Remediation & Safety Shims',
       description:
-        'Don’t just flag broken APIs—remediate them. Gemini synthesizes non-breaking schema shims, route aliases, and field-level deprecation wrappers in milliseconds.',
+        'Don’t just flag broken releases—remediate them. shaktIQ automatically synthesizes non-breaking compatibility shims, route aliases, and deprecation wrappers in milliseconds.',
     },
     {
       icon: Network,
-      title: 'Blast Radius & Consumer Dependency Mapping',
+      title: 'Downstream Client & Dependency Impact Mapping',
       description:
-        'Understand the ripple effect before deploy. shaktIQ matches modified schemas against registered consumer microservices, mobile apps, and third-party developers.',
+        'Understand the ripple effect before deploy. shaktIQ correlates modified service routes and logic against downstream clients, web applications, and mobile apps.',
     },
   ];
 
@@ -37,7 +37,7 @@ export const WhyShaktiq: React.FC = () => {
             Why platform teams choose <span>shakt<span className="text-[#52B143]">IQ</span></span> over static linters
           </h2>
           <p className="text-sm sm:text-base text-text-dim">
-            Engineered with mathematical precision to prevent breaking downstream production contracts while accelerating engineering release velocity.
+            Engineered with mathematical precision to prevent breaking downstream production services while accelerating engineering release velocity.
           </p>
         </div>
 

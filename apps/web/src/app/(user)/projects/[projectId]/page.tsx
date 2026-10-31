@@ -386,7 +386,7 @@ export default function ProjectDetailPage() {
                 <>
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-text">
-                      Base OpenAPI Spec (YAML)
+                      Base Service Spec (YAML)
                     </label>
                     <textarea
                       rows={5}
@@ -398,7 +398,7 @@ export default function ProjectDetailPage() {
 
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-text">
-                      Head OpenAPI Spec (YAML) *
+                      Head Service Spec (YAML) *
                     </label>
                     <textarea
                       rows={5}

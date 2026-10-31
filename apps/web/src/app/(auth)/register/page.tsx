@@ -98,7 +98,7 @@ export default function RegisterPage() {
             Create an Account
           </h1>
           <p className="text-xs text-[#0C382E]/70">
-            Join shaktIQ for autonomous OpenAPI compatibility verification
+            Join shaktIQ for continuous release safety & compatibility governance
           </p>
         </div>
 

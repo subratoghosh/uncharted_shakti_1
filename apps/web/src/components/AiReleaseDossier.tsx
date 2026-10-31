@@ -39,9 +39,9 @@ export function AiReleaseDossier({
           </div>
           <div>
             <h3 className="font-semibold text-sm flex items-center gap-2">
-              Multi-Layer AI Release Intelligence
+              Multi-Layer Release Intelligence
               <span className="text-[10px] px-2 py-0.5 rounded font-mono font-semibold bg-accent/10 text-accent border border-accent/20">
-                {aiDossier?.generatedBy || 'gemini-3.8-flash'}
+                Automated Intelligence
               </span>
             </h3>
             <p className="text-xs text-text-muted">
@@ -69,7 +69,7 @@ export function AiReleaseDossier({
             className="flex items-center gap-1.5 px-3.5 py-1.5 bg-accent text-white rounded text-xs font-semibold hover:bg-accent/90 disabled:opacity-50 transition-colors shadow-sm"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loadingDossier ? 'animate-spin' : ''}`} />
-            <span>{loadingDossier ? 'Analyzing with Gemini...' : 'Re-Generate Dossier'}</span>
+            <span>{loadingDossier ? 'Analyzing Contracts...' : 'Re-Generate Dossier'}</span>
           </button>
         </div>
       </div>
@@ -82,7 +82,7 @@ export function AiReleaseDossier({
           <div>
             <h4 className="font-semibold text-sm">Evaluating Consumer Contracts & Semantic Blast Radius...</h4>
             <p className="text-xs text-text-muted mt-1">
-              Gemini 3.8 Flash is inspecting OpenAPI changes, mapping client vulnerability, and generating code fix snippets.
+              Automated Intelligence is inspecting code and contract changes, mapping client vulnerability, and generating non-breaking fix recommendations.
             </p>
           </div>
         </div>

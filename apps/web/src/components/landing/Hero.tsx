@@ -18,26 +18,26 @@ export const Hero: React.FC = () => {
   const capabilities = [
     {
       icon: GitBranch,
-      title: 'Continuous Schema Ingestion',
-      description: 'Intercepts OpenAPI 3.0/3.1 contract changes via GitHub Webhooks, CLI, or CI pre-commit hooks.',
+      title: 'Continuous Contract Ingestion',
+      description: 'Intercepts contract and code modifications via GitHub Webhooks, CLI, or CI pre-commit hooks.',
       tag: 'Real-Time Ingestion',
     },
     {
       icon: Network,
-      title: 'Downstream Blast Radius Matrix',
-      description: 'Maps altered endpoints against registered consumers to pinpoint mobile app and microservice impact.',
-      tag: 'Consumer Matrix',
+      title: 'Downstream Client Impact Matrix',
+      description: 'Maps altered endpoints and logic against registered consumers to pinpoint mobile app and web service impact.',
+      tag: 'Impact Matrix',
     },
     {
       icon: Cpu,
-      title: 'Autonomous Gemini AI Remediation',
-      description: 'Synthesizes backward-compatible route shims, field deprecation headers, and migration wrappers.',
-      tag: 'Gemini 3.8 Flash',
+      title: 'Automated Patch Remediation',
+      description: 'Synthesizes non-breaking backwards-compatible shims, parameter deprecation wrappers, and migration code.',
+      tag: 'Intelligent Engine',
     },
     {
       icon: ShieldCheck,
       title: 'Non-Bypassable Release Gates',
-      description: 'Blocks breaking PRs with cryptographic SAFE, REVIEW, or BLOCKED status and 0–100 confidence scoring.',
+      description: 'Blocks breaking PRs with cryptographic SAFE, REVIEW, or BLOCKED status and comprehensive confidence scoring.',
       tag: 'Policy Enforcement',
     },
   ];
@@ -55,12 +55,12 @@ export const Hero: React.FC = () => {
             {/* Pill Tag */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-green-dark border border-green-light/40 text-xs font-mono text-butter-cream mb-6 shadow-xs">
               <span className="w-2 h-2 rounded-full bg-green-accent animate-pulse" />
-              <span>OPENAPI RELEASE INTELLIGENCE PLATFORM</span>
+              <span>CONTINUOUS RELEASE GOVERNANCE & SAFETY PLATFORM</span>
             </div>
 
             {/* Headline in SponFy slab-serif style */}
             <h1 className="font-slab text-[2.75rem] sm:text-7xl lg:text-[76px] leading-[1.04] font-light text-butter-cream tracking-tight mb-6">
-              <span>API releases</span>
+              <span>Software releases</span>
               <br />
               <span className="relative inline-block text-butter-cream font-light">
                 worth trusting
@@ -88,8 +88,8 @@ export const Hero: React.FC = () => {
 
             {/* Subtitle */}
             <p className="text-text-hero-sub text-base sm:text-lg max-w-xl leading-relaxed mb-8 font-normal">
-              Deterministic OpenAPI breaking change detection, consumer blast radius assessment, and
-              autonomous Gemini AI remediation dossiers. Zero unverified contracts shipped to production.
+              Deterministic breaking change prevention, downstream client impact assessment, and
+              automated patch remediation dossiers. Zero unverified code breaks shipped to production.
             </p>
 
             {/* Action Buttons */}
@@ -110,15 +110,15 @@ export const Hero: React.FC = () => {
             <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-butter-cream/15 w-full text-xs text-text-hero-sub/90">
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-green-accent" />
-                <span>100% Deterministic AST Engine</span>
+                <span>Deterministic Semantic Verification</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-green-accent" />
-                <span>Gemini 3.8 Flash Remediation</span>
+                <span>Automated Patch Remediation</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-green-accent" />
-                <span>Automated GitHub PR Gates</span>
+                <span>Automated Pull Request Safeguards</span>
               </div>
             </div>
           </div>
@@ -137,14 +137,14 @@ export const Hero: React.FC = () => {
                       ShaktIQ Platform Architecture
                     </h3>
                     <p className="text-[11px] text-[#0C382E]/70 font-mono">
-                      Continuous API Contract Reliability Engine
+                      Continuous Release Governance & Reliability Engine
                     </p>
                   </div>
                 </div>
 
                 <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0C382E]/5 border border-[#0C382E]/15 text-[10px] font-mono text-[#0C382E] font-semibold">
                   <Zap className="w-3 h-3 text-green-accent" />
-                  <span>Sub-50ms AST Speed</span>
+                  <span>Real-Time Audit Velocity</span>
                 </div>
               </div>
 

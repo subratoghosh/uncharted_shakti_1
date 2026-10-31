@@ -128,7 +128,7 @@ paths:
         '200':
           description: Refund accepted`;
 
-const PRESET_CONTROLLER = `import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+const PRESET_CONTROLLER = `import { RouteService, HttpRequest, HttpResponse } from '@core/routing';
 import { z } from 'zod';
 
 const createOrderSchema = z.object({
@@ -141,23 +141,23 @@ const createOrderSchema = z.object({
   priorityShipping: z.boolean(),
 });
 
-export async function orderRoutes(app: FastifyInstance) {
-  // GET /api/v1/orders
-  app.get('/api/v1/orders', async (req: FastifyRequest, reply: FastifyReply) => {
+export async function orderRoutes(app: RouteService) {
+  // GET /v1/orders
+  app.get('/v1/orders', async (req: HttpRequest, reply: HttpResponse) => {
     return reply.send({ success: true, orders: [] });
   });
 
-  // POST /api/v1/orders
-  app.post('/api/v1/orders', async (req: FastifyRequest, reply: FastifyReply) => {
+  // POST /v1/orders
+  app.post('/v1/orders', async (req: HttpRequest, reply: HttpResponse) => {
     const payload = createOrderSchema.parse(req.body);
     return reply.status(201).send({ success: true, orderId: 'ord_98765', payload });
   });
 
-  // DELETE /api/v1/orders/:id
-  app.delete('/api/v1/orders/:id', async (req: FastifyRequest, reply: FastifyReply) => {
+  // DELETE /v1/orders/:id
+  app.delete('/v1/orders/:id', async (req: HttpRequest, reply: HttpResponse) => {
     return reply.status(204).send();
   });
-}`;
+};`;
 
 export default function DashboardPage() {
   // Database Projects state
@@ -473,7 +473,7 @@ export default function DashboardPage() {
 
       if (!fetchedContent) {
         throw new Error(
-          `Could not locate an OpenAPI spec or route file in ${owner}/${repo} on branch "${branch}". Please verify the repository is public and contains openapi.yaml, or specify the exact file path.`
+          `Could not locate a service spec or route file in ${owner}/${repo} on branch "${branch}". Please verify the repository is public and contains a valid specification or route file, or specify the exact file path.`
         );
       }
 
@@ -692,7 +692,7 @@ export default function DashboardPage() {
               }}
               className="text-xs font-bold text-green-dark hover:underline"
             >
-              Load Sample OpenAPI Spec
+              Load Sample Service Spec
             </button>
             <span className="text-border">•</span>
             <button
@@ -702,7 +702,7 @@ export default function DashboardPage() {
               }}
               className="text-xs font-bold text-green-dark hover:underline"
             >
-              Load Sample Fastify Controller
+              Load Sample Route Controller
             </button>
           </div>
         </div>
@@ -1293,7 +1293,7 @@ export default function DashboardPage() {
                     <label className="text-xs font-bold text-green-dark">Spec / Route Path</label>
                     <input
                       type="text"
-                      placeholder="openapi.yaml (or auto-detect)"
+                      placeholder="service-spec.yaml (or auto-detect)"
                       value={githubPath}
                       onChange={(e) => setGithubPath(e.target.value)}
                       className="w-full px-3 py-2 rounded-lg bg-butter-panel border border-border text-xs text-green-dark focus:ring-1 focus:ring-green-mid"
@@ -1335,7 +1335,7 @@ export default function DashboardPage() {
             {/* TAB: UPLOAD FILE */}
             {importTab === 'upload' && (
               <div className="space-y-3">
-                <label className="text-xs font-bold text-green-dark">Select OpenAPI or Controller file</label>
+                <label className="text-xs font-bold text-green-dark">Select Service Spec or Route file</label>
                 <div className="relative border-2 border-dashed border-border hover:border-green-dark/50 rounded-xl p-8 text-center space-y-2 bg-butter-panel/60 cursor-pointer transition-all">
                   <Upload className="w-7 h-7 text-green-mid mx-auto" />
                   <p className="text-xs font-bold text-green-dark">Click or drag file here to upload</p>
@@ -1353,10 +1353,10 @@ export default function DashboardPage() {
             {/* TAB: PASTE CODE */}
             {importTab === 'paste' && (
               <div className="space-y-3">
-                <label className="text-xs font-bold text-green-dark">Paste OpenAPI YAML/JSON or Controller</label>
+                <label className="text-xs font-bold text-green-dark">Paste Service Spec or Route Code</label>
                 <textarea
                   rows={8}
-                  placeholder="openapi: 3.0.0&#10;paths:&#10;  /api/v1/users:&#10;    get:&#10;      summary: ..."
+                  placeholder="paths:&#10;  /users:&#10;    get:&#10;      summary: ..."
                   value={pasteInput}
                   onChange={(e) => setPasteInput(e.target.value)}
                   className="w-full p-3 rounded-lg bg-butter-panel border border-border text-xs font-mono text-green-dark focus:ring-1 focus:ring-green-mid"

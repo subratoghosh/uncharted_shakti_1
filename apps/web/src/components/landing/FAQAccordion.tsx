@@ -15,39 +15,39 @@ type FAQItem = {
 
 export const SHAKTIQ_FAQS: FAQItem[] = [
   {
-    question: 'How does shaktIQ detect OpenAPI breaking changes?',
+    question: 'How does shaktIQ detect breaking software changes?',
     answer:
-      'shaktIQ parses both base and candidate OpenAPI specifications into deep Abstract Syntax Trees (AST). It performs deterministic rule validation across all endpoints, methods, parameters, request bodies, and response codes. Changes such as removing an endpoint, changing parameter types, adding required request fields, or altering status codes are flagged with high-precision severity classification (BREAKING, WARNING, INFO).',
+      'shaktIQ parses both base and candidate service specifications into deep semantic structures. It performs deterministic rule validation across all endpoints, methods, parameters, request bodies, and response codes. Changes such as removing an endpoint, changing parameter types, adding required request fields, or altering status codes are flagged with high-precision severity classification (BREAKING, WARNING, INFO).',
     category: 'General',
   },
   {
-    question: 'Which OpenAPI and API schema versions are supported?',
+    question: 'Which service interface and contract formats are supported?',
     answer:
-      'shaktIQ supports OpenAPI 3.0.x and OpenAPI 3.1.x, as well as Swagger 2.0 specifications in both YAML and JSON formats. It handles complex JSON Schema references ($ref), polymorphs (oneOf, anyOf, allOf), and custom vendor extensions.',
+      'shaktIQ supports modern service contract specifications in both YAML and JSON formats. It handles complex data schema references ($ref), polymorphs (oneOf, anyOf, allOf), and custom extensions, as well as route controller files.',
     category: 'Compatibility',
   },
   {
-    question: 'How does the Blast Radius impact calculation work?',
+    question: 'How does the Downstream Client Impact calculation work?',
     answer:
-      'When an API schema changes, shaktIQ evaluates downstream dependencies registered to that endpoint. It computes an impact score based on consumer service tier (Core, Internal, Public SDK), active traffic volume, and the nature of the breaking change. If critical consumers are impacted, the release verdict is automatically shifted to BLOCKED.',
+      'When a service interface or route changes, shaktIQ evaluates downstream dependencies registered to that service. It computes an impact score based on consumer service tier (Core, Internal, Public Clients), active traffic volume, and the nature of the breaking change. If critical consumers are impacted, the release verdict is automatically shifted to BLOCKED.',
     category: 'Security & Risk',
   },
   {
-    question: 'How does AI remediation generate backward-compatible fixes?',
+    question: 'How does automated remediation generate backward-compatible fixes?',
     answer:
-      'When breaking changes are detected, shaktIQ feeds the schema AST diff and consumer contract constraints to our remediation engine. It synthesizes a production-grade Release Dossier containing: (1) an executive risk analysis, (2) concrete backward-compatible schema patches, (3) route deprecation strategies, and (4) copy-paste ready migration code.',
+      'When breaking changes are detected, shaktIQ feeds the structural diff and consumer contract constraints to our automated intelligence remediation engine. It synthesizes a production-grade Release Dossier containing: (1) an executive risk analysis, (2) concrete backward-compatible schema patches, (3) route deprecation strategies, and (4) copy-paste ready migration code.',
     category: 'Remediation',
   },
   {
-    question: 'Can I test shaktIQ without configuring any external API keys?',
+    question: 'Can I test shaktIQ without configuring any external setup?',
     answer:
-      'Yes! shaktIQ includes built-in mock and sandbox fallback modes. You can compare specs immediately in the interactive console, inspect live AST diffs, and explore sample projects without requiring any external keys.',
+      'Yes! shaktIQ includes built-in mock and sandbox fallback modes. You can compare specs immediately in the interactive console, inspect live structural diffs, and explore sample projects right out of the box.',
     category: 'General',
   },
   {
-    question: 'How do GitHub Webhooks work for universal developer workflows?',
+    question: 'How do Git and pull request safeguards work in developer workflows?',
     answer:
-      'You can register a webhook in any GitHub repository or install the shaktIQ GitHub integration. Whenever any developer pushes a commit or opens a pull request that touches an OpenAPI specification, GitHub dispatches an event to shaktIQ. shaktIQ automatically runs the diff, computes the release verdict, and updates status checks.',
+      'You can register a webhook in any repository or connect your version control provider. Whenever any developer pushes a commit or opens a pull request that touches interface contracts or controllers, an event is sent to shaktIQ. shaktIQ automatically runs the diff, computes the release verdict, and updates status checks.',
     category: 'Integrations',
   },
 ];
@@ -57,7 +57,7 @@ export const FAQAccordion: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
   const [activeCategory, setActiveCategory] = useState<string>('All');
 
-  // Load dynamic FAQs from MongoDB
+  // Load dynamic FAQs from storage
   useEffect(() => {
     let mounted = true;
     fetch('/api/faqs')
@@ -95,7 +95,7 @@ export const FAQAccordion: React.FC = () => {
             Everything you need to know about <span className="text-green-dark">shakt<span className="text-[#16A34A]">IQ</span></span>
           </h2>
           <p className="text-sm sm:text-base text-text-dim max-w-xl mx-auto">
-            Deterministic AST comparison, blast radius scoring, CI/CD automated gates, and backward-compatible code remediation.
+            Deterministic semantic comparison, blast radius scoring, CI/CD automated gates, and backward-compatible code remediation.
           </p>
 
           {/* Category Filter Pills */}

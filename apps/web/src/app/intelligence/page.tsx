@@ -15,9 +15,9 @@ import {
 import { MarketingLayout } from '@/components/landing/MarketingLayout';
 
 export const metadata: Metadata = {
-  title: 'Blast Radius & Contract Intelligence | shaktIQ',
+  title: 'Client Impact & Release Intelligence | shaktIQ',
   description:
-    'Deep downstream consumer dependency mapping, explainable release scoring, and non-bypassable CI contract governance for modern API platforms.',
+    'Deep downstream consumer dependency mapping, explainable release scoring, and non-bypassable CI release governance for modern engineering platforms.',
 };
 
 export const revalidate = 3600; // Cache static page for ultra-fast, zero-lag delivery
@@ -29,7 +29,7 @@ export default function IntelligencePage() {
       title: 'Consumer Dependency Graph',
       subtitle: 'Mapping altered endpoints to registered microservice consumers',
       description:
-        'When an endpoint schema changes, shaktIQ traces consumer contracts across your organization. If an internal billing service or external iOS client relies on a modified parameter, shaktIQ highlights the exact breaking path.',
+        'When an interface or route changes, shaktIQ traces consumer contracts across your organization. If an internal billing service or external mobile client relies on a modified parameter, shaktIQ highlights the exact breaking path.',
       benefit: 'Prevents silent downstream client outages before merging',
     },
     {
@@ -42,18 +42,18 @@ export default function IntelligencePage() {
     },
     {
       icon: Zap,
-      title: 'Autonomous Patch Synthesis',
-      subtitle: 'Gemini 3.8 Flash writes backward-compatible alternatives',
+      title: 'Automated Patch Synthesis',
+      subtitle: 'Intelligent synthesis of backward-compatible alternatives',
       description:
-        'When a breaking change is flagged, shaktIQ uses Gemini 3.8 Flash to synthesize backward-compatible alternatives: parameter deprecation wrappers, route shims, and RFC 8594 sunset schedules.',
+        'When a breaking change is flagged, shaktIQ uses automated code intelligence to synthesize backward-compatible alternatives: parameter deprecation wrappers, route shims, and sunset schedules.',
       benefit: 'Turns blockers into immediate 1-click refactoring steps',
     },
     {
       icon: Lock,
       title: 'Zero Telemetry & Private Processing',
-      subtitle: 'Schema payloads remain inside your security boundary',
+      subtitle: 'Code and contract payloads remain inside your security boundary',
       description:
-        'Your proprietary API specifications and internal endpoint topologies are processed securely with enterprise data isolation. AI prompts use minimal structural diff fragments without leaking sensitive corporate payloads.',
+        'Your proprietary specifications and internal route topologies are processed securely with enterprise data isolation. Prompts use minimal structural diff fragments without leaking sensitive corporate payloads.',
       benefit: 'Meets SOC2, ISO 27001, and enterprise security compliance',
     },
   ];
@@ -72,7 +72,7 @@ export default function IntelligencePage() {
               Blast radius analysis & consumer contract safety
             </h1>
             <p className="text-text-dim text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-              Understand the full downstream ripple effect of every API modification before committing to production.
+              Understand the full downstream ripple effect of every code and interface modification before committing to production.
             </p>
           </div>
         </section>
@@ -126,7 +126,7 @@ export default function IntelligencePage() {
                   Test contract intelligence in real-time
                 </h3>
                 <p className="text-text-dim text-sm sm:text-base leading-relaxed">
-                  Open our interactive console to compare sample base and candidate OpenAPI documents and view real-time blast radius matrices.
+                  Open our interactive console to compare sample base and candidate service specifications and view real-time client impact matrices.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3.5 shrink-0 w-full sm:w-auto">

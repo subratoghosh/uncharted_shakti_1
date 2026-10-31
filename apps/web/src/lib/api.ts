@@ -214,7 +214,7 @@ export const api = {
         alternativeSuggestions: [
           'refactor(routes): streamline parameter validation and response headers',
           'fix(contract): supply fallback values to prevent 400 Bad Request on older clients',
-          'chore(spec): update OpenAPI route annotations',
+          'chore(spec): update service route annotations',
         ],
         explanation: 'Formatted according to Conventional Commits 1.0 specification with clear change motivation.',
         generatedBy: 'shaktIQ Conventional Commit Optimizer',

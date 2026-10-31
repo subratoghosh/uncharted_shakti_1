@@ -151,9 +151,9 @@ export default function TokensPage() {
           ). <br />
           3. Run command: <strong className="text-text">shaktIQ: Sign in with token</strong> and
           paste your PAT. <br />
-          4. Open any OpenAPI specification and run{' '}
-          <strong className="text-text">shaktIQ: Analyze API changes</strong> to see instant
-          breaking change diagnostics!
+          4. Open any service specification or route controller and run{' '}
+          <strong className="text-text">shaktIQ: Analyze changes</strong> to see instant
+          compatibility and release safety diagnostics!
         </p>
       </div>
 

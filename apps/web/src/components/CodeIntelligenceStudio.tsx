@@ -41,7 +41,7 @@ import type {
 // Default presets for instant exploration
 const PRESET_OPENAPI = `openapi: 3.0.0
 info:
-  title: Orders & Checkout API
+  title: Orders & Checkout Service
   version: 2.1.0
   description: Core microservice powering mobile and web checkout flows.
 paths:
@@ -126,7 +126,7 @@ paths:
         '200':
           description: Refund accepted`;
 
-const PRESET_CONTROLLER = `import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+const PRESET_CONTROLLER = `import { RouteService, HttpRequest, HttpResponse } from '@core/routing';
 import { z } from 'zod';
 
 const createOrderSchema = z.object({
@@ -140,24 +140,24 @@ const createOrderSchema = z.object({
   priorityShipping: z.boolean(),
 });
 
-export async function orderRoutes(app: FastifyInstance) {
-  // GET /api/v1/orders
-  app.get('/api/v1/orders', async (req: FastifyRequest, reply: FastifyReply) => {
+export async function orderRoutes(app: RouteService) {
+  // GET /v1/orders
+  app.get('/v1/orders', async (req: HttpRequest, reply: HttpResponse) => {
     return reply.send({ success: true, orders: [] });
   });
 
-  // POST /api/v1/orders
-  app.post('/api/v1/orders', async (req: FastifyRequest, reply: FastifyReply) => {
+  // POST /v1/orders
+  app.post('/v1/orders', async (req: HttpRequest, reply: HttpResponse) => {
     const payload = createOrderSchema.parse(req.body);
     return reply.status(201).send({ success: true, orderId: 'ord_98765', payload });
   });
 
-  // DELETE /api/v1/orders/:id
-  app.delete('/api/v1/orders/:id', async (req: FastifyRequest, reply: FastifyReply) => {
+  // DELETE /v1/orders/:id
+  app.delete('/v1/orders/:id', async (req: HttpRequest, reply: HttpResponse) => {
     // Notice: Missing Deprecation header for legacy clients
     return reply.status(204).send();
   });
-}`;
+};`;
 
 const MOCK_COMMITS: StudioCommitLog[] = [
   {
@@ -431,7 +431,7 @@ export function CodeIntelligenceStudio({
                     : 'text-muted hover:text-foreground'
                 }`}
               >
-                OpenAPI Spec
+                Service Spec
               </button>
               <button
                 onClick={() => handleSelectFile('order-controller.ts')}
@@ -441,7 +441,7 @@ export function CodeIntelligenceStudio({
                     : 'text-muted hover:text-foreground'
                 }`}
               >
-                TypeScript Controller
+                Route Controller
               </button>
             </div>
           </div>
@@ -541,7 +541,7 @@ export function CodeIntelligenceStudio({
               }`}
             >
               <FileCode className="w-4 h-4 text-emerald-400" />
-              <span className="truncate">openapi.yaml</span>
+              <span className="truncate">service-spec.yaml</span>
               <span className="text-[10px] ml-auto text-muted">Spec</span>
             </div>
 
@@ -743,7 +743,7 @@ export function CodeIntelligenceStudio({
               {isReviewing ? (
                 <div className="p-8 text-center space-y-3 bg-surface-2/40 rounded-xl border border-border">
                   <RefreshCw className="w-6 h-6 animate-spin text-accent mx-auto" />
-                  <p className="text-xs text-muted">Gemini 3.8 Flash is reviewing contracts & compatibility...</p>
+                  <p className="text-xs text-muted">Automated Intelligence is reviewing contracts & compatibility...</p>
                 </div>
               ) : reviewResult ? (
                 <div className="space-y-3">
@@ -1005,7 +1005,7 @@ export function CodeIntelligenceStudio({
                   <GitCommit className="w-5 h-5 text-accent mx-auto" />
                   <p className="text-xs text-foreground font-semibold">Generate Semantic Commit</p>
                   <p className="text-[11px] text-muted">
-                    Let Gemini 3.8 Flash formulate an optimized Conventional Commit message reflecting your API modifications.
+                    Let Automated Intelligence formulate an optimized Conventional Commit message reflecting your code modifications.
                   </p>
                   <button
                     onClick={handleRunCommitMsg}
@@ -1187,7 +1187,7 @@ export function CodeIntelligenceStudio({
 
             {importType === 'upload' && (
               <div className="space-y-3">
-                <label className="text-xs font-semibold text-foreground">Choose OpenAPI or Route File</label>
+                <label className="text-xs font-semibold text-foreground">Choose Service Spec or Route File</label>
                 <div className="border-2 border-dashed border-border rounded-xl p-6 text-center space-y-2 hover:border-accent/50 cursor-pointer transition-all">
                   <Upload className="w-8 h-8 text-muted mx-auto" />
                   <p className="text-xs font-semibold text-foreground">
@@ -1220,7 +1220,7 @@ export function CodeIntelligenceStudio({
 
             {importType === 'paste' && (
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-foreground">Paste OpenAPI or Code snippet</label>
+                <label className="text-xs font-semibold text-foreground">Paste Service Contract or Code snippet</label>
                 <textarea
                   rows={8}
                   value={uploadText}

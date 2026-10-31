@@ -19,7 +19,7 @@ import type { AiQueryResponse } from '@shaktiq/shared';
 
 /**
  * AskAiAssistant Component
- * Interactive natural language AI assistant powered by Google Gemini 3.8 Flash.
+ * Interactive natural language assistant powered by automated compatibility intelligence.
  * Allows developers to query project health, breaking changes, and backward-compatible patches.
  */
 interface AskAiAssistantProps {
@@ -59,9 +59,9 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
     {
       id: 'welcome',
       sender: 'assistant',
-      content: `Hello! I'm **shaktIQ AI**, powered by **Google Gemini 3.8 Flash**.\n\nAsk me any natural language question about **${
+      content: `Hello! I'm **shaktIQ Copilot**, your continuous release intelligence assistant.\n\nAsk me any question about **${
         projectName || 'this project'
-      }** — breaking changes, downstream consumer impact, or backward-compatible code fixes!`,
+      }** — breaking changes, downstream client impact, or backward-compatible code fixes!`,
       timestamp: new Date(),
     },
   ]);
@@ -166,7 +166,7 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
                     </span>
-                    Gemini 3.8
+                    Intelligence Engine
                   </span>
                 </h3>
                 <p className="text-xs text-slate-400">
@@ -324,7 +324,7 @@ export function AskAiAssistant({ projectId, projectName }: AskAiAssistantProps) 
             {isLoading && (
               <div className="flex gap-3 items-center text-sm text-slate-400 bg-slate-900/50 p-3 rounded-lg border border-white/5 animate-pulse">
                 <Bot className="w-4 h-4 text-emerald-400 animate-spin" />
-                <span>Google Gemini 3.8 Flash is analyzing your API topology...</span>
+                <span>Automated Intelligence is analyzing release topology...</span>
               </div>
             )}
             <div ref={messagesEndRef} />

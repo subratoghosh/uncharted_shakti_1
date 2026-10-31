@@ -8,9 +8,9 @@ import { WhyShaktiq } from '@/components/landing/WhyShaktiq';
 import { CallToAction } from '@/components/landing/CallToAction';
 
 export const metadata: Metadata = {
-  title: 'shaktIQ — OpenAPI Compatibility & Release Intelligence',
+  title: 'shaktIQ — Release Safety & Compatibility Governance',
   description:
-    'Deterministic OpenAPI breaking change detection, blast radius assessment, and autonomous Gemini AI remediation dossiers for high-velocity API platform teams.',
+    'Deterministic breaking change prevention, downstream client impact assessment, and automated patch remediation dossiers for modern engineering teams.',
 };
 
 export default function LandingPage() {

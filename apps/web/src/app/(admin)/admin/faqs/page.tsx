@@ -278,7 +278,7 @@ export default function AdminFaqsPage() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. How does OpenAPI contract diffing work?"
+                  placeholder="e.g. How does continuous release safety governance work?"
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg bg-butter-panel border border-border text-xs sm:text-sm text-green-dark focus:ring-1 focus:ring-green-mid"

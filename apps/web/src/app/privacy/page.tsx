@@ -5,9 +5,9 @@ import { ShieldCheck, Lock, Database, ArrowRight } from 'lucide-react';
 import { MarketingLayout } from '@/components/landing/MarketingLayout';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | shaktIQ - OpenAPI Release Intelligence',
+  title: 'Privacy Policy | shaktIQ - Release Safety & Compatibility Intelligence',
   description:
-    'Learn how shaktIQ protects your OpenAPI specifications, git repositories, and schema payload data with zero telemetry leakage and strict tenant isolation.',
+    'Learn how shaktIQ protects your service specifications, git repositories, and schema payload data with zero telemetry leakage and strict tenant isolation.',
 };
 
 export const revalidate = 3600; // Cache static page for ultra-fast, zero-lag delivery
@@ -29,7 +29,7 @@ export default function PrivacyPolicyPage() {
               Privacy Policy
             </h1>
             <p className="text-sm sm:text-base text-green-dark/75 max-w-2xl mx-auto leading-relaxed">
-              shaktIQ is engineered for mission-critical platform teams. We treat your OpenAPI specifications, API routes, and schema contracts with zero-trust architecture.
+              shaktIQ is engineered for mission-critical platform teams. We treat your software specifications, route controllers, and schema contracts with zero-trust architecture.
             </p>
             <p className="text-xs text-green-dark/60 font-mono">Last revised: {lastUpdated}</p>
           </div>
@@ -45,14 +45,14 @@ export default function PrivacyPolicyPage() {
                 <h2>Information We Process</h2>
               </div>
               <p className="text-sm leading-relaxed text-green-dark/80">
-                shaktIQ collects and processes only the information required to execute deterministic OpenAPI breaking change detection, blast radius assessment, and release intelligence:
+                shaktIQ collects and processes only the information required to execute deterministic breaking change detection, downstream client impact assessment, and release intelligence:
               </p>
               <ul className="list-disc pl-5 text-sm space-y-1.5 text-green-dark/80">
                 <li>
-                  <strong className="text-green-dark">OpenAPI Specifications:</strong> YAML and JSON documents describing your HTTP APIs and endpoints submitted via GitHub Webhooks, CLI, or direct upload.
+                  <strong className="text-green-dark">Service Specifications:</strong> YAML and JSON documents describing your endpoints and interfaces submitted via GitHub Webhooks, CLI, or direct upload.
                 </li>
                 <li>
-                  <strong className="text-green-dark">Account Credentials:</strong> Name, work email address, and hashed passwords (using argon2/scrypt with salt) or OAuth provider profile tokens.
+                  <strong className="text-green-dark">Account Credentials:</strong> Name, work email address, and securely hashed passwords or OAuth provider profile tokens.
                 </li>
                 <li>
                   <strong className="text-green-dark">Analysis Metadata:</strong> Git commit SHAs, pull request numbers, repository URLs, change fingerprints, and diff verdicts (SAFE / REVIEW / BLOCKED).
@@ -69,7 +69,7 @@ export default function PrivacyPolicyPage() {
                 <h2>Zero Telemetry & Code Privacy Guarantee</h2>
               </div>
               <p className="text-sm leading-relaxed text-green-dark/80">
-                We believe your internal API schemas are proprietary intellectual property:
+                We believe your internal schemas and route contracts are proprietary intellectual property:
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                 <div className="p-4 rounded-2xl bg-butter-bg border border-green-dark/10">
@@ -84,10 +84,10 @@ export default function PrivacyPolicyPage() {
                 <div className="p-4 rounded-2xl bg-butter-bg border border-green-dark/10">
                   <div className="flex items-center gap-2 text-xs font-bold text-green-dark mb-1">
                     <Database className="w-3.5 h-3.5 text-green-accent" />
-                    <span>Isolated AST Execution</span>
+                    <span>Isolated Execution Sandbox</span>
                   </div>
                   <p className="text-xs text-green-dark/70">
-                    AST semantic diffing executes in transient sandbox environments and is never shared across tenants.
+                    Semantic diffing executes in transient sandbox environments and is never shared across tenants.
                   </p>
                 </div>
               </div>
@@ -99,14 +99,14 @@ export default function PrivacyPolicyPage() {
                 <div className="w-7 h-7 rounded-lg bg-green-dark text-butter-cream flex items-center justify-center text-xs font-mono">
                   03
                 </div>
-                <h2>AI Processing & Gemini Intelligence</h2>
+                <h2>AI Processing & Automated Intelligence</h2>
               </div>
               <p className="text-sm leading-relaxed text-green-dark/80">
-                When AI release dossiers are enabled, shaktIQ sends isolated diff chunks to Google Gemini 3.8 Flash via the official Google Gen AI SDK to synthesize non-breaking shim recommendations:
+                When AI release dossiers are enabled, shaktIQ sends isolated diff chunks to our secure automated intelligence engine to synthesize non-breaking shim recommendations:
               </p>
               <ul className="list-disc pl-5 text-sm space-y-1.5 text-green-dark/80">
-                <li>Your API schemas are processed solely for the execution of your requested analysis run.</li>
-                <li>Data sent to Gemini via API is not retained by Google or used to train public foundation models.</li>
+                <li>Your schemas and code are processed solely for the execution of your requested analysis run.</li>
+                <li>Data sent for analysis is not retained by third parties or used to train public foundation models.</li>
                 <li>AI analysis can be toggled completely off at any time using the <code>AI_EXPLANATIONS_ENABLED=false</code> platform configuration flag.</li>
               </ul>
             </section>
@@ -120,7 +120,7 @@ export default function PrivacyPolicyPage() {
                 <h2>Data Retention & Security Storage</h2>
               </div>
               <p className="text-sm leading-relaxed text-green-dark/80">
-                All platform data is persisted using high-availability MongoDB replica sets with WiredTiger storage encryption. Access tokens are hashed using SHA-256 before storage. Spec snapshot diffs are retained according to your organization&apos;s configured data retention policies.
+                All platform data is persisted using high-availability enterprise database clusters with end-to-end encryption at rest and in transit. Access tokens are hashed using SHA-256 before storage. Spec snapshot diffs are retained according to your organization&apos;s configured data retention policies.
               </p>
             </section>
 
@@ -133,7 +133,7 @@ export default function PrivacyPolicyPage() {
                 <h2>Your Rights & Data Portability</h2>
               </div>
               <p className="text-sm leading-relaxed text-green-dark/80">
-                Platform administrators can export all analysis history, project snapshots, and consumer blast radius matrices at any time via the REST API or console dashboard. Organization admins may request complete data purging upon account deletion.
+                Platform administrators can export all analysis history, project snapshots, and consumer impact matrices at any time via the console dashboard. Organization admins may request complete data purging upon account deletion.
               </p>
             </section>
 

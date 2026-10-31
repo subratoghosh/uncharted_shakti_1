@@ -20,7 +20,7 @@ export const CallToAction: React.FC = () => {
               Zero breaking changes shipped to production.
             </h3>
             <p className="text-text-hero-sub text-sm sm:text-base leading-relaxed">
-              Connect your OpenAPI repository or paste base and candidate schemas directly into our live sandbox. Instant AST diffing, blast radius matrix, and Gemini AI release dossiers.
+              Connect your software repository or inspect base and candidate versions directly in our live console. Instant semantic diffing, downstream client protection, and automated release dossiers.
             </p>
           </div>
 

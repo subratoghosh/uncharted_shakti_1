@@ -5,9 +5,9 @@ import { ShieldCheck, CheckCircle2, ArrowRight } from 'lucide-react';
 import { MarketingLayout } from '@/components/landing/MarketingLayout';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | shaktIQ - OpenAPI Release Intelligence',
+  title: 'Terms of Service | shaktIQ - Release Safety & Compatibility Intelligence',
   description:
-    'Review the terms of service governing access to shaktIQ OpenAPI breaking change detection, blast radius assessment, and release intelligence infrastructure.',
+    'Review the terms of service governing access to shaktIQ breaking change detection, downstream client impact assessment, and release intelligence infrastructure.',
 };
 
 export const revalidate = 3600; // Cache static page for ultra-fast, zero-lag delivery
@@ -29,7 +29,7 @@ export default function TermsOfServicePage() {
               Terms of Service
             </h1>
             <p className="text-sm sm:text-base text-green-dark/75 max-w-2xl mx-auto leading-relaxed">
-              These terms govern your use of the shaktIQ platform, CLI binaries, API analyzer engine, and release intelligence automation services.
+              These terms govern your use of the shaktIQ platform, developer tooling, compatibility analyzer engine, and release intelligence automation services.
             </p>
             <p className="text-xs text-green-dark/60 font-mono">Effective as of: {lastUpdated}</p>
           </div>
@@ -45,7 +45,7 @@ export default function TermsOfServicePage() {
                 <h2>Acceptance of Terms</h2>
               </div>
               <p className="text-sm leading-relaxed text-green-dark/80">
-                By accessing or using shaktIQ (including the web application, REST API, VS Code extension, or GitHub Action webhooks), you agree to be bound by these Terms of Service. If you are entering into these terms on behalf of an enterprise or organization, you represent that you have authority to bind that entity.
+                By accessing or using shaktIQ (including the web application, developer tools, VS Code extension, or version control webhooks), you agree to be bound by these Terms of Service. If you are entering into these terms on behalf of an enterprise or organization, you represent that you have authority to bind that entity.
               </p>
             </section>
 
@@ -58,7 +58,7 @@ export default function TermsOfServicePage() {
                 <h2>Service Scope & Verification Engine</h2>
               </div>
               <p className="text-sm leading-relaxed text-green-dark/80">
-                shaktIQ provides automated OpenAPI 3.0/3.1 Abstract Syntax Tree (AST) comparison, blast radius matrix evaluation, and Gemini AI remediation intelligence. The platform delivers release gate verdicts:
+                shaktIQ provides automated semantic code and specification comparison, downstream client impact evaluation, and intelligent remediation. The platform delivers release gate verdicts:
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                 <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200">
@@ -85,7 +85,7 @@ export default function TermsOfServicePage() {
                 <h2>Account Governance & Security</h2>
               </div>
               <p className="text-sm leading-relaxed text-green-dark/80">
-                Users must safeguard personal access tokens and internal API credentials. Administrators have the right to suspend or revoke access for any user in accordance with organizational security policies.
+                Users must safeguard personal access tokens and service credentials. Administrators have the right to suspend or revoke access for any user in accordance with organizational security policies.
               </p>
               <ul className="list-disc pl-5 text-sm space-y-1.5 text-green-dark/80">
                 <li>You are solely responsible for actions originating from your registered tokens and accounts.</li>
@@ -103,7 +103,7 @@ export default function TermsOfServicePage() {
                 <h2>Intellectual Property & Ownership</h2>
               </div>
               <p className="text-sm leading-relaxed text-green-dark/80">
-                You retain complete, exclusive ownership of all OpenAPI specifications, code schemas, repository configurations, and proprietary API contracts uploaded or connected to shaktIQ. shaktIQ does not claim any intellectual property rights over your specifications.
+                You retain complete, exclusive ownership of all software specifications, code schemas, repository configurations, and proprietary contracts uploaded or connected to shaktIQ. shaktIQ does not claim any intellectual property rights over your specifications.
               </p>
             </section>
 
@@ -116,7 +116,7 @@ export default function TermsOfServicePage() {
                 <h2>Disclaimer of Warranties & Liability</h2>
               </div>
               <p className="text-sm leading-relaxed text-green-dark/80">
-                shaktIQ provides release gate analysis using deterministic AST matching and multi-layer AI heuristics. While designed to prevent production incidents, you remain responsible for final deployment decisions and overall system architecture. shaktIQ is provided &quot;as is&quot; without warranties of uninterrupted uptime or error-free parsing of non-standard spec variants.
+                shaktIQ provides release gate analysis using deterministic semantic matching and multi-layer AI heuristics. While designed to prevent production incidents, you remain responsible for final deployment decisions and overall system architecture. shaktIQ is provided &quot;as is&quot; without warranties of uninterrupted uptime or error-free parsing of non-standard spec variants.
               </p>
             </section>
 

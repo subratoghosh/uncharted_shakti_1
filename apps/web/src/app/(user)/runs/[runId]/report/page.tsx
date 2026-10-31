@@ -168,7 +168,7 @@ export default function ReleaseReportPage() {
 
       {/* Mandatory Disclaimer Footer */}
       <div className="border-t border-border pt-4 text-xs text-muted text-center italic">
-        This report assesses API compatibility based on the OpenAPI specifications provided. It does
+        This report assesses software compatibility based on the service specifications provided. It does
         not guarantee the release is safe.
       </div>
     </div>
